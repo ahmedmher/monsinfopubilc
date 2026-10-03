@@ -4,7 +4,7 @@ Env: FEEDS_FILE (override feeds list), DAYS (default 7), MAX_ITEMS (default 150)
 import json, os, re, sys, html, datetime, email.utils, urllib.request
 import xml.etree.ElementTree as ET
 here = os.path.dirname(os.path.abspath(__file__))
-DAYS = int(os.environ.get("DAYS", 7)); MAX_ITEMS = int(os.environ.get("MAX_ITEMS", 150))
+DAYS = int(os.environ.get("DAYS", 30)); MAX_ITEMS = int(os.environ.get("MAX_ITEMS", 500))  # 30-day archive so shared links keep working
 now = datetime.datetime.now(datetime.timezone.utc)
 KW = re.compile(r"\b(ai|a\.i\.|artificial intelligence|llm|gpt|chatgpt|claude|gemini|openai|anthropic|machine learning|deep learning|neural|agentic|agents?|copilot|diffusion|generative|genai|nvidia nim|inference)\b|ذكاء|نموذج", re.I)
 
@@ -67,16 +67,25 @@ for f in feeds:
         if (now - d).days >= DAYS or d > now + datetime.timedelta(hours=2): continue
         desc = clean(raw)
         if f.get("filter") and not KW.search(title + " " + desc): continue
-        items.append({"t": title, "d": desc, "u": link, "p": d.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "s": f["id"], "i": image_of(e, raw)})
+        items.append({"t": title, "d": desc, "x": clean(raw, 700), "u": link, "p": d.astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "s": f["id"], "i": image_of(e, raw)})
         n += 1
     if n: srcs.append({"id": f["id"], "name": f["name"], "lang": f["lang"]})
     print(f["id"], n)
+try:  # keep the archive: merge previous items that are still inside the window
+    prev = json.load(open(os.path.join(here, "news.json"), encoding="utf8")).get("items", [])
+    have = {i["u"] for i in items}
+    for it in prev:
+        d = parse_date(it["p"].replace("Z", ":00+00:00") if it["p"].endswith("Z") and len(it["p"]) == 17 else it["p"])
+        if it["u"] not in have and d and (now - d).days < DAYS: items.append(it)
+except Exception: pass
 seen, out = set(), []
 for it in sorted(items, key=lambda x: x["p"], reverse=True):
     k = re.sub(r"\W+", "", it["t"].lower())[:60]
     if it["u"] in seen or k in seen: continue
     seen.add(it["u"]); seen.add(k); out.append(it)
 out = out[:MAX_ITEMS]
+used = {i["s"] for i in out}
+srcs = [{"id": f["id"], "name": f["name"], "lang": f["lang"]} for f in feeds if f["id"] in used]
 if not out:
     print("no items fetched; keeping previous news.json", file=sys.stderr); sys.exit(0)
 json.dump({"updated": now.strftime("%Y-%m-%dT%H:%MZ"), "sources": srcs, "items": out}, open(os.path.join(here, "news.json"), "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
