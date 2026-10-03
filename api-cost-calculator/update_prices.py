@@ -21,7 +21,6 @@ for key, name, prov in json.load(open(os.path.join(here, "models.json"))):
     out.append({"id": key.replace("/", "-"), "n": name, "p": prov, "i": i, "o": o, "c": c, "x": x})
 if missing:
     print("missing:", missing, file=sys.stderr)
-new = {"updated": datetime.date.today().isoformat(), "source": "LiteLLM community price list", "models": out}
 path = os.path.join(here, "prices.json")
 try:
     old = json.load(open(path))
@@ -29,5 +28,19 @@ except Exception:
     old = None
 if old and old.get("models") == out:
     print("no price changes"); sys.exit(0)
+# detect real price changes versus the previous snapshot and keep the last 60 days of them
+today_s = datetime.date.today().isoformat()
+changes = []
+if old:
+    prev = {m["id"]: m for m in old.get("models", [])}
+    for m in out:
+        o = prev.get(m["id"])
+        if not o: continue
+        for fld, label in (("i", "input"), ("o", "output")):
+            if abs(o[fld] - m[fld]) > 1e-9:
+                changes.append({"id": m["id"], "n": m["n"], "p": m["p"], "d": today_s, "f": label, "old": o[fld], "new": m[fld]})
+    keep_from = (datetime.date.today() - datetime.timedelta(days=60)).isoformat()
+    changes = [c for c in old.get("changes", []) if c["d"] >= keep_from] + changes
+new = {"updated": today_s, "source": "LiteLLM community price list", "models": out, "changes": changes}
 json.dump(new, open(path, "w"), ensure_ascii=False, indent=1)
 print("updated", len(out), "models")
