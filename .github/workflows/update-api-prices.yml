@@ -16,5 +16,5 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@users.noreply.github.com"
-          git add api-cost-calculator/prices.json
+          git add api-cost-calculator/prices.json api-cost-calculator/price-history.json
           git diff --cached --quiet || (git commit -m "chore: update API prices" && for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done)

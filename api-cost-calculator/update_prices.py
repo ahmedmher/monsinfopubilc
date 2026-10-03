@@ -21,6 +21,12 @@ for key, name, prov in json.load(open(os.path.join(here, "models.json"))):
     out.append({"id": key.replace("/", "-"), "n": name, "p": prov, "i": i, "o": o, "c": c, "x": x})
 if missing:
     print("missing:", missing, file=sys.stderr)
+hist_path = os.path.join(here, "price-history.json")  # daily snapshot of every model price (kept 120 days)
+try: hist = json.load(open(hist_path))
+except Exception: hist = {}
+hist[datetime.date.today().isoformat()] = {m["id"]: [m["i"], m["o"]] for m in out}
+for d in sorted(hist)[:-120]: del hist[d]
+json.dump(hist, open(hist_path, "w"), separators=(",", ":"))
 path = os.path.join(here, "prices.json")
 try:
     old = json.load(open(path))
