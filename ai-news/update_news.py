@@ -165,5 +165,31 @@ if not out:
     print("no items fetched; keeping previous news.json", file=sys.stderr); sys.exit(0)
 used = {i["s"] for i in out}
 srcs = [{"id": f["id"], "name": f["name"], "lang": f["lang"]} for f in feeds if f["id"] in used]
-json.dump({"updated": now.strftime("%Y-%m-%dT%H:%MZ"), "sources": srcs, "items": out}, open(os.path.join(here, "news.json"), "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
+# our own content (blog posts + YouTube videos) so the page can link related news to it
+own = []
+try:
+    cfg = json.load(open(os.path.join(here, "own.json"), encoding="utf8"))
+except Exception:
+    cfg = {}
+if cfg.get("blog"):
+    try:
+        j = json.loads(fetch(cfg["blog"].rstrip("/") + "/feeds/posts/summary?alt=json&max-results=150", accept="application/json"))
+        for e in j.get("feed", {}).get("entry", []):
+            u = next((l["href"] for l in e.get("link", []) if l.get("rel") == "alternate"), "")
+            if u: own.append({"k": "p", "t": e["title"]["$t"][:140], "u": u, "c": [c["term"] for c in e.get("category", [])][:4]})
+    except Exception as e:
+        print("blog feed failed:", e, file=sys.stderr)
+for ch in cfg.get("youtube_channels", []):
+    try:
+        root = ET.fromstring(fetch("https://www.youtube.com/feeds/videos.xml?channel_id=" + ch))
+        for e in [e for e in root.iter() if local(e.tag) == "entry"]:
+            vid = text_of(child(e, "videoId")); ttl = text_of(child(e, "title"))
+            if vid and ttl: own.append({"k": "v", "t": ttl[:140], "u": "https://www.youtube.com/watch?v=" + vid})
+    except Exception as e:
+        print("youtube feed failed:", ch, e, file=sys.stderr)
+if not own:  # keep the previous list when both fetches fail
+    try: own = json.load(open(os.path.join(here, "news.json"), encoding="utf8")).get("own", [])
+    except Exception: own = []
+print("own items:", len(own))
+json.dump({"updated": now.strftime("%Y-%m-%dT%H:%MZ"), "sources": srcs, "items": out, "own": own}, open(os.path.join(here, "news.json"), "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
 print("wrote", len(out), "items")
