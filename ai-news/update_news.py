@@ -174,6 +174,7 @@ for it in sorted(items, key=lambda x: x["p"], reverse=True):
     if it["u"] in seen or k in seen: continue
     seen.add(it["u"]); seen.add(k); out.append(it)
 out = out[:MAX_ITEMS]
+for it in out: it["c"] = categorize(it) or ["other"]
 if not out:
     print("no items fetched; keeping previous news.json", file=sys.stderr); sys.exit(0)
 used = {i["s"] for i in out}
