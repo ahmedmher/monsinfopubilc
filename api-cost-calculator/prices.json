@@ -1,0 +1,285 @@
+{
+ "updated": "2026-10-01",
+ "source": "LiteLLM community price list",
+ "models": [
+  {
+   "id": "claude-fable-5-1",
+   "n": "Claude Fable 5.1",
+   "p": "Anthropic",
+   "i": 10.0,
+   "o": 50.0,
+   "c": 0.25,
+   "x": 1000000
+  },
+  {
+   "id": "claude-opus-5-5",
+   "n": "Claude Opus 5.5",
+   "p": "Anthropic",
+   "i": 4.0,
+   "o": 20.0,
+   "c": 0.2,
+   "x": 1000000
+  },
+  {
+   "id": "claude-opus-5",
+   "n": "Claude Opus 5",
+   "p": "Anthropic",
+   "i": 5.0,
+   "o": 25.0,
+   "c": 0.5,
+   "x": 1000000
+  },
+  {
+   "id": "claude-opus-4-8",
+   "n": "Claude Opus 4.8",
+   "p": "Anthropic",
+   "i": 5.0,
+   "o": 25.0,
+   "c": 0.5,
+   "x": 1000000
+  },
+  {
+   "id": "claude-sonnet-5-5",
+   "n": "Claude Sonnet 5.5",
+   "p": "Anthropic",
+   "i": 2.0,
+   "o": 10.0,
+   "c": 0.2,
+   "x": 1000000
+  },
+  {
+   "id": "claude-sonnet-4-6",
+   "n": "Claude Sonnet 4.6",
+   "p": "Anthropic",
+   "i": 3.0,
+   "o": 15.0,
+   "c": 0.3,
+   "x": 1000000
+  },
+  {
+   "id": "claude-haiku-4-5",
+   "n": "Claude Haiku 4.5",
+   "p": "Anthropic",
+   "i": 1.0,
+   "o": 5.0,
+   "c": 0.1,
+   "x": 200000
+  },
+  {
+   "id": "gpt-5.6",
+   "n": "GPT-5.6",
+   "p": "OpenAI",
+   "i": 4.0,
+   "o": 20.0,
+   "c": 0.4,
+   "x": 922000
+  },
+  {
+   "id": "gpt-5.6-terra",
+   "n": "GPT-5.6 Terra",
+   "p": "OpenAI",
+   "i": 2.0,
+   "o": 12.0,
+   "c": 0.2,
+   "x": 922000
+  },
+  {
+   "id": "gpt-5.6-luna",
+   "n": "GPT-5.6 Luna",
+   "p": "OpenAI",
+   "i": 0.2,
+   "o": 1.2,
+   "c": 0.02,
+   "x": 922000
+  },
+  {
+   "id": "gpt-5.5",
+   "n": "GPT-5.5",
+   "p": "OpenAI",
+   "i": 5.0,
+   "o": 30.0,
+   "c": 0.5,
+   "x": 1050000
+  },
+  {
+   "id": "gpt-5.4",
+   "n": "GPT-5.4",
+   "p": "OpenAI",
+   "i": 2.5,
+   "o": 15.0,
+   "c": 0.25,
+   "x": 1050000
+  },
+  {
+   "id": "gpt-5.4-mini",
+   "n": "GPT-5.4 mini",
+   "p": "OpenAI",
+   "i": 0.75,
+   "o": 4.5,
+   "c": 0.075,
+   "x": 272000
+  },
+  {
+   "id": "gpt-5.4-nano",
+   "n": "GPT-5.4 nano",
+   "p": "OpenAI",
+   "i": 0.2,
+   "o": 1.25,
+   "c": 0.02,
+   "x": 272000
+  },
+  {
+   "id": "gpt-5-mini",
+   "n": "GPT-5 mini",
+   "p": "OpenAI",
+   "i": 0.25,
+   "o": 2.0,
+   "c": 0.025,
+   "x": 272000
+  },
+  {
+   "id": "gpt-5-nano",
+   "n": "GPT-5 nano",
+   "p": "OpenAI",
+   "i": 0.05,
+   "o": 0.4,
+   "c": 0.005,
+   "x": 272000
+  },
+  {
+   "id": "gpt-4.1",
+   "n": "GPT-4.1",
+   "p": "OpenAI",
+   "i": 2.0,
+   "o": 8.0,
+   "c": 0.5,
+   "x": 1047576
+  },
+  {
+   "id": "gpt-4o-mini",
+   "n": "GPT-4o mini",
+   "p": "OpenAI",
+   "i": 0.15,
+   "o": 0.6,
+   "c": 0.075,
+   "x": 128000
+  },
+  {
+   "id": "gemini-3.8-flash",
+   "n": "Gemini 3.8 Flash",
+   "p": "Google",
+   "i": 0.75,
+   "o": 3.75,
+   "c": 0.075,
+   "x": 1048576
+  },
+  {
+   "id": "gemini-3.5-flash",
+   "n": "Gemini 3.5 Flash",
+   "p": "Google",
+   "i": 1.5,
+   "o": 9.0,
+   "c": 0.15,
+   "x": 1048576
+  },
+  {
+   "id": "gemini-3.5-flash-lite",
+   "n": "Gemini 3.5 Flash-Lite",
+   "p": "Google",
+   "i": 0.3,
+   "o": 2.5,
+   "c": 0.03,
+   "x": 1048576
+  },
+  {
+   "id": "gemini-2.5-pro",
+   "n": "Gemini 2.5 Pro",
+   "p": "Google",
+   "i": 1.25,
+   "o": 10.0,
+   "c": 0.125,
+   "x": 1048576
+  },
+  {
+   "id": "gemini-2.5-flash",
+   "n": "Gemini 2.5 Flash",
+   "p": "Google",
+   "i": 0.3,
+   "o": 2.5,
+   "c": 0.03,
+   "x": 1048576
+  },
+  {
+   "id": "gemini-2.5-flash-lite",
+   "n": "Gemini 2.5 Flash-Lite",
+   "p": "Google",
+   "i": 0.1,
+   "o": 0.4,
+   "c": 0.01,
+   "x": 1048576
+  },
+  {
+   "id": "deepseek-v4-pro",
+   "n": "DeepSeek V4 Pro",
+   "p": "DeepSeek",
+   "i": 1.32,
+   "o": 3.96,
+   "c": 0.044,
+   "x": 1000000
+  },
+  {
+   "id": "deepseek-v4-flash",
+   "n": "DeepSeek V4 Flash",
+   "p": "DeepSeek",
+   "i": 0.3,
+   "o": 1.2,
+   "c": 0.006,
+   "x": 1000000
+  },
+  {
+   "id": "deepseek-chat",
+   "n": "DeepSeek Chat",
+   "p": "DeepSeek",
+   "i": 0.28,
+   "o": 0.42,
+   "c": 0.028,
+   "x": 131072
+  },
+  {
+   "id": "xai-grok-4.7",
+   "n": "Grok 4.7",
+   "p": "xAI",
+   "i": 2.0,
+   "o": 6.0,
+   "c": 0.5,
+   "x": 500000
+  },
+  {
+   "id": "xai-grok-4.20",
+   "n": "Grok 4.20",
+   "p": "xAI",
+   "i": 1.25,
+   "o": 2.5,
+   "c": 0.2,
+   "x": 1000000
+  },
+  {
+   "id": "mistral-mistral-large-3",
+   "n": "Mistral Large 3",
+   "p": "Mistral",
+   "i": 0.5,
+   "o": 1.5,
+   "c": 0.05,
+   "x": 262144
+  },
+  {
+   "id": "mistral-mistral-small-2603",
+   "n": "Mistral Small",
+   "p": "Mistral",
+   "i": 0.15,
+   "o": 0.6,
+   "c": 0.015,
+   "x": 262144
+  }
+ ]
+}

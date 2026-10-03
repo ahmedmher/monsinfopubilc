@@ -1,0 +1,14 @@
+[
+{"id":"openai","name":"OpenAI","url":"https://openai.com/news/rss.xml","lang":"en","filter":false},
+{"id":"deepmind","name":"Google DeepMind","url":"https://deepmind.google/blog/rss.xml","lang":"en","filter":false},
+{"id":"googleai","name":"Google AI","url":"https://blog.google/technology/ai/rss/","lang":"en","filter":false},
+{"id":"hf","name":"Hugging Face","url":"https://huggingface.co/blog/feed.xml","lang":"en","filter":false},
+{"id":"nvidia","name":"NVIDIA","url":"https://blogs.nvidia.com/feed/","lang":"en","filter":true},
+{"id":"msai","name":"Microsoft AI","url":"https://blogs.microsoft.com/ai/feed/","lang":"en","filter":false},
+{"id":"verge","name":"The Verge","url":"https://www.theverge.com/rss/ai-artificial-intelligence/index.xml","lang":"en","filter":false},
+{"id":"techcrunch","name":"TechCrunch","url":"https://techcrunch.com/category/artificial-intelligence/feed/","lang":"en","filter":false},
+{"id":"venturebeat","name":"VentureBeat","url":"https://venturebeat.com/category/ai/feed/","lang":"en","filter":false},
+{"id":"ars","name":"Ars Technica","url":"https://arstechnica.com/ai/feed/","lang":"en","filter":false},
+{"id":"mit","name":"MIT Technology Review","url":"https://www.technologyreview.com/topic/artificial-intelligence/feed","lang":"en","filter":false},
+{"id":"aitnews","name":"أخبار الذكاء الاصطناعي","url":"https://aitnews.com/feed/","lang":"ar","filter":false}
+]

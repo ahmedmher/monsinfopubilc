@@ -1,0 +1,9 @@
+[
+{"id":"claude","label":"Claude Code","q":"topic:claude-code","min":50},
+{"id":"skills","label":"Claude Skills","q":"claude skills in:name,description","min":30},
+{"id":"mcp","label":"خوادم MCP","q":"topic:mcp-server","min":100},
+{"id":"agents","label":"وكلاء الذكاء الاصطناعي","q":"topic:ai-agents","min":500},
+{"id":"llm","label":"نماذج اللغة LLM","q":"topic:llm","min":1000},
+{"id":"image","label":"الصور والفيديو","q":"topic:comfyui","min":300},
+{"id":"ai","label":"الذكاء الاصطناعي عموما","q":"topic:artificial-intelligence","min":3000}
+]
