@@ -47,6 +47,14 @@ def aggregate(key, yt):
     return out
 
 yt = aggregate("yt", True); g = aggregate("g", False)
+# daily history of the top-25 scores (14 days) so the page can chart how each phrase moves
+hp = os.path.join(here, "trends-history.json")
+try: hist = json.load(open(hp, encoding="utf8"))
+except Exception: hist = {}
+if yt or g:
+    hist[now.strftime("%Y-%m-%d")] = {"yt": {x["q"]: x["s"] for x in yt}, "g": {x["q"]: x["s"] for x in g}}
+    for d in sorted(hist)[:-14]: del hist[d]
+    json.dump(hist, open(hp, "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
 if yt or g:
     json.dump({"updated": now.strftime("%Y-%m-%dT%H:%MZ"), "yt": yt or old.get("yt", []), "g": g or old.get("g", [])},
               open(os.path.join(here, "trends.json"), "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
