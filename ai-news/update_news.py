@@ -102,6 +102,19 @@ def page_excerpt(url):
         if sum(len(x) for x in out) >= X_MAX: break
     return out
 
+CATS = json.load(open(os.path.join(here, "categories.json"), encoding="utf8"))
+for _c in CATS: _c["rx"] = re.compile(_c["re"], re.I)
+
+def categorize(it):
+    """Up to 3 category ids per item: title hits count double, only the first 300 chars of the summary are used."""
+    title, desc = it["t"], (it.get("d") or "")[:300]
+    scored = []
+    for c in CATS:
+        sc = (2 * len(c["rx"].findall(title)) + min(len(c["rx"].findall(desc)), 2)) * c.get("w", 1)
+        if sc >= 1.4: scored.append((sc, c["id"]))
+    scored.sort(key=lambda x: -x[0])
+    return [i for _, i in scored[:3]]
+
 prev_items = {}
 try:
     for it in json.load(open(os.path.join(here, "news.json"), encoding="utf8")).get("items", []): prev_items[it["u"]] = it
@@ -191,5 +204,5 @@ if not own:  # keep the previous list when both fetches fail
     try: own = json.load(open(os.path.join(here, "news.json"), encoding="utf8")).get("own", [])
     except Exception: own = []
 print("own items:", len(own))
-json.dump({"updated": now.strftime("%Y-%m-%dT%H:%MZ"), "sources": srcs, "items": out, "own": own}, open(os.path.join(here, "news.json"), "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
+json.dump({"updated": now.strftime("%Y-%m-%dT%H:%MZ"), "sources": srcs, "items": out, "own": own, "cats": [{"id": c["id"], "l": c["l"], "g": c["g"]} for c in CATS] + [{"id": "other", "l": "أخبار عامة", "g": "أخرى"}]}, open(os.path.join(here, "news.json"), "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
 print("wrote", len(out), "items")

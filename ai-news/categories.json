@@ -1,0 +1,237 @@
+[
+ {
+  "id": "anthropic",
+  "g": "الشركات",
+  "l": "Anthropic وClaude",
+  "re": "claude|anthropic|\\bopus\\b|\\bsonnet\\b|\\bhaiku\\b"
+ },
+ {
+  "id": "openai",
+  "g": "الشركات",
+  "l": "OpenAI وChatGPT",
+  "re": "openai|chatgpt|\\bgpt[- ]?\\d|\\bgpt\\b|\\bsora\\b|\\bcodex\\b|\\bo[1-9]\\b|altman"
+ },
+ {
+  "id": "google",
+  "g": "الشركات",
+  "l": "Google وGemini",
+  "re": "gemini|deepmind|\\bgoogle\\b|\\bgemma\\b|\\bveo\\b|notebooklm|waymo"
+ },
+ {
+  "id": "meta",
+  "g": "الشركات",
+  "l": "Meta وLlama",
+  "re": "\\bmeta\\b|llama|zuckerberg|instagram|whatsapp"
+ },
+ {
+  "id": "microsoft",
+  "g": "الشركات",
+  "l": "Microsoft وCopilot",
+  "re": "microsoft|copilot|azure|nadella|\\bbing\\b"
+ },
+ {
+  "id": "xai",
+  "g": "الشركات",
+  "l": "xAI وGrok",
+  "re": "\\bxai\\b|grok|musk"
+ },
+ {
+  "id": "apple",
+  "g": "الشركات",
+  "l": "Apple وSiri",
+  "re": "\\bapple\\b|\\bsiri\\b|iphone|\\bios\\b|apple intelligence"
+ },
+ {
+  "id": "amazon",
+  "g": "الشركات",
+  "l": "Amazon وAWS",
+  "re": "amazon|\\baws\\b|alexa|bedrock|trainium"
+ },
+ {
+  "id": "nvidia",
+  "g": "الشركات",
+  "l": "NVIDIA",
+  "re": "nvidia|jensen huang|\\bcuda\\b|blackwell|\\bnim\\b"
+ },
+ {
+  "id": "china",
+  "g": "الشركات",
+  "l": "الصين والنماذج الصينية",
+  "re": "deepseek|qwen|alibaba|kimi|moonshot|minimax|zhipu|\\bglm\\b|baidu|ernie|tencent|hunyuan|bytedance|doubao|china|chinese|huawei|beijing"
+ },
+ {
+  "id": "mistral",
+  "g": "الشركات",
+  "l": "أوروبا وMistral",
+  "re": "mistral|\\beu\\b|europe|european|france|\\buk\\b|britain"
+ },
+ {
+  "id": "perplexity",
+  "g": "الشركات",
+  "l": "البحث بالذكاء الاصطناعي",
+  "re": "perplexity|ai search|search engine|searchgpt|\\bbrowser\\b|\\barc\\b|you\\.com"
+ },
+ {
+  "id": "agents",
+  "g": "التقنيات",
+  "l": "الوكلاء والأتمتة",
+  "re": "\\bagents?\\b|agentic|\\bmcp\\b|automation|\\bworkflow|operator|computer use|autonomous agent|assistant",
+  "w": 0.9
+ },
+ {
+  "id": "reasoning",
+  "g": "التقنيات",
+  "l": "النماذج الكبيرة والاستدلال",
+  "re": "\\bllms?\\b|large language|foundation model|reasoning|context window|parameters|\\btokens?\\b|multimodal|frontier model|new model",
+  "w": 0.7
+ },
+ {
+  "id": "opensource",
+  "g": "التقنيات",
+  "l": "المصادر المفتوحة",
+  "re": "open[- ]source|open[- ]weights?|hugging ?face|ollama|llama\\.cpp|open model"
+ },
+ {
+  "id": "local",
+  "g": "التقنيات",
+  "l": "النماذج المحلية والأجهزة",
+  "re": "on-device|local (model|llm|ai)|\\bedge ai\\b|\\bnpu\\b|offline|run locally|laptop|smartphone"
+ },
+ {
+  "id": "chips",
+  "g": "التقنيات",
+  "l": "الشرائح والحوسبة والطاقة",
+  "re": "\\bgpus?\\b|chips?|semiconductor|\\btpu\\b|h100|data ?cent(er|re)s?|compute|supercomputer|power grid|energy|electricity|\\btsmc\\b|\\bamd\\b|\\bintel\\b"
+ },
+ {
+  "id": "research",
+  "g": "التقنيات",
+  "l": "الأبحاث والمقاييس",
+  "re": "research|paper|benchmark|\\bstudy\\b|arxiv|researchers?|leaderboard|evaluation|scientists?|breakthrough"
+ },
+ {
+  "id": "data",
+  "g": "التقنيات",
+  "l": "البيانات والتدريب",
+  "re": "training data|dataset|synthetic data|fine-?tun|\\brlhf\\b|scrap(e|ing)|data labeling|pre-?training|distillation"
+ },
+ {
+  "id": "media",
+  "g": "التطبيقات",
+  "l": "الصور والفيديو",
+  "re": "\\bimages?\\b|\\bvideos?\\b|midjourney|diffusion|seedance|kling|runway|\\bpika\\b|\\bflux\\b|text-to-video|image generat|animation|film|photo|nano banana|\\bveo\\b|\\bsora\\b"
+ },
+ {
+  "id": "audio",
+  "g": "التطبيقات",
+  "l": "الصوت والموسيقى",
+  "re": "\\bvoice\\b|\\baudio\\b|music|speech|\\btts\\b|podcast|\\bsuno\\b|elevenlabs|dubbing|transcri|song|singer"
+ },
+ {
+  "id": "coding",
+  "g": "التطبيقات",
+  "l": "البرمجة والمطورون",
+  "re": "\\bcode\\b|coding|developers?|programming|github|\\bcursor\\b|software engineer|vibe coding|\\bide\\b|\\bapi\\b|\\bsdk\\b"
+ },
+ {
+  "id": "robotics",
+  "g": "التطبيقات",
+  "l": "الروبوتات والمركبات الذاتية",
+  "re": "robots?|robotic|humanoid|self-driving|autonomous (car|vehicle|driving)|drones?|optimus|figure ai|tesla|robotaxi"
+ },
+ {
+  "id": "health",
+  "g": "التطبيقات",
+  "l": "الصحة والعلوم",
+  "re": "health|medical|medicine|drug|biology|protein|cancer|diagnos|clinical|alphafold|climate|hospital|doctors?|patients?|genom"
+ },
+ {
+  "id": "education",
+  "g": "التطبيقات",
+  "l": "التعليم والعمل",
+  "re": "education|students?|school|universit(y|ies)|teachers?|\\bjobs?\\b|workforce|layoffs?|employment|hiring|workers?|careers?|\\bskills?\\b"
+ },
+ {
+  "id": "creative",
+  "g": "التطبيقات",
+  "l": "المحتوى والتسويق والإبداع",
+  "re": "content creat|creative|designers?|writing|artists?|marketing|advertis|social media|youtube|tiktok|influencer|journalism|publishers?"
+ },
+ {
+  "id": "business",
+  "g": "التطبيقات",
+  "l": "الأعمال والمؤسسات",
+  "re": "enterprise|business|customer (service|support)|saas|\\bb2b\\b|productivity|office|companies|adoption|startups? tool",
+  "w": 0.7
+ },
+ {
+  "id": "consumer",
+  "g": "التطبيقات",
+  "l": "تطبيقات المستخدمين والأجهزة",
+  "re": "\\bapp\\b|\\bapps\\b|feature|smart ?glasses|wearable|\\bphone|consumers?|chatbot|companion|memory feature",
+  "w": 0.7
+ },
+ {
+  "id": "funding",
+  "g": "الأعمال",
+  "l": "الاستثمار والصفقات",
+  "re": "funding|raises?|valuation|billions?|acqui(re|sition|res)|startups?|\\bipo\\b|investors?|bubble|revenue|earnings|stock|venture|\\bvc\\b|merger|deal",
+  "w": 0.9
+ },
+ {
+  "id": "pricing",
+  "g": "الأعمال",
+  "l": "الأسعار والاشتراكات",
+  "re": "prices?|pricing|subscriptions?|cheaper|free tier|\\bcost\\b|costs|\\bplan\\b|\\bpro plan\\b|\\bmax plan\\b|discount|rate limits?|usage limits?"
+ },
+ {
+  "id": "releases",
+  "g": "الأعمال",
+  "l": "إصدارات وتحديثات",
+  "re": "launch|releas|unveil|announc|introduc|rolls? out|now available|available now|debut|\\bupdate\\b|new version",
+  "w": 0.7
+ },
+ {
+  "id": "upcoming",
+  "g": "الأعمال",
+  "l": "تسريبات وتوقعات",
+  "re": "rumou?r|leak|reportedly|expected|upcoming|coming soon|\\bsoon\\b|teas(e|es|er|ing)|spotted|in testing|next[- ]gen|plans? to|set to|could launch"
+ },
+ {
+  "id": "policy",
+  "g": "المجتمع والقوانين",
+  "l": "القوانين والتنظيم",
+  "re": "regulat|\\blaws?\\b|lawsuit|\\bsued?\\b|copyright|legislation|congress|senate|eu ai act|\\bban(s|ned)?\\b|\\bcourts?\\b|antitrust|policy|government|white house|trump|tariff|export controls?"
+ },
+ {
+  "id": "safety",
+  "g": "المجتمع والقوانين",
+  "l": "الأمان والسلامة",
+  "re": "safety|alignment|\\brisks?\\b|jailbreak|misuse|guardrails?|red team|existential|\\bharms?\\b|hallucinat|too (dangerous|insecure)"
+ },
+ {
+  "id": "security",
+  "g": "المجتمع والقوانين",
+  "l": "الأمن السيبراني والاختراق",
+  "re": "security|\\bhack|breach|vulnerab|cyber|malware|phishing|exploit|ransomware|attack"
+ },
+ {
+  "id": "misinfo",
+  "g": "المجتمع والقوانين",
+  "l": "التزييف والتضليل",
+  "re": "deepfake|misinformation|disinformation|\\bfake\\b|\\bscams?\\b|fraud|election|propaganda"
+ },
+ {
+  "id": "privacy",
+  "g": "المجتمع والقوانين",
+  "l": "الخصوصية",
+  "re": "privacy|surveillance|data protection|gdpr|tracking|personal data|facial recognition"
+ },
+ {
+  "id": "society",
+  "g": "المجتمع والقوانين",
+  "l": "المجتمع والأخلاقيات",
+  "re": "ethic|\\bbias\\b|society|societal|culture|mental health|children|teens?|loneliness|relationships?|religion|artists' rights|inequality",
+  "w": 0.8
+ }
+]
