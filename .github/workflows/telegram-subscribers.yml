@@ -1,0 +1,25 @@
+name: Telegram subscribers
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: telegram-bot
+  cancel-in-progress: false
+jobs:
+  subs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Handle /start and /stop, welcome new subscribers
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: python3 ai-news/telegram_news.py --subs
+      - name: Commit subscriber list (encrypted) if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          if [ -f ai-news/telegram-subs.dat ]; then git add ai-news/telegram-subs.dat; fi
+          git diff --cached --quiet || (git commit -m "chore: update Telegram subscribers" && for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done)

@@ -5,6 +5,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: telegram-bot
+  cancel-in-progress: false
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -24,5 +27,5 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@users.noreply.github.com"
           git add ai-news/news.json ai-news/model-tracker.json
-          if [ -f ai-news/telegram-state.json ]; then git add ai-news/telegram-state.json; fi
+          for f in ai-news/telegram-state.json ai-news/telegram-subs.dat; do if [ -f $f ]; then git add $f; fi; done
           git diff --cached --quiet || (git commit -m "chore: update AI news" && for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done)
