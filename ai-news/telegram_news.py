@@ -25,6 +25,7 @@ YT = os.environ.get("YT_BASE", "https://www.youtube.com")
 TRB = os.environ.get("TRANSLATE_BASE", "https://translate.googleapis.com")
 LIVE_COUNT = int(os.environ.get("LIVE_COUNT", 5)); LIVE_AGE_H = int(os.environ.get("LIVE_AGE_HOURS", 10))   # instant mode: max stories per run, max age
 INSTANT_CAP = int(os.environ.get("INSTANT_CAP", 8)); INSTANT_MIN = float(os.environ.get("INSTANT_MIN_AUTH", 2))   # per user per day; minimum source authority
+GATE = os.environ.get("BOT_GATE", "@code_hup")   # users must be members of this channel (set to off to disable)
 DIGEST_HOURS = os.environ.get("DIGEST_HOURS", "9,21"); DIGEST_COUNT = int(os.environ.get("DIGEST_COUNT", 5)); TZ = os.environ.get("BOT_TZ", "Africa/Cairo")   # digests at these local hours
 POLL_T = int(os.environ.get("POLL_TIMEOUT", 25))
 AUTH = {"openai": 3, "anthropic": 3, "claude": 2.5, "anthropic-r": 2.5, "deepmind": 3, "googleai": 3, "hf": 2.5, "msai": 2.5, "nvidia": 2.5,
@@ -127,7 +128,7 @@ subs.setdefault("users", {}); subs.setdefault("offset", 0)
 CFG_KEYS = {  # key: (global name, converter, Arabic label)
     "live_count": ("LIVE_COUNT", int, "أقصى عدد أخبار فورية في كل دورة فحص"), "instant_cap": ("INSTANT_CAP", int, "أقصى عدد أخبار فورية للمشترك في اليوم"),
     "instant_min": ("INSTANT_MIN", float, "أقل وزن لمصدر الخبر الفوري (2 = المصادر الكبرى فقط، 1 = الكل)"), "live_age": ("LIVE_AGE_H", int, "أقصى عمر للخبر الفوري بالساعات"),
-    "digest_hours": ("DIGEST_HOURS", str, "ساعات الملخص اليومي بتوقيتك مفصولة بفاصلة، مثل 9,21"), "tz": ("TZ", str, "المنطقة الزمنية، مثل Africa/Cairo"),
+    "gate": ("GATE", str, "القناة التي يجب الاشتراك فيها قبل استخدام البوت (اكتب off لإيقاف الشرط)"), "digest_hours": ("DIGEST_HOURS", str, "ساعات الملخص اليومي بتوقيتك مفصولة بفاصلة، مثل 9,21"), "tz": ("TZ", str, "المنطقة الزمنية، مثل Africa/Cairo"),
     "digest_count": ("DIGEST_COUNT", int, "عدد أخبار كل ملخص"), "ref_hold": ("REF_HOLD", lambda h: int(float(h) * 3600), "ساعات بقاء المدعو لاحتساب النقطة"),
     "ref_cap": ("REF_DAILY_CAP", int, "أقصى نقاط إحالة يوميا للشخص")}
 def apply_cfg():
@@ -204,15 +205,62 @@ def stats_text():
         for t in u.get("topics", []): cnt[t] = cnt.get(t, 0) + 1
     top = "، ".join("%s (%d)" % (CATL.get(t, t), c) for t, c in sorted(cnt.items(), key=lambda x: -x[1])[:8]) or "لا يوجد بعد"
     last = (load_json("telegram-state.json", {}) or {}).get("last", {})
+    gate_note = ("\n\n⚠️ شرط القناة غير مفعّل لأن البوت لا يستطيع قراءة الأعضاء: %s\nأضِف البوت <b>مشرفا</b> في القناة %s" % (subs["gate_err"], GATE)) if (gate_on() and subs.get("gate_err")) else (("\n\n🔒 شرط القناة %s مفعّل. خارج القناة الآن: %d" % (GATE, sum(1 for x in subs["users"].values() if x.get("nm")))) if gate_on() else "")
     return ("📊 <b>إحصائيات البوت</b>\n\n👥 المشتركون الآن: <b>%d</b>\n⚡ نمط فوري: %d\n☀️ ملخص مرتين يوميا: %d\n⚙️ اختاروا مواضيع محددة: %d\n\n"
             "➕ انضمام: اليوم %d | 7 أيام %d | 30 يوما %d\n➖ إيقاف: اليوم %d | 7 أيام %d | 30 يوما %d\n\n🔥 أكثر المواضيع: %s\n\n📨 آخر إرسال: %s (وصلت %s رسالة مباشرة، %s ملخص يومي)"
             % (n, live, daily, withtopics, days("new", 1), days("new", 7), days("new", 30), days("stop", 1), days("stop", 7), days("stop", 30), html.escape(top),
-               last.get("at", "لم يحدث بعد"), (last.get("sent") or {}).get("live", 0), (last.get("sent") or {}).get("digest", 0)))
+               last.get("at", "لم يحدث بعد"), (last.get("sent") or {}).get("live", 0), (last.get("sent") or {}).get("digest", 0)) + gate_note)
 def edit(chat, mid, text, markup):
     tg("editMessageText", chat_id=chat, message_id=mid, text=text, parse_mode="HTML", reply_markup=markup)
+# ---------------- channel membership gate ----------------
+_mem = {}
+def gate_on(): return bool(GATE) and GATE.lower() not in ("off", "none", "0")
+def gate_url(): return "https://t.me/" + GATE.lstrip("@")
+def is_member(uid, fresh=False):
+    """True when the user is in the required channel. Fails open (True) when the bot cannot read members, so a missing admin right never locks everyone out."""
+    if not gate_on(): return True
+    c = _mem.get(uid)
+    if c and not fresh and time.time() - c[0] < 600: return c[1]
+    r = tg("getChatMember", chat_id=GATE, user_id=uid)
+    if not r.get("ok"):
+        subs["gate_err"] = str(r.get("description", "error"))[:90]; return True
+    subs.pop("gate_err", None)
+    res = r["result"]; ok = res.get("status") in ("member", "administrator", "creator") or (res.get("status") == "restricted" and res.get("is_member"))
+    _mem[uid] = (time.time(), bool(ok)); return bool(ok)
+def gate_kb(): return {"inline_keyboard": [[{"text": "📢 انضم إلى القناة", "url": gate_url()}], [{"text": "✅ انضممت، تحقق", "callback_data": "chk"}]]}
+GATE_TEXT = "🔒 <b>يجب أن تكون عضوا في قناتنا</b> لاستخدام البوت.\n\n1) اضغط «انضم إلى القناة» وانضم.\n2) ارجع هنا واضغط «انضممت، تحقق».\n\n%s"
+def gate_block(cid, payload=""):
+    if str(cid) in subs["users"]: subs["users"][str(cid)]["nm"] = 1
+    if payload: subs.setdefault("pref", {})[str(cid)] = payload
+    send(cid, GATE_TEXT % gate_url(), gate_kb())
+def welcome_new(cid):
+    send(cid, subs.get("welcome") or WELCOME, MENU_KB)
+    for it in ranked(news["items"], 72, None)[:LIVE_COUNT]:
+        t = story_text(it)
+        if t: send(cid, t); time.sleep(0.6)
+def recheck_members(limit=150):
+    """Every few hours: users who left the channel are paused and told how to come back; returning users are re-enabled."""
+    ids = list(subs["users"]); i0 = subs.get("gate_i", 0) % max(1, len(ids)); batch = (ids[i0:] + ids[:i0])[:limit]; subs["gate_i"] = i0 + limit
+    for c in batch:
+        u = subs["users"].get(c)
+        if not u: continue
+        if not is_member(int(c), fresh=True):
+            if not u.get("nm"): u["nm"] = 1; send(int(c), "⚠️ لاحظنا أنك غادرت قناتنا، فتوقفت الأخبار عنك.\n\nانضم من جديد ثم اضغط «تحقق» لتعود.\n" + gate_url(), gate_kb())
+        elif u.get("nm"): u.pop("nm")
+        time.sleep(0.05)
 def handle_callback(cb):
     if cb.get("data", "").startswith("ad:"): return admin_cb(cb)
-    cid = cb["message"]["chat"]["id"]; mid = cb["message"]["message_id"]; d = cb.get("data", ""); u = user(cid)
+    cid = cb["message"]["chat"]["id"]; mid = cb["message"]["message_id"]; d = cb.get("data", "")
+    adm = is_admin({"chat": cb["message"]["chat"], "from": cb.get("from")})
+    if d == "chk":
+        if is_member(cid, fresh=True):
+            tg("answerCallbackQuery", callback_query_id=cb["id"], text="تم التحقق ✅ أهلا بك")
+            pl = subs.get("pref", {}).pop(str(cid), "")
+            for c in handle_message({"chat": {"id": cid, "type": "private"}, "from": cb.get("from"), "text": ("/start " + pl).strip()}): welcome_new(c)
+        else: tg("answerCallbackQuery", callback_query_id=cb["id"], text="لم تنضم إلى القناة بعد. انضم أولا ثم اضغط تحقق.", show_alert="true")
+        return
+    if not adm and not is_member(cid): tg("answerCallbackQuery", callback_query_id=cb["id"]); return gate_block(cid)
+    u = user(cid)
     tg("answerCallbackQuery", callback_query_id=cb["id"])
     if d.startswith("m:"): u["mode"] = d[2:] if d[2:] in ("live", "daily") else "live"; edit(cid, mid, settings_text(u), kb_main(u))
     elif d == "all": u["topics"] = []; edit(cid, mid, settings_text(u), kb_main(u))
@@ -320,7 +368,7 @@ def requests_send(cid):
     send(cid, requests_text())
     for x in pend[:10]: send(cid, "• %s — <code>%s</code>" % (html.escape(x["n"]), x["c"]), deliver_kb(x["c"]))
 # ---------------- owner panel: manage the bot from Telegram ----------------
-def _cfgv(): return {"live_count": LIVE_COUNT, "instant_cap": INSTANT_CAP, "instant_min": INSTANT_MIN, "live_age": LIVE_AGE_H, "digest_hours": DIGEST_HOURS, "tz": TZ, "digest_count": DIGEST_COUNT, "ref_hold": REF_HOLD // 3600, "ref_cap": REF_DAILY_CAP}
+def _cfgv(): return {"live_count": LIVE_COUNT, "instant_cap": INSTANT_CAP, "instant_min": INSTANT_MIN, "live_age": LIVE_AGE_H, "gate": GATE, "digest_hours": DIGEST_HOURS, "tz": TZ, "digest_count": DIGEST_COUNT, "ref_hold": REF_HOLD // 3600, "ref_cap": REF_DAILY_CAP}
 def _rewards_view():
     rows = "\n".join("• <code>%s</code> — %s — %d نقطة — متاح: %s" % (r["id"], html.escape(r["name"]), r["cost"], "بلا حد" if r.get("stock") is None else r["stock"] - subs.get("used", {}).get(r["id"], 0)) for r in rewards()) or "لا توجد جوائز بعد"
     return ("🎁 <b>إدارة الجوائز</b>\n\nالجوائز الحالية:\n" + rows + "\n\n<b>إضافة جائزة أو تعديلها كاملة:</b>\n<code>/addreward المعرف|الاسم|النقاط|العدد|الوصف</code>\n"
@@ -424,6 +472,10 @@ def handle_message(m):
     if chat.get("type") != "private" or "id" not in chat: return []
     cid = chat["id"]; text = (m.get("text") or m.get("caption") or "").strip(); cmd = BTN.get(text) or CMD.get(text.split("@")[0].split()[0].lower() if text else "", None)
     new = []
+    if cmd != "myid" and not is_admin(m) and not is_member(cid):
+        pl = text.split()[1] if cmd == "start" and len(text.split()) > 1 else ""
+        gate_block(cid, pl); return new
+    if str(cid) in subs["users"] and subs["users"][str(cid)].get("nm"): subs["users"][str(cid)].pop("nm")
     if cmd == "myid": send(cid, "معرف محادثتك: <code>%s</code>\nضعه في سر GitHub باسم TELEGRAM_ADMIN_ID لتفعيل أمر /stats لك." % cid); return new
     if cmd == "broadcast":
         if not is_admin(m): send(cid, "هذا الأمر لمالك البوت فقط."); return new
@@ -533,7 +585,7 @@ def kick_news():
     try: urllib.request.urlopen(req, timeout=20); print("news job started")
     except Exception as e: print("could not start news job:", str(e).replace(tok, "***")[:80], file=sys.stderr)
 def targets_all():
-    return [int(c) for c in subs["users"]] + ([EXTRA] if EXTRA else [])
+    return [int(c) for c, u in subs["users"].items() if not u.get("nm")] + ([EXTRA] if EXTRA else [])
 
 # ================= mode 1: interactive subscribers job =================
 if "--subs" in sys.argv:
@@ -560,15 +612,12 @@ if "--subs" in sys.argv:
             try:
                 if "callback_query" in u: handle_callback(u["callback_query"])
                 elif "message" in u:
-                    for cid in handle_message(u["message"]):
-                        send(cid, subs.get("welcome") or WELCOME, MENU_KB); welcomed += 1
-                        for it in ranked(news["items"], 72, None)[:LIVE_COUNT]:
-                            t = story_text(it)
-                            if t: send(cid, t); time.sleep(0.6)
+                    for cid in handle_message(u["message"]): welcome_new(cid); welcomed += 1
             except Exception as e: print("update failed:", str(e).replace(TOKEN, "***")[:120], file=sys.stderr)
         if time.time() - last_vid > 300:
             if not subs.get("paused"): watch_videos(targets_all())
             confirm_refs(); last_vid = time.time()
+        if gate_on() and time.time() - subs.get("gate_t", 0) > 10800: subs["gate_t"] = int(time.time()); recheck_members()
         if time.time() >= deadline: break
         if not dur: break
     save_subs()
@@ -580,7 +629,7 @@ try: state = json.load(open(state_path)); first_run = False
 except Exception: state = {"sent": []}; first_run = True
 sent = set(state["sent"]); trcache.update(state.get("tr", {})); gone = set(state.get("gone", []))
 now = time.time(); stats = {"alerts": 0, "live": 0, "digest": 0}
-users = {c: u for c, u in subs["users"].items() if int(c) not in gone}
+users = {c: u for c, u in subs["users"].items() if int(c) not in gone and not u.get("nm")}
 if subs.get("paused"): print("paused by owner; nothing sent"); sys.exit(0)
 if not users and not EXTRA:
     print("no subscribers yet and no TELEGRAM_CHAT_ID; nothing to send"); sys.exit(0)
