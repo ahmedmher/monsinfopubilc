@@ -15,6 +15,7 @@ import xml.etree.ElementTree as ET
 here = os.path.dirname(os.path.abspath(__file__))
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 EXTRA = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
+ADMIN = [a for a in (os.environ.get("TELEGRAM_ADMIN_ID", "") + "," + os.environ.get("TELEGRAM_CHAT_ID", "")).replace(" ", "").split(",") if a.lstrip("-").isdigit() and not a.startswith("-")]
 API = os.environ.get("TELEGRAM_API", "https://api.telegram.org")
 NEWS_PAGE = os.environ.get("NEWS_PAGE", "https://www.monsinfo.com/p/ai-news.html")
 SITE = os.environ.get("SITE_URL", "https://www.monsinfo.com")
@@ -121,7 +122,13 @@ if "chats" in subs:   # migrate the first version of the file
     subs["users"] = subs.get("users", {}); [subs["users"].setdefault(str(c), {"mode": "live", "topics": []}) for c in subs.pop("chats")]
 subs.setdefault("users", {}); subs.setdefault("offset", 0)
 def save_subs(): open(subs_path, "w").write(seal(subs))
-def user(cid): return subs["users"].setdefault(str(cid), {"mode": "live", "topics": []})
+def hist(key):
+    h = subs.setdefault("hist", {}); d = h.setdefault(time.strftime("%Y-%m-%d", time.gmtime()), {"new": 0, "stop": 0}); d[key] += 1
+    for k in sorted(h)[:-90]: del h[k]
+def user(cid):
+    k = str(cid)
+    if k not in subs["users"]: subs["users"][k] = {"mode": "live", "topics": [], "j": time.strftime("%Y-%m-%d", time.gmtime())}; hist("new")
+    return subs["users"][k]
 
 def age_h(it):
     return (time.time() - datetime.datetime.strptime(it["p"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=datetime.timezone.utc).timestamp()) / 3600
@@ -141,7 +148,7 @@ def arabic(it):
         d = (it.get("d") or ""); d = d[:260].rsplit(" ", 1)[0] + ("…" if len(d) > 260 else "") if d else ""
         r = {"t": t, "d": (tr(d) if d else "") or ""}
     trcache[it["u"]] = r; return r
-def link(it): return "%s#/n/%s%s" % (NEWS_PAGE, nid(it["u"]), "" if langs.get(it["s"]) == "ar" else "/ar")
+def link(it): return "%s%sutm_source=telegram&utm_medium=bot&utm_campaign=news#/n/%s%s" % (NEWS_PAGE, "&" if "?" in NEWS_PAGE else "?", nid(it["u"]), "" if langs.get(it["s"]) == "ar" else "/ar")
 def story_text(it):
     a = arabic(it)
     if not a: return None
@@ -174,6 +181,19 @@ def status_text(cid):
     u = user(cid); n = len(u.get("topics", []))
     names_ = "، ".join(CATL.get(t, t) for t in u.get("topics", [])[:12]) if n else "كل المواضيع"
     return "📋 <b>حالتك</b>\nالنمط: %s\nالمواضيع: %s\n\n⚙️ /topics للتعديل" % ("أهم الأخبار كل 6 ساعات" if u["mode"] == "live" else "ملخص يومي صباحا", html.escape(names_))
+def stats_text():
+    us = subs["users"].values(); n = len(subs["users"]); today = time.strftime("%Y-%m-%d", time.gmtime()); h = subs.get("hist", {})
+    def days(k, nd): return sum(h.get((datetime.date.today() - datetime.timedelta(days=i)).isoformat(), {}).get(k, 0) for i in range(nd))
+    live = sum(1 for u in us if u.get("mode", "live") == "live"); daily = n - live; withtopics = sum(1 for u in us if u.get("topics"))
+    cnt = {}
+    for u in us:
+        for t in u.get("topics", []): cnt[t] = cnt.get(t, 0) + 1
+    top = "، ".join("%s (%d)" % (CATL.get(t, t), c) for t, c in sorted(cnt.items(), key=lambda x: -x[1])[:8]) or "لا يوجد بعد"
+    last = (load_json("telegram-state.json", {}) or {}).get("last", {})
+    return ("📊 <b>إحصائيات البوت</b>\n\n👥 المشتركون الآن: <b>%d</b>\n🕒 نمط كل 6 ساعات: %d\n☀️ ملخص يومي: %d\n⚙️ اختاروا مواضيع محددة: %d\n\n"
+            "➕ انضمام: اليوم %d | 7 أيام %d | 30 يوما %d\n➖ إيقاف: اليوم %d | 7 أيام %d | 30 يوما %d\n\n🔥 أكثر المواضيع: %s\n\n📨 آخر إرسال: %s (وصلت %s رسالة مباشرة، %s ملخص يومي)"
+            % (n, live, daily, withtopics, days("new", 1), days("new", 7), days("new", 30), days("stop", 1), days("stop", 7), days("stop", 30), html.escape(top),
+               last.get("at", "لم يحدث بعد"), (last.get("sent") or {}).get("live", 0), (last.get("sent") or {}).get("digest", 0)))
 def edit(chat, mid, text, markup):
     tg("editMessageText", chat_id=chat, message_id=mid, text=text, parse_mode="HTML", reply_markup=markup)
 def handle_callback(cb):
@@ -190,14 +210,17 @@ def handle_callback(cb):
         (t.discard if tid in t else t.add)(tid); u["topics"] = sorted(t)
         edit(cid, mid, "📂 <b>%s</b>\nاضغط على الموضوع لتفعيله أو إلغائه:" % html.escape(GROUPS[int(gi)]), kb_group(u, int(gi)))
 CMD = {"/topics": "topics", "/مواضيع": "topics", "مواضيع": "topics", "/settings": "topics", "/daily": "daily", "/ملخص": "daily", "ملخص": "daily",
-       "/live": "live", "/مباشر": "live", "/status": "status", "/الحالة": "status", "/stop": "stop", "/ايقاف": "stop", "/إيقاف": "stop", "/help": "help", "/start": "start"}
+       "/live": "live", "/مباشر": "live", "/status": "status", "/الحالة": "status", "/stop": "stop", "/ايقاف": "stop", "/إيقاف": "stop", "/help": "help", "/start": "start", "/stats": "stats", "/إحصائيات": "stats", "/احصائيات": "stats", "/myid": "myid"}
 def handle_message(m):
     chat = m.get("chat") or {}
     if chat.get("type") != "private" or "id" not in chat: return []
     cid = chat["id"]; text = (m.get("text") or "").strip(); cmd = CMD.get(text.split("@")[0].split()[0].lower() if text else "", None)
     new = []
+    if cmd == "myid": send(cid, "معرف محادثتك: <code>%s</code>\nضعه في سر GitHub باسم TELEGRAM_ADMIN_ID لتفعيل أمر /stats لك." % cid); return new
+    if cmd == "stats":
+        send(cid, stats_text() if str(cid) in ADMIN else "هذا الأمر لمالك البوت فقط."); return new
     if cmd == "stop":
-        if str(cid) in subs["users"]: subs["users"].pop(str(cid)); send(cid, "تم إيقاف الأخبار ✅ لإعادة تشغيلها أرسل /start")
+        if str(cid) in subs["users"]: subs["users"].pop(str(cid)); hist("stop"); send(cid, "تم إيقاف الأخبار ✅ لإعادة تشغيلها أرسل /start")
         return new
     if str(cid) not in subs["users"]: user(cid); new.append(cid)
     if cmd == "topics": send(cid, settings_text(user(cid)), kb_main(user(cid)))
@@ -307,7 +330,7 @@ for m in tracker.get("models", []):
     ri = m.get("relItem") or {}
     text = "🚨 <b>صدر %s</b>\n\nكان نموذجا مرتقبا: أول تسريب في %s، وصدر في %s (%s بعد التسريب).%s" % (
         html.escape(m["n"]), ar_date(m["first"]), ar_date(m["rel"]), ar_days(gap) if gap else "في اليوم نفسه",
-        ("\n\n👉 <a href=\"%s#/n/%s/ar\">اقرأ خبر الإصدار</a>" % (NEWS_PAGE, nid(ri["u"]))) if ri.get("u") else "")
+        ("\n\n👉 <a href=\"%s%sutm_source=telegram&amp;utm_medium=bot&amp;utm_campaign=alert#/n/%s/ar\">اقرأ خبر الإصدار</a>" % (NEWS_PAGE, "&amp;" if "?" in NEWS_PAGE else "?", nid(ri["u"]))) if ri.get("u") else "")
     for c in list(users) + ([EXTRA] if EXTRA else []):
         if deliver(c, text): stats["alerts"] += 1
 state["alerted"] = sorted(alerted)

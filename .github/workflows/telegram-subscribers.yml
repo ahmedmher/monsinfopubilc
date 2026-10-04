@@ -18,6 +18,8 @@ jobs:
       - name: Handle /start and /stop, welcome new subscribers
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_ADMIN_ID: ${{ secrets.TELEGRAM_ADMIN_ID }}
         run: python3 ai-news/telegram_news.py --subs --duration 780
       - name: Commit subscriber list (encrypted) if changed
         run: |
