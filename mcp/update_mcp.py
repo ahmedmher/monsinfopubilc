@@ -44,6 +44,8 @@ def find_config(md):
         srv = j.get("mcpServers") or j.get("servers") or ({"x": j} if "command" in j else None)
         if srv:
             name, v = next(iter(srv.items()))
+            if isinstance(v, dict) and v.get("url") and not v.get("command") and str(v["url"]).startswith("http"):
+                return {"url": v["url"], "env": []}
             if isinstance(v, dict) and v.get("command"):
                 return {"command": v["command"], "args": [str(a) for a in v.get("args", [])], "env": sorted((v.get("env") or {}).keys())}
     for m in re.finditer(r"npx\s+(?:-y\s+|--yes\s+)?(@?[\w.\-]+(?:/[\w.\-]+)?(?:@[\w.\-]+)?)", md):
@@ -78,7 +80,7 @@ for full, it in pick.items():
     try: md = get("%s/repos/%s/readme" % (API, full), raw=True) if time.time() - T0 < 420 else ""
     except Exception: md = ""
     cfg = find_config(md) if md else None
-    if cfg and any("inspector" in a for a in cfg["args"]): cfg = None
+    if cfg and any("inspector" in a for a in cfg.get("args", [])): cfg = None
     d = (it.get("description") or "").strip()
     meta = (it["name"] + " " + d).lower()
     if not ("mcp" in meta or "model context protocol" in meta or '"mcpServers"' in md): continue
