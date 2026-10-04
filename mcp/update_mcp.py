@@ -78,6 +78,7 @@ for full, it in pick.items():
     try: md = get("%s/repos/%s/readme" % (API, full), raw=True) if time.time() - T0 < 420 else ""
     except Exception: md = ""
     cfg = find_config(md) if md else None
+    if cfg and any("inspector" in a for a in cfg["args"]): cfg = None
     d = (it.get("description") or "").strip()
     meta = (it["name"] + " " + d).lower()
     if not ("mcp" in meta or "model context protocol" in meta or '"mcpServers"' in md): continue
