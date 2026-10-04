@@ -18,7 +18,8 @@ for key, name, prov in json.load(open(os.path.join(here, "models.json"))):
     o = round(v.get("output_cost_per_token", 0) * 1e6, 4)
     c = round((v.get("cache_read_input_token_cost") or v["input_cost_per_token"]) * 1e6, 4)
     x = v.get("max_input_tokens") or v.get("max_tokens") or 0
-    out.append({"id": key.replace("/", "-"), "n": name, "p": prov, "i": i, "o": o, "c": c, "x": x})
+    rl = 2 if (v.get("supports_xhigh_reasoning_effort") or v.get("supports_max_reasoning_effort")) else 1 if v.get("supports_reasoning") else 0
+    out.append({"id": key.replace("/", "-"), "n": name, "p": prov, "i": i, "o": o, "c": c, "x": x, "rl": rl, "v": 1 if v.get("supports_vision") else 0})
 if missing:
     print("missing:", missing, file=sys.stderr)
 hist_path = os.path.join(here, "price-history.json")  # daily snapshot of every model price (kept 120 days)

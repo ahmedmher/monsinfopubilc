@@ -1,0 +1,511 @@
+{
+ "updated": "2026-10-04",
+ "source": "LiteLLM community price list",
+ "tools": [
+  {
+   "n": "Midjourney",
+   "p": "Midjourney",
+   "t": [
+    "img"
+   ],
+   "q": 3,
+   "c": 2,
+   "o": 0,
+   "s": "أجمل أسلوب فني وصور مبهرة بأقل جهد",
+   "u": "https://www.midjourney.com"
+  },
+  {
+   "n": "Nano Banana",
+   "p": "Google",
+   "t": [
+    "img",
+    "edit"
+   ],
+   "q": 3,
+   "c": 2,
+   "o": 0,
+   "s": "تعديل الصور بالوصف مع الحفاظ على الوجوه والتفاصيل",
+   "u": "https://gemini.google.com",
+   "k": "img",
+   "pr": {
+    "k": "img",
+    "min": 0.0336,
+    "max": 0.15,
+    "med": 0.0672,
+    "n": 23
+   }
+  },
+  {
+   "n": "GPT Image",
+   "p": "OpenAI",
+   "t": [
+    "img",
+    "edit"
+   ],
+   "q": 3,
+   "c": 2,
+   "o": 0,
+   "s": "يلتزم بالتعليمات المعقدة ويكتب نصوصا داخل الصور",
+   "u": "https://chatgpt.com",
+   "k": "img",
+   "pr": {
+    "k": "img",
+    "min": 0.0361,
+    "max": 0.151,
+    "med": 0.0361,
+    "n": 7
+   }
+  },
+  {
+   "n": "Flux",
+   "p": "Black Forest Labs",
+   "t": [
+    "img",
+    "edit"
+   ],
+   "q": 3,
+   "c": 1,
+   "o": 1,
+   "s": "جودة عالية ونسخ مفتوحة تعمل على جهازك",
+   "u": "https://bfl.ai",
+   "k": "img",
+   "pr": {
+    "k": "img",
+    "min": 0.003,
+    "max": 0.06,
+    "med": 0.04,
+    "n": 9
+   }
+  },
+  {
+   "n": "Ideogram",
+   "p": "Ideogram",
+   "t": [
+    "img"
+   ],
+   "q": 2,
+   "c": 2,
+   "o": 0,
+   "s": "من الأفضل في كتابة النصوص داخل الصور والشعارات",
+   "u": "https://ideogram.ai",
+   "k": "img",
+   "pr": {
+    "k": "img",
+    "min": 0.06,
+    "max": 0.06,
+    "med": 0.06,
+    "n": 1
+   }
+  },
+  {
+   "n": "Imagen",
+   "p": "Google",
+   "t": [
+    "img"
+   ],
+   "q": 3,
+   "c": 2,
+   "o": 0,
+   "s": "صور واقعية عالية الجودة من جوجل",
+   "u": "https://deepmind.google/models/imagen",
+   "k": "img",
+   "pr": {
+    "k": "img",
+    "min": 0.02,
+    "max": 0.06,
+    "med": 0.0398,
+    "n": 5
+   }
+  },
+  {
+   "n": "Leonardo",
+   "p": "Leonardo AI",
+   "t": [
+    "img"
+   ],
+   "q": 2,
+   "c": 1,
+   "o": 0,
+   "s": "أدوات كثيرة ومرونة للمصممين وخطة مجانية محدودة",
+   "u": "https://leonardo.ai"
+  },
+  {
+   "n": "Recraft",
+   "p": "Recraft",
+   "t": [
+    "img"
+   ],
+   "q": 2,
+   "c": 2,
+   "o": 0,
+   "s": "تصاميم وشعارات وأيقونات بأسلوب متناسق",
+   "u": "https://www.recraft.ai",
+   "k": "img",
+   "pr": {
+    "k": "img",
+    "min": 0.022,
+    "max": 0.04,
+    "med": 0.0398,
+    "n": 3
+   }
+  },
+  {
+   "n": "Stable Diffusion",
+   "p": "Stability AI",
+   "t": [
+    "img",
+    "edit"
+   ],
+   "q": 2,
+   "c": 0,
+   "o": 1,
+   "s": "مجاني ومفتوح المصدر ويعمل محليا مع تحكم كامل",
+   "u": "https://stability.ai"
+  },
+  {
+   "n": "Adobe Firefly",
+   "p": "Adobe",
+   "t": [
+    "edit",
+    "img"
+   ],
+   "q": 3,
+   "c": 2,
+   "o": 0,
+   "s": "تعديل احترافي داخل أدوات أدوبي وبمحتوى آمن تجاريا",
+   "u": "https://firefly.adobe.com"
+  },
+  {
+   "n": "Higgsfield",
+   "p": "Higgsfield",
+   "t": [
+    "adv",
+    "vid",
+    "i2v",
+    "img"
+   ],
+   "q": 3,
+   "c": 2,
+   "o": 0,
+   "s": "منصة تجمع نماذج كثيرة وقوالب جاهزة لإعلانات المنتجات",
+   "u": "https://higgsfield.ai"
+  },
+  {
+   "n": "Seedance 2.0",
+   "p": "ByteDance",
+   "t": [
+    "adv",
+    "vid",
+    "i2v"
+   ],
+   "q": 3,
+   "c": 2,
+   "o": 0,
+   "s": "حركة سينمائية وتحكم جيد بالمشهد من نص أو صور مرجعية",
+   "u": "https://seed.bytedance.com/en/seedance",
+   "k": "sec",
+   "pr": {
+    "k": "sec",
+    "min": 0.16,
+    "max": 0.473,
+    "med": 0.3034,
+    "n": 10
+   }
+  },
+  {
+   "n": "Kling",
+   "p": "Kuaishou",
+   "t": [
+    "adv",
+    "vid",
+    "i2v"
+   ],
+   "q": 3,
+   "c": 2,
+   "o": 0,
+   "s": "حركة واقعية وتحريك صور ممتاز بسعر معقول",
+   "u": "https://klingai.com",
+   "k": "sec"
+  },
+  {
+   "n": "Veo",
+   "p": "Google",
+   "t": [
+    "vid",
+    "adv"
+   ],
+   "q": 3,
+   "c": 1,
+   "o": 0,
+   "s": "فيديو عالي الجودة مع صوت متزامن",
+   "u": "https://deepmind.google/models/veo",
+   "k": "sec",
+   "pr": {
+    "k": "sec",
+    "min": 0.05,
+    "max": 0.5,
+    "med": 0.1,
+    "n": 13
+   }
+  },
+  {
+   "n": "Sora",
+   "p": "OpenAI",
+   "t": [
+    "vid",
+    "adv"
+   ],
+   "q": 3,
+   "c": 2,
+   "o": 0,
+   "s": "مشاهد طويلة ومتماسكة وفهم قوي للقصة",
+   "u": "https://sora.com",
+   "k": "sec",
+   "pr": {
+    "k": "sec",
+    "min": 0.1,
+    "max": 0.5,
+    "med": 0.3,
+    "n": 6
+   }
+  },
+  {
+   "n": "Runway",
+   "p": "Runway",
+   "t": [
+    "vid",
+    "i2v",
+    "adv",
+    "edit"
+   ],
+   "q": 3,
+   "c": 1,
+   "o": 0,
+   "s": "أدوات مونتاج وتحكم بالكاميرا للمحترفين",
+   "u": "https://runwayml.com",
+   "k": "sec",
+   "pr": {
+    "k": "sec",
+    "min": 0.05,
+    "max": 0.12,
+    "med": 0.085,
+    "n": 2
+   }
+  },
+  {
+   "n": "Hailuo",
+   "p": "MiniMax",
+   "t": [
+    "vid",
+    "i2v",
+    "adv"
+   ],
+   "q": 2,
+   "c": 2,
+   "o": 0,
+   "s": "نتائج جيدة وسريعة بتكلفة منخفضة",
+   "u": "https://hailuoai.video",
+   "k": "sec",
+   "pr": {
+    "k": "sec",
+    "min": 0.13,
+    "max": 0.13,
+    "med": 0.13,
+    "n": 2
+   }
+  },
+  {
+   "n": "Wan",
+   "p": "Alibaba",
+   "t": [
+    "vid",
+    "i2v"
+   ],
+   "q": 2,
+   "c": 0,
+   "o": 1,
+   "s": "فيديو مفتوح المصدر يعمل على جهازك إن كان قويا",
+   "u": "https://github.com/Wan-Video/Wan2.1"
+  },
+  {
+   "n": "ElevenLabs",
+   "p": "ElevenLabs",
+   "t": [
+    "voice"
+   ],
+   "q": 3,
+   "c": 2,
+   "o": 0,
+   "s": "أصوات طبيعية جدا ودعم للعربية واستنساخ الصوت",
+   "u": "https://elevenlabs.io",
+   "k": "kchar",
+   "pr": {
+    "k": "kchar",
+    "min": 0.18,
+    "max": 0.18,
+    "med": 0.18,
+    "n": 2
+   }
+  },
+  {
+   "n": "OpenAI TTS",
+   "p": "OpenAI",
+   "t": [
+    "voice"
+   ],
+   "q": 2,
+   "c": 1,
+   "o": 0,
+   "s": "قراءة جيدة بسعر منخفض عبر API",
+   "u": "https://platform.openai.com",
+   "k": "kchar",
+   "pr": {
+    "k": "kchar",
+    "min": 0.015,
+    "max": 0.03,
+    "med": 0.0225,
+    "n": 4
+   }
+  },
+  {
+   "n": "Edge TTS",
+   "p": "Microsoft",
+   "t": [
+    "voice"
+   ],
+   "q": 2,
+   "c": 0,
+   "o": 0,
+   "s": "مجاني مع أصوات عربية جيدة من متصفح إيدج",
+   "u": "https://www.microsoft.com/edge"
+  },
+  {
+   "n": "Suno",
+   "p": "Suno",
+   "t": [
+    "music"
+   ],
+   "q": 3,
+   "c": 1,
+   "o": 0,
+   "s": "أغان كاملة بكلمات وصوت من وصف نصي",
+   "u": "https://suno.com"
+  },
+  {
+   "n": "Udio",
+   "p": "Udio",
+   "t": [
+    "music"
+   ],
+   "q": 3,
+   "c": 1,
+   "o": 0,
+   "s": "جودة صوتية عالية وتنوع في الأنماط",
+   "u": "https://www.udio.com"
+  },
+  {
+   "n": "Stable Audio",
+   "p": "Stability AI",
+   "t": [
+    "music"
+   ],
+   "q": 2,
+   "c": 0,
+   "o": 1,
+   "s": "مفتوح المصدر لموسيقى خلفية ومؤثرات",
+   "u": "https://stability.ai"
+  }
+ ],
+ "discovered": [
+  {
+   "n": "bria/text-to-image",
+   "k": "img",
+   "p": 0.0398,
+   "src": "fal_ai"
+  },
+  {
+   "n": "bytedance/dreamina",
+   "k": "img",
+   "p": 0.03,
+   "src": "fal_ai"
+  },
+  {
+   "n": "bytedance/seedream",
+   "k": "img",
+   "p": 0.03,
+   "src": "fal_ai"
+  },
+  {
+   "n": "minimax/speech-02-hd",
+   "k": "kchar",
+   "p": 0.1,
+   "src": "minimax"
+  },
+  {
+   "n": "minimax/speech-02-turbo",
+   "k": "kchar",
+   "p": 0.06,
+   "src": "minimax"
+  },
+  {
+   "n": "minimax/speech-2.6-hd",
+   "k": "kchar",
+   "p": 0.1,
+   "src": "minimax"
+  },
+  {
+   "n": "minimax/speech-2.6-turbo",
+   "k": "kchar",
+   "p": 0.06,
+   "src": "minimax"
+  },
+  {
+   "n": "stability/sd3.5-large",
+   "k": "img",
+   "p": 0.065,
+   "src": "stability"
+  },
+  {
+   "n": "stability/sd3.5-large-turbo",
+   "k": "img",
+   "p": 0.04,
+   "src": "stability"
+  },
+  {
+   "n": "stability/sd3.5-medium",
+   "k": "img",
+   "p": 0.035,
+   "src": "stability"
+  },
+  {
+   "n": "stability/stable-image-core",
+   "k": "img",
+   "p": 0.03,
+   "src": "stability"
+  },
+  {
+   "n": "stability/stable-image-ultra",
+   "k": "img",
+   "p": 0.08,
+   "src": "stability"
+  },
+  {
+   "n": "xai/grok-imagine-video",
+   "k": "sec",
+   "p": 0.05,
+   "src": "xai"
+  },
+  {
+   "n": "xai/grok-imagine-video-1.5",
+   "k": "sec",
+   "p": 0.08,
+   "src": "xai"
+  },
+  {
+   "n": "xai/grok-imagine-video-1.5-lite",
+   "k": "sec",
+   "p": 0.02,
+   "src": "xai"
+  }
+ ]
+}
