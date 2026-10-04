@@ -18,7 +18,7 @@ def jload(p, d):
     except Exception: return d
 # ---- 1) candidates: topic searches, merged and ranked by stars ----
 repos = {}
-for q in ("topic:mcp-server", "topic:model-context-protocol", "topic:mcp-servers", "topic:mcp"):
+for q in ("topic:mcp-server", "topic:model-context-protocol", "topic:mcp-servers"):
     for page in (1, 2, 3):
         try: r = get("%s/search/repositories?q=%s&sort=stars&order=desc&per_page=100&page=%d" % (API, urllib.parse.quote(q), page))
         except Exception as e: print("search failed:", q, page, str(e)[:80], file=sys.stderr); break
@@ -33,7 +33,7 @@ if not repos: sys.exit(1)
 ranked = sorted(repos.values(), key=lambda x: -x["stargazers_count"])
 cutoff = (datetime.date.today() - datetime.timedelta(days=75)).isoformat()
 new = [x for x in ranked if x["created_at"][:10] >= cutoff][:30]
-pick = {x["full_name"]: x for x in ranked[:TOP]}; pick.update({x["full_name"]: x for x in new})
+pick = {x["full_name"]: x for x in ranked[:int(TOP * 1.6)]}; pick.update({x["full_name"]: x for x in new})
 # ---- 2) README -> install config ----
 def find_config(md):
     for blk in re.findall(r"```(?:json|jsonc)?\s*\n(.*?)```", md, flags=re.S):
@@ -46,10 +46,12 @@ def find_config(md):
             name, v = next(iter(srv.items()))
             if isinstance(v, dict) and v.get("command"):
                 return {"command": v["command"], "args": [str(a) for a in v.get("args", [])], "env": sorted((v.get("env") or {}).keys())}
-    m = re.search(r"npx\s+(?:-y\s+|--yes\s+)?(@?[\w.\-]+(?:/[\w.\-]+)?(?:@[\w.\-]+)?)", md)
-    if m and not m.group(1).startswith(("-", "create-")): return {"command": "npx", "args": ["-y", m.group(1)], "env": []}
-    m = re.search(r"uvx\s+([\w.\-]+(?:@[\w.\-]+)?)", md)
-    if m: return {"command": "uvx", "args": [m.group(1)], "env": []}
+    for m in re.finditer(r"npx\s+(?:-y\s+|--yes\s+)?(@?[\w.\-]+(?:/[\w.\-]+)?(?:@[\w.\-]+)?)", md):
+        near = md[max(0, m.start() - 200):m.end() + 200].lower()
+        if not m.group(1).startswith(("-", "create-")) and ("mcp" in m.group(1).lower() or "mcp" in near): return {"command": "npx", "args": ["-y", m.group(1)], "env": []}
+    for m in re.finditer(r"uvx\s+([\w.\-]+(?:@[\w.\-]+)?)", md):
+        near = md[max(0, m.start() - 200):m.end() + 200].lower()
+        if "mcp" in m.group(1).lower() or "mcp" in near: return {"command": "uvx", "args": [m.group(1)], "env": []}
     return None
 CATS = [("files", ["filesystem", "file system", "files", "pdf", "document", "obsidian", "notes"]), ("db", ["postgres", "mysql", "sqlite", "mongo", "database", "sql", "redis", "supabase", "vector"]),
         ("browser", ["browser", "playwright", "puppeteer", "selenium", "scrap", "crawl", "web page", "chrome"]), ("search", ["search", "web search", "brave", "tavily", "exa", "google"]),
@@ -66,7 +68,7 @@ def category(it):
 cache = jload("ar-cache.json", {})
 def translate(t):
     try:
-        j = json.loads(urllib.request.urlopen(urllib.request.Request("https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=en&tl=ar&q=" + urllib.parse.quote(t[:300]), headers={"User-Agent": "Mozilla/5.0"}), timeout=6).read())
+        j = json.loads(urllib.request.urlopen(urllib.request.Request("https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=ar&q=" + urllib.parse.quote(t[:300]), headers={"User-Agent": "Mozilla/5.0"}), timeout=6).read())
         r = j[0] if isinstance(j[0], str) else j[0][0]
         return r if r and r != t else None
     except Exception: return None
@@ -77,6 +79,9 @@ for full, it in pick.items():
     except Exception: md = ""
     cfg = find_config(md) if md else None
     d = (it.get("description") or "").strip()
+    meta = (it["name"] + " " + d + " " + " ".join(it.get("topics", []))).lower()
+    if not ("mcp" in meta or "model context protocol" in meta or cfg or "mcpservers" in md.lower()): continue
+    if len(items) >= TOP and not (it["created_at"][:10] >= cutoff): continue
     da = cache.get(full + "|" + d)
     if d and da is None and tr_n < 120 and not re.search(r"[؀-ۿ]", d):
         da = translate(d); tr_n += 1
