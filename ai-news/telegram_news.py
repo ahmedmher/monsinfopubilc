@@ -129,7 +129,7 @@ def hist(key):
     for k in sorted(h)[:-90]: del h[k]
 def user(cid):
     k = str(cid)
-    if k not in subs["users"]: subs["users"][k] = {"mode": "live", "topics": [], "j": time.strftime("%Y-%m-%d", time.gmtime())}; hist("new")
+    if k not in subs["users"]: subs["users"][k] = {"mode": "live", "topics": [], "j": time.strftime("%Y-%m-%d", time.gmtime()), "jt": int(time.time())}; hist("new")
     return subs["users"][k]
 
 def age_h(it):
@@ -178,7 +178,7 @@ def settings_text(u):
     return ("⚙️ <b>إعدادات الأخبار</b>\n\nنمط الإرسال: <b>%s</b>\nالمواضيع: <b>%s</b>\n\nاختر نمط الإرسال، ثم المجموعات لتحديد المواضيع التي تهمك. إن لم تختر شيئا تصلك كل المواضيع."
             % ("أهم الأخبار كل 6 ساعات" if u.get("mode", "live") == "live" else "ملخص يومي صباحا", ("%d موضوعا" % n) if n else "كل المواضيع"))
 WELCOME = ("أهلا بك في بوت <b>أخبار الذكاء الاصطناعي</b> من مونستر للمعلوميات 👋\n\nسيصلك بالعربية أهم الأخبار مع رابط لقراءة ملخص كل خبر على موقعنا، وتنبيه فوري عندما يصدر نموذج كان مرتقبا، وفيديوهات القناة الجديدة.\n\n"
-           "⚙️ /topics اختيار المواضيع ونمط الإرسال\n☀️ /daily ملخص يومي واحد بدل الرسائل المتفرقة\n🕒 /live أهم الأخبار كل 6 ساعات\n📋 /status حالتك\n⛔ /stop إيقاف\n\n🌐 <a href=\"%s\">الموقع</a>" % SITE)
+           "⚙️ /topics اختيار المواضيع ونمط الإرسال\n☀️ /daily ملخص يومي واحد بدل الرسائل المتفرقة\n🕒 /live أهم الأخبار كل 6 ساعات\n📋 /status حالتك\n🎁 /invite ادعُ أصدقاءك واربح جوائز\n⛔ /stop إيقاف\n\n🌐 <a href=\"%s\">الموقع</a>" % SITE)
 def status_text(cid):
     u = user(cid); n = len(u.get("topics", []))
     names_ = "، ".join(CATL.get(t, t) for t in u.get("topics", [])[:12]) if n else "كل المواضيع"
@@ -204,6 +204,7 @@ def handle_callback(cb):
     if d.startswith("m:"): u["mode"] = d[2:] if d[2:] in ("live", "daily") else "live"; edit(cid, mid, settings_text(u), kb_main(u))
     elif d == "all": u["topics"] = []; edit(cid, mid, settings_text(u), kb_main(u))
     elif d == "back": edit(cid, mid, settings_text(u), kb_main(u))
+    elif d.startswith("rw:"): send(cid, redeem(cid, d[3:])); edit(cid, mid, rewards_text(user(cid)), rewards_kb(user(cid)))
     elif d == "done": edit(cid, mid, "تم حفظ إعداداتك ✅\n\n" + status_text(cid).split("\n\n")[0], {"inline_keyboard": []})
     elif d.startswith("g:"):
         gi = int(d[2:]); edit(cid, mid, "📂 <b>%s</b>\nاضغط على الموضوع لتفعيله أو إلغائه:" % html.escape(GROUPS[gi]), kb_group(u, gi))
@@ -212,7 +213,7 @@ def handle_callback(cb):
         (t.discard if tid in t else t.add)(tid); u["topics"] = sorted(t)
         edit(cid, mid, "📂 <b>%s</b>\nاضغط على الموضوع لتفعيله أو إلغائه:" % html.escape(GROUPS[int(gi)]), kb_group(u, int(gi)))
 CMD = {"/topics": "topics", "/مواضيع": "topics", "مواضيع": "topics", "/settings": "topics", "/daily": "daily", "/ملخص": "daily", "ملخص": "daily",
-       "/live": "live", "/مباشر": "live", "/status": "status", "/الحالة": "status", "/stop": "stop", "/ايقاف": "stop", "/إيقاف": "stop", "/help": "help", "/start": "start", "/stats": "stats", "/broadcast": "broadcast", "/نشر": "broadcast", "/اذاعة": "broadcast", "/إحصائيات": "stats", "/احصائيات": "stats", "/myid": "myid"}
+       "/live": "live", "/مباشر": "live", "/status": "status", "/الحالة": "status", "/stop": "stop", "/ايقاف": "stop", "/إيقاف": "stop", "/help": "help", "/start": "start", "/stats": "stats", "/broadcast": "broadcast", "/invite": "invite", "/دعوة": "invite", "/points": "invite", "/نقاطي": "invite", "/rewards": "rewards", "/جوائز": "rewards", "/send": "send", "/requests": "requests", "/نشر": "broadcast", "/اذاعة": "broadcast", "/إحصائيات": "stats", "/احصائيات": "stats", "/myid": "myid"}
 def is_admin(m):
     return str((m.get("chat") or {}).get("id")) in ADMIN or str((m.get("from") or {}).get("username", "")).lower() in ADMIN_NAMES
 def push(chats, text=None, photo=None, copy_from=None, plain=False):
@@ -229,6 +230,62 @@ def push(chats, text=None, photo=None, copy_from=None, plain=False):
         time.sleep(0.06)
     return ok, gone
 BROADCAST_HELP = "لإرسال رسالة لكل المشتركين:\n• اكتب <code>/broadcast نص الرسالة</code> (يدعم الروابط)\n• أو أرسل صورة وفي وصفها <code>/broadcast النص</code>\n• أو اعمل «رد» على أي رسالة (نص، صورة، فيديو، ملف) واكتب <code>/broadcast</code> فتُنسخ كما هي"
+# ---------------- referrals: invite friends, earn points, redeem rewards ----------------
+REF_HOLD = int(os.environ.get("REF_HOLD_HOURS", 24)) * 3600     # an invited friend counts after staying subscribed this long
+REF_DAILY_CAP = int(os.environ.get("REF_DAILY_CAP", 15))        # max points one person can earn per day
+BOT_USER = os.environ.get("BOT_USERNAME", "")
+def rewards(): return load_json("rewards.json", [])
+def ref_code(cid): return base64.b32encode(hmac.new(KEY, b"ref:" + str(cid).encode(), "sha256").digest())[:8].decode().lower()
+def seen_id(cid): return hmac.new(KEY, b"seen:" + str(cid).encode(), "sha256").hexdigest()[:12]
+def find_ref(code):
+    for c in subs["users"]:
+        if ref_code(c) == code: return c
+def ref_link(cid): return "https://t.me/%s?start=ref_%s" % (BOT_USER, ref_code(cid)) if BOT_USER else ""
+def pending_refs(cid): return sum(1 for u in subs["users"].values() if u.get("ref") == str(cid) and not u.get("rv"))
+def invite_text(cid):
+    u = user(cid); rs = rewards(); pts = u.get("pts", 0)
+    nxt = min((r["cost"] for r in rs if r["cost"] > pts), default=None)
+    return ("🎁 <b>ادعُ أصدقاءك واربح</b>\n\nشارك رابطك الخاص مع أصدقائك المهتمين بالذكاء الاصطناعي. تحصل على <b>نقطة</b> عن كل صديق ينضم عبر رابطك ويبقى مشتركا %d ساعة، وتستبدل نقاطك بجوائز.\n\n"
+            "🔗 رابطك:\n%s\n\n⭐ نقاطك: <b>%d</b>\n⏳ قيد التأكيد: %d\n%s\n\n🎁 /rewards لعرض الجوائز واستبدال النقاط") % (
+            REF_HOLD // 3600, ref_link(cid) or "(سيظهر الرابط بعد قليل)", pts, pending_refs(cid), ("🎯 تبقى %d نقطة للجائزة التالية" % (nxt - pts)) if nxt else "")
+def rewards_kb(u):
+    rows = []
+    for r in rewards():
+        left = None if r.get("stock") is None else r["stock"] - subs.get("used", {}).get(r["id"], 0)
+        if left is not None and left <= 0: continue
+        ok = u.get("pts", 0) >= r["cost"]
+        rows.append([{"text": ("✅ " if ok else "🔒 ") + "%s — %d نقطة" % (r["name"], r["cost"]), "callback_data": "rw:" + r["id"]}])
+    return {"inline_keyboard": rows}
+def rewards_text(u):
+    rs = [r for r in rewards() if r.get("stock") is None or r["stock"] - subs.get("used", {}).get(r["id"], 0) > 0]
+    if not rs: return "لا توجد جوائز متاحة حاليا. تابعنا، ستضاف جوائز جديدة قريبا."
+    return "🎁 <b>الجوائز المتاحة</b>\n\nنقاطك: <b>%d</b>\nاضغط على الجائزة لطلبها (يراجع المالك الطلب ثم يرسل لك التفاصيل هنا).\n\n%s" % (u.get("pts", 0), "\n".join("• %s — %d نقطة%s" % (r["name"], r["cost"], ("\n  " + r["desc"]) if r.get("desc") else "") for r in rs))
+def admin_chat(): return subs.get("admin_cid")
+def redeem(cid, rid):
+    u = user(cid); r = next((x for x in rewards() if x["id"] == rid), None)
+    if not r: return "هذه الجائزة غير متاحة."
+    used = subs.setdefault("used", {})
+    if r.get("stock") is not None and used.get(rid, 0) >= r["stock"]: return "نفدت هذه الجائزة."
+    if u.get("pts", 0) < r["cost"]: return "نقاطك لا تكفي: تحتاج %d وعندك %d." % (r["cost"], u.get("pts", 0))
+    u["pts"] -= r["cost"]; used[rid] = used.get(rid, 0) + 1
+    subs.setdefault("red", []).append({"c": str(cid), "id": rid, "n": r["name"], "t": int(time.time()), "st": "pending"})
+    ac = admin_chat()
+    if ac: send(ac, "🔔 <b>طلب استبدال جديد</b>\nالجائزة: %s\nالمستخدم: <code>%s</code>\n\nلإرسال التفاصيل له: <code>/send %s النص أو الرابط</code>" % (html.escape(r["name"]), cid, cid))
+    return "تم تسجيل طلبك لجائزة «%s» ✅\nخصمنا %d نقطة، وسيراجع المالك الطلب ويرسل لك التفاصيل هنا في المحادثة." % (r["name"], r["cost"])
+def confirm_refs():
+    now = time.time(); today = time.strftime("%Y-%m-%d", time.gmtime())
+    for c, u in list(subs["users"].items()):
+        rf = u.get("ref")
+        if not rf or u.get("rv") or now - u.get("jt", now) < REF_HOLD or rf not in subs["users"]: continue
+        ru = subs["users"][rf]; day = ru.setdefault("pd", {})
+        if day.get(today, 0) >= REF_DAILY_CAP: continue
+        u["rv"] = 1; day[today] = day.get(today, 0) + 1; ru["pts"] = ru.get("pts", 0) + 1
+        for k in sorted(day)[:-7]: del day[k]
+        send(int(rf), "🎉 انضم صديق عبر رابطك وبقي مشتركا، وأُضيفت لك <b>نقطة</b>! رصيدك: <b>%d</b>\n🎁 /rewards" % ru["pts"])
+def requests_text():
+    pend = [x for x in subs.get("red", []) if x.get("st") == "pending"]
+    if not pend: return "لا توجد طلبات معلقة."
+    return "🔔 <b>الطلبات المعلقة (%d)</b>\n\n" % len(pend) + "\n".join("• %s — <code>%s</code>" % (html.escape(x["n"]), x["c"]) for x in pend[:30]) + "\n\nللرد: <code>/send المعرف النص</code>"
 def handle_message(m):
     chat = m.get("chat") or {}
     if chat.get("type") != "private" or "id" not in chat: return []
@@ -249,8 +306,32 @@ def handle_message(m):
     if cmd == "stop":
         if str(cid) in subs["users"]: subs["users"].pop(str(cid)); hist("stop"); send(cid, "تم إيقاف الأخبار ✅ لإعادة تشغيلها أرسل /start")
         return new
-    if str(cid) not in subs["users"]: user(cid); new.append(cid)
-    if cmd == "topics": send(cid, settings_text(user(cid)), kb_main(user(cid)))
+    if is_admin(m): subs["admin_cid"] = cid
+    if cmd == "send":
+        if not is_admin(m): send(cid, "هذا الأمر لمالك البوت فقط."); return new
+        parts = text.split(None, 2)
+        if len(parts) < 3 or not parts[1].lstrip("-").isdigit(): send(cid, "الصيغة: <code>/send المعرف النص أو الرابط</code>"); return new
+        r = send(int(parts[1]), parts[2])
+        if r == "ok":
+            for x in subs.get("red", []):
+                if x.get("c") == parts[1] and x.get("st") == "pending": x["st"] = "done"; break
+        send(cid, "تم الإرسال ✅" if r == "ok" else "تعذر الإرسال (قد يكون المستخدم حظر البوت)."); return new
+    if cmd == "requests":
+        send(cid, requests_text() if is_admin(m) else "هذا الأمر لمالك البوت فقط."); return new
+    if str(cid) not in subs["users"]:
+        first = seen_id(cid) not in subs.setdefault("seen", [])
+        u0 = user(cid); new.append(cid)
+        if first:
+            subs["seen"].append(seen_id(cid)); subs["seen"] = subs["seen"][-20000:]
+            parts = text.split()
+            if cmd == "start" and len(parts) > 1 and parts[1].startswith("ref_"):
+                rf = find_ref(parts[1][4:])
+                if rf and rf != str(cid):
+                    u0["ref"] = rf
+                    send(int(rf), "👋 انضم شخص جديد عبر رابطك. ستُحتسب لك النقطة إذا بقي مشتركا %d ساعة." % (REF_HOLD // 3600))
+    if cmd == "invite": send(cid, invite_text(cid))
+    elif cmd == "rewards": send(cid, rewards_text(user(cid)), rewards_kb(user(cid)))
+    elif cmd == "topics": send(cid, settings_text(user(cid)), kb_main(user(cid)))
     elif cmd == "daily": user(cid)["mode"] = "daily"; send(cid, "تم ✅ سيصلك **ملخص واحد** كل صباح بأهم 5 أخبار.".replace("**", ""))
     elif cmd == "live": user(cid)["mode"] = "live"; send(cid, "تم ✅ ستصلك أهم الأخبار كل 6 ساعات.")
     elif cmd == "status": send(cid, status_text(cid))
@@ -309,8 +390,9 @@ if "--subs" in sys.argv:
     state = load_json("telegram-state.json", {})
     for g in state.get("gone", []): subs["users"].pop(str(g), None)
     tg("deleteWebhook")
+    if not BOT_USER: BOT_USER = (tg("getMe").get("result") or {}).get("username", "")
     tg("setMyCommands", commands=[{"command": "start", "description": "الاشتراك في أخبار الذكاء الاصطناعي"}, {"command": "topics", "description": "اختيار المواضيع ونمط الإرسال"},
-        {"command": "daily", "description": "ملخص يومي واحد صباحا"}, {"command": "live", "description": "أهم الأخبار كل 6 ساعات"}, {"command": "status", "description": "حالتي"}, {"command": "stop", "description": "إيقاف الأخبار"}])
+        {"command": "daily", "description": "ملخص يومي واحد صباحا"}, {"command": "live", "description": "أهم الأخبار كل 6 ساعات"}, {"command": "status", "description": "حالتي"}, {"command": "invite", "description": "ادعُ أصدقاءك واربح نقاطا"}, {"command": "rewards", "description": "الجوائز واستبدال النقاط"}, {"command": "stop", "description": "إيقاف الأخبار"}])
     welcomed = 0
     while True:
         r = tg("getUpdates", offset=subs["offset"], timeout=(POLL_T if dur else 0), allowed_updates=["message", "callback_query"])
@@ -327,7 +409,7 @@ if "--subs" in sys.argv:
                             if t: send(cid, t); time.sleep(0.6)
             except Exception as e: print("update failed:", str(e).replace(TOKEN, "***")[:120], file=sys.stderr)
         if time.time() - last_vid > 300:
-            watch_videos(targets_all()); last_vid = time.time()
+            watch_videos(targets_all()); confirm_refs(); last_vid = time.time()
         if time.time() >= deadline: break
         if not dur: break
     save_subs()
