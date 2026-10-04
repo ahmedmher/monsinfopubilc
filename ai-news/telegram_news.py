@@ -4,8 +4,8 @@ Secrets (GitHub Actions): TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID (default @code_hu
 State: telegram-state.json (URLs already sent). Never prints the token."""
 import json, os, re, sys, html, time, urllib.parse, urllib.request
 here = os.path.dirname(os.path.abspath(__file__))
-TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
-CHAT = os.environ.get("TELEGRAM_CHAT_ID", "").strip() or "@code_hup"
+TOKEN = os.environ.get("8974402385:AAHehqjmtJoMCG85S6OA14kwJeJ3W1Mo6CM", "").strip()
+CHAT = os.environ.get("@Ai_news_updatebot", "").strip() or "@code_hup"
 API = os.environ.get("TELEGRAM_API", "https://api.telegram.org")
 NEWS_PAGE = os.environ.get("NEWS_PAGE", "https://www.monsinfo.com/p/ai-news.html")
 MAX_PER_RUN = int(os.environ.get("MAX_PER_RUN", 3))
