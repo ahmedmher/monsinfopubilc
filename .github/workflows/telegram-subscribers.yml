@@ -21,5 +21,5 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@users.noreply.github.com"
-          if [ -f ai-news/telegram-subs.dat ]; then git add ai-news/telegram-subs.dat; fi
+          for f in ai-news/telegram-subs.dat ai-news/telegram-videos.json; do if [ -f $f ]; then git add $f; fi; done
           git diff --cached --quiet || (git commit -m "chore: update Telegram subscribers" && for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done)
