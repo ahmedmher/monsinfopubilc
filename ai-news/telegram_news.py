@@ -212,13 +212,38 @@ def handle_callback(cb):
         (t.discard if tid in t else t.add)(tid); u["topics"] = sorted(t)
         edit(cid, mid, "📂 <b>%s</b>\nاضغط على الموضوع لتفعيله أو إلغائه:" % html.escape(GROUPS[int(gi)]), kb_group(u, int(gi)))
 CMD = {"/topics": "topics", "/مواضيع": "topics", "مواضيع": "topics", "/settings": "topics", "/daily": "daily", "/ملخص": "daily", "ملخص": "daily",
-       "/live": "live", "/مباشر": "live", "/status": "status", "/الحالة": "status", "/stop": "stop", "/ايقاف": "stop", "/إيقاف": "stop", "/help": "help", "/start": "start", "/stats": "stats", "/إحصائيات": "stats", "/احصائيات": "stats", "/myid": "myid"}
+       "/live": "live", "/مباشر": "live", "/status": "status", "/الحالة": "status", "/stop": "stop", "/ايقاف": "stop", "/إيقاف": "stop", "/help": "help", "/start": "start", "/stats": "stats", "/broadcast": "broadcast", "/نشر": "broadcast", "/اذاعة": "broadcast", "/إحصائيات": "stats", "/احصائيات": "stats", "/myid": "myid"}
+def is_admin(m):
+    return str((m.get("chat") or {}).get("id")) in ADMIN or str((m.get("from") or {}).get("username", "")).lower() in ADMIN_NAMES
+def push(chats, text=None, photo=None, copy_from=None, plain=False):
+    """Send one message to many chats; returns (ok_count, removed_count). Chats that blocked the bot are dropped."""
+    ok = gone = 0
+    for c in chats:
+        if copy_from: r = tg("copyMessage", chat_id=c, from_chat_id=copy_from[0], message_id=copy_from[1])
+        elif photo: r = tg("sendPhoto", chat_id=c, photo=photo, caption=text or "", **({} if plain else {"parse_mode": "HTML"}))
+        else: r = tg("sendMessage", chat_id=c, text=text, disable_web_page_preview="false", **({} if plain else {"parse_mode": "HTML"}))
+        if not r.get("ok") and not plain and "parse" in str(r.get("description", "")).lower() and not copy_from:
+            r = tg("sendMessage", chat_id=c, text=text, disable_web_page_preview="false") if not photo else tg("sendPhoto", chat_id=c, photo=photo, caption=text or "")
+        if r.get("ok"): ok += 1
+        elif r.get("error_code") in (400, 403) and str(c).lstrip("-").isdigit() and str(c) in subs["users"]: subs["users"].pop(str(c), None); gone += 1
+        time.sleep(0.06)
+    return ok, gone
+BROADCAST_HELP = "لإرسال رسالة لكل المشتركين:\n• اكتب <code>/broadcast نص الرسالة</code> (يدعم الروابط)\n• أو أرسل صورة وفي وصفها <code>/broadcast النص</code>\n• أو اعمل «رد» على أي رسالة (نص، صورة، فيديو، ملف) واكتب <code>/broadcast</code> فتُنسخ كما هي"
 def handle_message(m):
     chat = m.get("chat") or {}
     if chat.get("type") != "private" or "id" not in chat: return []
-    cid = chat["id"]; text = (m.get("text") or "").strip(); cmd = CMD.get(text.split("@")[0].split()[0].lower() if text else "", None)
+    cid = chat["id"]; text = (m.get("text") or m.get("caption") or "").strip(); cmd = CMD.get(text.split("@")[0].split()[0].lower() if text else "", None)
     new = []
     if cmd == "myid": send(cid, "معرف محادثتك: <code>%s</code>\nضعه في سر GitHub باسم TELEGRAM_ADMIN_ID لتفعيل أمر /stats لك." % cid); return new
+    if cmd == "broadcast":
+        if not is_admin(m): send(cid, "هذا الأمر لمالك البوت فقط."); return new
+        body = text.split(None, 1)[1].strip() if len(text.split(None, 1)) > 1 else ""
+        rp = m.get("reply_to_message"); chats = targets_all()
+        if rp: ok, gone = push(chats, copy_from=(rp["chat"]["id"], rp["message_id"]))
+        elif m.get("photo") and (body or True): ok, gone = push(chats, text=body, photo=m["photo"][-1]["file_id"])
+        elif body: ok, gone = push(chats, text=body)
+        else: send(cid, BROADCAST_HELP); return new
+        send(cid, "تم الإرسال إلى %d من %d ✅%s" % (ok, len(chats), (" (حُذف %d لأنهم حظروا البوت)" % gone) if gone else "")); return new
     if cmd == "stats":
         send(cid, stats_text() if (str(cid) in ADMIN or str((m.get("from") or {}).get("username", "")).lower() in ADMIN_NAMES) else "هذا الأمر لمالك البوت فقط."); return new
     if cmd == "stop":
