@@ -230,6 +230,10 @@ def push(chats, text=None, photo=None, copy_from=None, plain=False):
         time.sleep(0.06)
     return ok, gone
 BROADCAST_HELP = "لإرسال رسالة لكل المشتركين:\n• اكتب <code>/broadcast نص الرسالة</code> (يدعم الروابط)\n• أو أرسل صورة وفي وصفها <code>/broadcast النص</code>\n• أو اعمل «رد» على أي رسالة (نص، صورة، فيديو، ملف) واكتب <code>/broadcast</code> فتُنسخ كما هي"
+# ---------------- persistent button menu (shown under the chat box, so users need not type commands) ----------------
+BTN = {"⚙️ المواضيع": "topics", "🎁 ادعُ واربح": "invite", "🏆 الجوائز": "rewards", "📋 حالتي": "status", "☀️ ملخص يومي": "daily", "🕒 كل 6 ساعات": "live", "❓ مساعدة": "help", "⛔ إيقاف": "stop"}
+MENU_KB = {"keyboard": [[{"text": "⚙️ المواضيع"}, {"text": "🎁 ادعُ واربح"}], [{"text": "🏆 الجوائز"}, {"text": "📋 حالتي"}], [{"text": "☀️ ملخص يومي"}, {"text": "🕒 كل 6 ساعات"}], [{"text": "❓ مساعدة"}, {"text": "⛔ إيقاف"}]],
+           "resize_keyboard": True, "is_persistent": True, "input_field_placeholder": "اختر من القائمة 👇"}
 # ---------------- referrals: invite friends, earn points, redeem rewards ----------------
 REF_HOLD = int(os.environ.get("REF_HOLD_HOURS", 24)) * 3600     # an invited friend counts after staying subscribed this long
 REF_DAILY_CAP = int(os.environ.get("REF_DAILY_CAP", 15))        # max points one person can earn per day
@@ -289,7 +293,7 @@ def requests_text():
 def handle_message(m):
     chat = m.get("chat") or {}
     if chat.get("type") != "private" or "id" not in chat: return []
-    cid = chat["id"]; text = (m.get("text") or m.get("caption") or "").strip(); cmd = CMD.get(text.split("@")[0].split()[0].lower() if text else "", None)
+    cid = chat["id"]; text = (m.get("text") or m.get("caption") or "").strip(); cmd = BTN.get(text) or CMD.get(text.split("@")[0].split()[0].lower() if text else "", None)
     new = []
     if cmd == "myid": send(cid, "معرف محادثتك: <code>%s</code>\nضعه في سر GitHub باسم TELEGRAM_ADMIN_ID لتفعيل أمر /stats لك." % cid); return new
     if cmd == "broadcast":
@@ -304,7 +308,7 @@ def handle_message(m):
     if cmd == "stats":
         send(cid, stats_text() if (str(cid) in ADMIN or str((m.get("from") or {}).get("username", "")).lower() in ADMIN_NAMES) else "هذا الأمر لمالك البوت فقط."); return new
     if cmd == "stop":
-        if str(cid) in subs["users"]: subs["users"].pop(str(cid)); hist("stop"); send(cid, "تم إيقاف الأخبار ✅ لإعادة تشغيلها أرسل /start")
+        if str(cid) in subs["users"]: subs["users"].pop(str(cid)); hist("stop"); send(cid, "تم إيقاف الأخبار ✅ لإعادة تشغيلها أرسل /start", {"remove_keyboard": True})
         return new
     if is_admin(m): subs["admin_cid"] = cid
     if cmd == "send":
@@ -335,7 +339,8 @@ def handle_message(m):
     elif cmd == "daily": user(cid)["mode"] = "daily"; send(cid, "تم ✅ سيصلك **ملخص واحد** كل صباح بأهم 5 أخبار.".replace("**", ""))
     elif cmd == "live": user(cid)["mode"] = "live"; send(cid, "تم ✅ ستصلك أهم الأخبار كل 6 ساعات.")
     elif cmd == "status": send(cid, status_text(cid))
-    elif cmd in ("help",): send(cid, WELCOME)
+    elif cmd == "help": send(cid, WELCOME, MENU_KB)
+    elif cmd == "start" and cid not in new: send(cid, "أهلا بعودتك 👋 القائمة جاهزة أسفل الشاشة. اختر ما تريد 👇", MENU_KB)
     return new
 
 # ---------------- YouTube: new long videos ----------------
@@ -392,7 +397,7 @@ if "--subs" in sys.argv:
     tg("deleteWebhook")
     if not BOT_USER: BOT_USER = (tg("getMe").get("result") or {}).get("username", "")
     tg("setMyCommands", commands=[{"command": "start", "description": "الاشتراك في أخبار الذكاء الاصطناعي"}, {"command": "topics", "description": "اختيار المواضيع ونمط الإرسال"},
-        {"command": "daily", "description": "ملخص يومي واحد صباحا"}, {"command": "live", "description": "أهم الأخبار كل 6 ساعات"}, {"command": "status", "description": "حالتي"}, {"command": "invite", "description": "ادعُ أصدقاءك واربح نقاطا"}, {"command": "rewards", "description": "الجوائز واستبدال النقاط"}, {"command": "stop", "description": "إيقاف الأخبار"}])
+        {"command": "daily", "description": "ملخص يومي واحد صباحا"}, {"command": "live", "description": "أهم الأخبار كل 6 ساعات"}, {"command": "status", "description": "حالتي"}, {"command": "invite", "description": "ادعُ أصدقاءك واربح نقاطا"}, {"command": "rewards", "description": "الجوائز واستبدال النقاط"}, {"command": "help", "description": "المساعدة وقائمة الأزرار"}, {"command": "stop", "description": "إيقاف الأخبار"}])
     welcomed = 0
     while True:
         r = tg("getUpdates", offset=subs["offset"], timeout=(POLL_T if dur else 0), allowed_updates=["message", "callback_query"])
@@ -403,7 +408,7 @@ if "--subs" in sys.argv:
                 if "callback_query" in u: handle_callback(u["callback_query"])
                 elif "message" in u:
                     for cid in handle_message(u["message"]):
-                        send(cid, WELCOME); welcomed += 1
+                        send(cid, WELCOME, MENU_KB); welcomed += 1
                         for it in ranked(news["items"], 72, None)[:LIVE_COUNT]:
                             t = story_text(it)
                             if t: send(cid, t); time.sleep(0.6)
