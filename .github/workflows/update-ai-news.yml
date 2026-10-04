@@ -1,7 +1,7 @@
 name: Update AI news
 on:
   schedule:
-    - cron: "11 * * * *"
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 permissions:
   contents: write

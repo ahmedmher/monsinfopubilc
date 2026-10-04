@@ -23,8 +23,9 @@ NEWS_PAGE = os.environ.get("NEWS_PAGE", "https://www.monsinfo.com/p/ai-news.html
 SITE = os.environ.get("SITE_URL", "https://www.monsinfo.com")
 YT = os.environ.get("YT_BASE", "https://www.youtube.com")
 TRB = os.environ.get("TRANSLATE_BASE", "https://translate.googleapis.com")
-LIVE_EVERY_H = float(os.environ.get("LIVE_EVERY_HOURS", 6)); LIVE_COUNT = int(os.environ.get("LIVE_COUNT", 3)); LIVE_AGE_H = int(os.environ.get("LIVE_AGE_HOURS", 10))
-DIGEST_HOUR = int(os.environ.get("DIGEST_HOUR_UTC", 6)); DIGEST_COUNT = int(os.environ.get("DIGEST_COUNT", 5))
+LIVE_COUNT = int(os.environ.get("LIVE_COUNT", 5)); LIVE_AGE_H = int(os.environ.get("LIVE_AGE_HOURS", 10))   # instant mode: max stories per run, max age
+INSTANT_CAP = int(os.environ.get("INSTANT_CAP", 8)); INSTANT_MIN = float(os.environ.get("INSTANT_MIN_AUTH", 2))   # per user per day; minimum source authority
+DIGEST_HOURS = os.environ.get("DIGEST_HOURS", "9,21"); DIGEST_COUNT = int(os.environ.get("DIGEST_COUNT", 5)); TZ = os.environ.get("BOT_TZ", "Africa/Cairo")   # digests at these local hours
 POLL_T = int(os.environ.get("POLL_TIMEOUT", 25))
 AUTH = {"openai": 3, "anthropic": 3, "claude": 2.5, "anthropic-r": 2.5, "deepmind": 3, "googleai": 3, "hf": 2.5, "msai": 2.5, "nvidia": 2.5,
         "mit": 2, "ars": 2, "verge": 2, "techcrunch": 2, "venturebeat": 1.5, "aitnews": 2, "scmp": 1.5, "technode": 1, "pandaily": 1.5}
@@ -124,9 +125,10 @@ if "chats" in subs:   # migrate the first version of the file
     subs["users"] = subs.get("users", {}); [subs["users"].setdefault(str(c), {"mode": "live", "topics": []}) for c in subs.pop("chats")]
 subs.setdefault("users", {}); subs.setdefault("offset", 0)
 CFG_KEYS = {  # key: (global name, converter, Arabic label)
-    "live_count": ("LIVE_COUNT", int, "عدد الأخبار في كل إرسال (كل 6 ساعات)"), "live_hours": ("LIVE_EVERY_H", float, "الفاصل بين إرسالات الأخبار بالساعات"),
-    "live_age": ("LIVE_AGE_H", int, "أقصى عمر للخبر المرسل بالساعات"), "digest_hour": ("DIGEST_HOUR", int, "ساعة الملخص اليومي (بتوقيت UTC)"),
-    "digest_count": ("DIGEST_COUNT", int, "عدد أخبار الملخص اليومي"), "ref_hold": ("REF_HOLD", lambda h: int(float(h) * 3600), "ساعات بقاء المدعو لاحتساب النقطة"),
+    "live_count": ("LIVE_COUNT", int, "أقصى عدد أخبار فورية في كل دورة فحص"), "instant_cap": ("INSTANT_CAP", int, "أقصى عدد أخبار فورية للمشترك في اليوم"),
+    "instant_min": ("INSTANT_MIN", float, "أقل وزن لمصدر الخبر الفوري (2 = المصادر الكبرى فقط، 1 = الكل)"), "live_age": ("LIVE_AGE_H", int, "أقصى عمر للخبر الفوري بالساعات"),
+    "digest_hours": ("DIGEST_HOURS", str, "ساعات الملخص اليومي بتوقيتك مفصولة بفاصلة، مثل 9,21"), "tz": ("TZ", str, "المنطقة الزمنية، مثل Africa/Cairo"),
+    "digest_count": ("DIGEST_COUNT", int, "عدد أخبار كل ملخص"), "ref_hold": ("REF_HOLD", lambda h: int(float(h) * 3600), "ساعات بقاء المدعو لاحتساب النقطة"),
     "ref_cap": ("REF_DAILY_CAP", int, "أقصى نقاط إحالة يوميا للشخص")}
 def apply_cfg():
     for k, v in subs.get("cfg", {}).items():
@@ -170,8 +172,8 @@ def story_text(it):
 # ---------------- interactive settings (inline keyboard) ----------------
 def kb_main(u):
     mode = u.get("mode", "live"); n = len(u.get("topics", []))
-    rows = [[{"text": ("✅ " if mode == "live" else "") + "🕒 أهم الأخبار كل 6 ساعات", "callback_data": "m:live"}],
-            [{"text": ("✅ " if mode == "daily" else "") + "☀️ ملخص يومي صباحا", "callback_data": "m:daily"}],
+    rows = [[{"text": ("✅ " if mode == "live" else "") + "⚡ كل خبر مهم فور صدوره", "callback_data": "m:live"}],
+            [{"text": ("✅ " if mode == "daily" else "") + "☀️🌙 ملخص مرتين يوميا (9 ص و9 م)", "callback_data": "m:daily"}],
             [{"text": "📂 " + g, "callback_data": "g:%d" % i} for i, g in enumerate(GROUPS[:1])]]
     rows = rows[:2] + [[{"text": "📂 " + g, "callback_data": "g:%d" % i}] for i, g in enumerate(GROUPS)]
     rows.append([{"text": "🌐 كل المواضيع" + (" ✅" if not n else ""), "callback_data": "all"}, {"text": "تم ✔️", "callback_data": "done"}])
@@ -186,13 +188,13 @@ def kb_group(u, gi):
 def settings_text(u):
     n = len(u.get("topics", []))
     return ("⚙️ <b>إعدادات الأخبار</b>\n\nنمط الإرسال: <b>%s</b>\nالمواضيع: <b>%s</b>\n\nاختر نمط الإرسال، ثم المجموعات لتحديد المواضيع التي تهمك. إن لم تختر شيئا تصلك كل المواضيع."
-            % ("أهم الأخبار كل 6 ساعات" if u.get("mode", "live") == "live" else "ملخص يومي صباحا", ("%d موضوعا" % n) if n else "كل المواضيع"))
+            % ("فوري: كل خبر مهم فور صدوره" if u.get("mode", "live") == "live" else "ملخص مرتين يوميا (9 صباحا و9 مساء)", ("%d موضوعا" % n) if n else "كل المواضيع"))
 WELCOME = ("أهلا بك في بوت <b>أخبار الذكاء الاصطناعي</b> من مونستر للمعلوميات 👋\n\nسيصلك بالعربية أهم الأخبار مع رابط لقراءة ملخص كل خبر على موقعنا، وتنبيه فوري عندما يصدر نموذج كان مرتقبا، وفيديوهات القناة الجديدة.\n\n"
-           "⚙️ /topics اختيار المواضيع ونمط الإرسال\n☀️ /daily ملخص يومي واحد بدل الرسائل المتفرقة\n🕒 /live أهم الأخبار كل 6 ساعات\n📋 /status حالتك\n🎁 /invite ادعُ أصدقاءك واربح جوائز\n⛔ /stop إيقاف\n\n🌐 <a href=\"%s\">الموقع</a>" % SITE)
+           "⚙️ /topics اختيار المواضيع ونمط الإرسال\n☀️ /daily ملخص مرتين يوميا (9 ص و9 م) بدل الرسائل المتفرقة\n⚡ /live كل خبر مهم فور صدوره\n📋 /status حالتك\n🎁 /invite ادعُ أصدقاءك واربح جوائز\n⛔ /stop إيقاف\n\n🌐 <a href=\"%s\">الموقع</a>" % SITE)
 def status_text(cid):
     u = user(cid); n = len(u.get("topics", []))
     names_ = "، ".join(CATL.get(t, t) for t in u.get("topics", [])[:12]) if n else "كل المواضيع"
-    return "📋 <b>حالتك</b>\nالنمط: %s\nالمواضيع: %s\n\n⚙️ /topics للتعديل" % ("أهم الأخبار كل 6 ساعات" if u["mode"] == "live" else "ملخص يومي صباحا", html.escape(names_))
+    return "📋 <b>حالتك</b>\nالنمط: %s\nالمواضيع: %s\n\n⚙️ /topics للتعديل" % ("فوري: كل خبر مهم فور صدوره" if u["mode"] == "live" else "ملخص مرتين يوميا (9 صباحا و9 مساء)", html.escape(names_))
 def stats_text():
     us = subs["users"].values(); n = len(subs["users"]); today = time.strftime("%Y-%m-%d", time.gmtime()); h = subs.get("hist", {})
     def days(k, nd): return sum(h.get((datetime.date.today() - datetime.timedelta(days=i)).isoformat(), {}).get(k, 0) for i in range(nd))
@@ -202,7 +204,7 @@ def stats_text():
         for t in u.get("topics", []): cnt[t] = cnt.get(t, 0) + 1
     top = "، ".join("%s (%d)" % (CATL.get(t, t), c) for t, c in sorted(cnt.items(), key=lambda x: -x[1])[:8]) or "لا يوجد بعد"
     last = (load_json("telegram-state.json", {}) or {}).get("last", {})
-    return ("📊 <b>إحصائيات البوت</b>\n\n👥 المشتركون الآن: <b>%d</b>\n🕒 نمط كل 6 ساعات: %d\n☀️ ملخص يومي: %d\n⚙️ اختاروا مواضيع محددة: %d\n\n"
+    return ("📊 <b>إحصائيات البوت</b>\n\n👥 المشتركون الآن: <b>%d</b>\n⚡ نمط فوري: %d\n☀️ ملخص مرتين يوميا: %d\n⚙️ اختاروا مواضيع محددة: %d\n\n"
             "➕ انضمام: اليوم %d | 7 أيام %d | 30 يوما %d\n➖ إيقاف: اليوم %d | 7 أيام %d | 30 يوما %d\n\n🔥 أكثر المواضيع: %s\n\n📨 آخر إرسال: %s (وصلت %s رسالة مباشرة، %s ملخص يومي)"
             % (n, live, daily, withtopics, days("new", 1), days("new", 7), days("new", 30), days("stop", 1), days("stop", 7), days("stop", 30), html.escape(top),
                last.get("at", "لم يحدث بعد"), (last.get("sent") or {}).get("live", 0), (last.get("sent") or {}).get("digest", 0)))
@@ -225,7 +227,7 @@ def handle_callback(cb):
         edit(cid, mid, "📂 <b>%s</b>\nاضغط على الموضوع لتفعيله أو إلغائه:" % html.escape(GROUPS[int(gi)]), kb_group(u, int(gi)))
 CMD = {"/topics": "topics", "/مواضيع": "topics", "مواضيع": "topics", "/settings": "topics", "/daily": "daily", "/ملخص": "daily", "ملخص": "daily",
        "/live": "live", "/مباشر": "live", "/status": "status", "/الحالة": "status", "/stop": "stop", "/ايقاف": "stop", "/إيقاف": "stop", "/help": "help", "/start": "start", "/stats": "stats", "/broadcast": "broadcast", "/invite": "invite", "/دعوة": "invite", "/points": "invite", "/نقاطي": "invite", "/rewards": "rewards", "/جوائز": "rewards", "/send": "send", "/requests": "requests", "/نشر": "broadcast", "/اذاعة": "broadcast", "/إحصائيات": "stats", "/احصائيات": "stats", "/myid": "myid"}
-ADMIN_ONLY = {"/admin", "/pause", "/resume", "/top", "/user", "/addpoints", "/ban", "/unban", "/setconfig", "/setwelcome", "/resetwelcome", "/addreward", "/setcost", "/setstock", "/delreward", "/preview"}
+ADMIN_ONLY = {"/admin", "/pause", "/resume", "/top", "/user", "/addpoints", "/ban", "/unban", "/setconfig", "/setwelcome", "/resetwelcome", "/addreward", "/setcost", "/setstock", "/delreward", "/preview", "/cancel", "/msg"}
 def is_admin(m):
     return str((m.get("chat") or {}).get("id")) in ADMIN or str((m.get("from") or {}).get("username", "")).lower() in ADMIN_NAMES
 def push(chats, text=None, photo=None, copy_from=None, plain=False):
@@ -243,8 +245,8 @@ def push(chats, text=None, photo=None, copy_from=None, plain=False):
     return ok, gone
 BROADCAST_HELP = "لإرسال رسالة لكل المشتركين:\n• اكتب <code>/broadcast نص الرسالة</code> (يدعم الروابط)\n• أو أرسل صورة وفي وصفها <code>/broadcast النص</code>\n• أو اعمل «رد» على أي رسالة (نص، صورة، فيديو، ملف) واكتب <code>/broadcast</code> فتُنسخ كما هي"
 # ---------------- persistent button menu (shown under the chat box, so users need not type commands) ----------------
-BTN = {"⚙️ المواضيع": "topics", "🎁 ادعُ واربح": "invite", "🏆 الجوائز": "rewards", "📋 حالتي": "status", "☀️ ملخص يومي": "daily", "🕒 كل 6 ساعات": "live", "❓ مساعدة": "help", "⛔ إيقاف": "stop"}
-MENU_KB = {"keyboard": [[{"text": "⚙️ المواضيع"}, {"text": "🎁 ادعُ واربح"}], [{"text": "🏆 الجوائز"}, {"text": "📋 حالتي"}], [{"text": "☀️ ملخص يومي"}, {"text": "🕒 كل 6 ساعات"}], [{"text": "❓ مساعدة"}, {"text": "⛔ إيقاف"}]],
+BTN = {"⚙️ المواضيع": "topics", "🎁 ادعُ واربح": "invite", "🏆 الجوائز": "rewards", "📋 حالتي": "status", "☀️🌙 ملخص مرتين": "daily", "⚡ فوري": "live", "☀️ ملخص يومي": "daily", "🕒 كل 6 ساعات": "live", "❓ مساعدة": "help", "⛔ إيقاف": "stop"}
+MENU_KB = {"keyboard": [[{"text": "⚙️ المواضيع"}, {"text": "🎁 ادعُ واربح"}], [{"text": "🏆 الجوائز"}, {"text": "📋 حالتي"}], [{"text": "☀️🌙 ملخص مرتين"}, {"text": "⚡ فوري"}], [{"text": "❓ مساعدة"}, {"text": "⛔ إيقاف"}]],
            "resize_keyboard": True, "is_persistent": True, "input_field_placeholder": "اختر من القائمة 👇"}
 # ---------------- referrals: invite friends, earn points, redeem rewards ----------------
 REF_HOLD = int(os.environ.get("REF_HOLD_HOURS", 24)) * 3600     # an invited friend counts after staying subscribed this long
@@ -277,6 +279,17 @@ def rewards_text(u):
     if not rs: return "لا توجد جوائز متاحة حاليا. تابعنا، ستضاف جوائز جديدة قريبا."
     return "🎁 <b>الجوائز المتاحة</b>\n\nنقاطك: <b>%d</b>\nاضغط على الجائزة لطلبها (يراجع المالك الطلب ثم يرسل لك التفاصيل هنا).\n\n%s" % (u.get("pts", 0), "\n".join("• %s — %d نقطة%s" % (r["name"], r["cost"], ("\n  " + r["desc"]) if r.get("desc") else "") for r in rs))
 def admin_chat(): return subs.get("admin_cid")
+def deliver_kb(cid): return {"inline_keyboard": [[{"text": "✉️ تسليم (أكتب الرابط)", "callback_data": "ad:dl:%s" % cid}, {"text": "❌ رفض وإرجاع النقاط", "callback_data": "ad:rj:%s" % cid}]]}
+def finish_request(cid, st):
+    for x in subs.get("red", []):
+        if x.get("c") == str(cid) and x.get("st") == "pending": x["st"] = st; return x
+def reject(cid):
+    x = finish_request(cid, "rejected")
+    if not x: return "لا يوجد طلب معلق لهذا المستخدم."
+    if str(cid) in subs["users"]: subs["users"][str(cid)]["pts"] = subs["users"][str(cid)].get("pts", 0) + x.get("cost", 0)
+    subs.setdefault("used", {})[x["id"]] = max(0, subs.get("used", {}).get(x["id"], 1) - 1)
+    send(int(cid), "تعذر تنفيذ طلبك لجائزة «%s» حاليا، وأُعيدت نقاطك إلى رصيدك." % x["n"])
+    return "تم الرفض وأُعيدت %d نقطة للمستخدم %s." % (x.get("cost", 0), cid)
 def redeem(cid, rid):
     u = user(cid); r = next((x for x in rewards() if x["id"] == rid), None)
     if not r: return "هذه الجائزة غير متاحة."
@@ -284,9 +297,9 @@ def redeem(cid, rid):
     if r.get("stock") is not None and used.get(rid, 0) >= r["stock"]: return "نفدت هذه الجائزة."
     if u.get("pts", 0) < r["cost"]: return "نقاطك لا تكفي: تحتاج %d وعندك %d." % (r["cost"], u.get("pts", 0))
     u["pts"] -= r["cost"]; used[rid] = used.get(rid, 0) + 1
-    subs.setdefault("red", []).append({"c": str(cid), "id": rid, "n": r["name"], "t": int(time.time()), "st": "pending"})
+    subs.setdefault("red", []).append({"c": str(cid), "id": rid, "n": r["name"], "cost": r["cost"], "t": int(time.time()), "st": "pending"})
     ac = admin_chat()
-    if ac: send(ac, "🔔 <b>طلب استبدال جديد</b>\nالجائزة: %s\nالمستخدم: <code>%s</code>\n\nلإرسال التفاصيل له: <code>/send %s النص أو الرابط</code>" % (html.escape(r["name"]), cid, cid))
+    if ac: send(ac, "🔔 <b>طلب استبدال جديد</b>\nالجائزة: %s\nالمستخدم: <code>%s</code>\n\nاضغط «تسليم» ثم اكتب الرابط أو الرسالة وسأرسلها له." % (html.escape(r["name"]), cid), deliver_kb(cid))
     return "تم تسجيل طلبك لجائزة «%s» ✅\nخصمنا %d نقطة، وسيراجع المالك الطلب ويرسل لك التفاصيل هنا في المحادثة." % (r["name"], r["cost"])
 def confirm_refs():
     now = time.time(); today = time.strftime("%Y-%m-%d", time.gmtime())
@@ -301,17 +314,30 @@ def confirm_refs():
 def requests_text():
     pend = [x for x in subs.get("red", []) if x.get("st") == "pending"]
     if not pend: return "لا توجد طلبات معلقة."
-    return "🔔 <b>الطلبات المعلقة (%d)</b>\n\n" % len(pend) + "\n".join("• %s — <code>%s</code>" % (html.escape(x["n"]), x["c"]) for x in pend[:30]) + "\n\nللرد: <code>/send المعرف النص</code>"
+    return "🔔 <b>الطلبات المعلقة (%d)</b>\n\n" % len(pend) + "\n".join("• %s — <code>%s</code>" % (html.escape(x["n"]), x["c"]) for x in pend[:30]) + "\n\nاضغط «تسليم» تحت الطلب، ثم اكتب الرابط."
+def requests_send(cid):
+    pend = [x for x in subs.get("red", []) if x.get("st") == "pending"]
+    send(cid, requests_text())
+    for x in pend[:10]: send(cid, "• %s — <code>%s</code>" % (html.escape(x["n"]), x["c"]), deliver_kb(x["c"]))
 # ---------------- owner panel: manage the bot from Telegram ----------------
+def _cfgv(): return {"live_count": LIVE_COUNT, "instant_cap": INSTANT_CAP, "instant_min": INSTANT_MIN, "live_age": LIVE_AGE_H, "digest_hours": DIGEST_HOURS, "tz": TZ, "digest_count": DIGEST_COUNT, "ref_hold": REF_HOLD // 3600, "ref_cap": REF_DAILY_CAP}
+def _rewards_view():
+    rows = "\n".join("• <code>%s</code> — %s — %d نقطة — متاح: %s" % (r["id"], html.escape(r["name"]), r["cost"], "بلا حد" if r.get("stock") is None else r["stock"] - subs.get("used", {}).get(r["id"], 0)) for r in rewards()) or "لا توجد جوائز بعد"
+    return ("🎁 <b>إدارة الجوائز</b>\n\nالجوائز الحالية:\n" + rows + "\n\n<b>إضافة جائزة أو تعديلها كاملة:</b>\n<code>/addreward المعرف|الاسم|النقاط|العدد|الوصف</code>\n"
+            "• المعرف: كلمة إنجليزية قصيرة بلا مسافات، مثل <code>gpro</code>\n• العدد: رقم، أو <code>-</code> إن كانت بلا حد\n"
+            "مثال: <code>/addreward gpro|اشتراك Google AI Pro|25|3|رابط تفعيل لمدة 18 شهرا</code>\n(إن كان المعرف موجودا فستُستبدل الجائزة)\n\n"
+            "<b>تعديل جزء واحد:</b>\n<code>/setcost gpro 30</code> يغيّر عدد النقاط المطلوبة\n<code>/setstock gpro 5</code> يغيّر العدد المتاح (<code>-</code> = بلا حد)\n<code>/delreward gpro</code> يحذف الجائزة\n\n"
+            "💡 لا يتأثر المشتركون الذين استبدلوا بالفعل. التسليم من قسم «📬 الطلبات».")
 ADMIN_SECTIONS = {
- "st": ("📊 الإحصائيات", lambda: stats_text() + "\n\nأوامر: /stats  /top (أكثر المدعوين)  /user المعرف"),
- "bc": ("📢 الإرسال للجميع", lambda: BROADCAST_HELP + "\n\n/preview يرسل لك نموذجا لخبر كما يراه المشترك"),
- "rw": ("🎁 الجوائز", lambda: "🎁 <b>إدارة الجوائز</b>\n\n" + ("\n".join("• <code>%s</code> — %s — %d نقطة — متاح: %s" % (r["id"], html.escape(r["name"]), r["cost"], "بلا حد" if r.get("stock") is None else r["stock"] - subs.get("used", {}).get(r["id"], 0)) for r in rewards()) or "لا توجد جوائز") +
-      "\n\n<code>/addreward المعرف|الاسم|النقاط|العدد|الوصف</code>\n(العدد: رقم أو - لبلا حد)\n<code>/setcost المعرف النقاط</code>\n<code>/setstock المعرف العدد</code>\n<code>/delreward المعرف</code>\n\nالطلبات: /requests ثم <code>/send المعرف الرابط</code>"),
- "us": ("👥 المستخدمون", lambda: "👥 <b>إدارة المستخدمين</b>\n\n<code>/user المعرف</code> بيانات مشترك\n<code>/addpoints المعرف عدد</code> إضافة نقاط (سالب للخصم)\n<code>/ban المعرف</code> حظر مشترك\n<code>/unban المعرف</code> رفع الحظر\n<code>/send المعرف نص</code> رسالة لمشترك واحد\n/top أكثر المدعوين نقاطا\n\nعدد المحظورين: %d" % len(subs.get("ban", []))),
- "cf": ("⚙️ الإعدادات", lambda: "⚙️ <b>الإعدادات الحالية</b>\n\n" + "\n".join("• <code>%s</code> = <b>%s</b> — %s" % (k, subs.get("cfg", {}).get(k, {"live_count": LIVE_COUNT, "live_hours": LIVE_EVERY_H, "live_age": LIVE_AGE_H, "digest_hour": DIGEST_HOUR, "digest_count": DIGEST_COUNT, "ref_hold": REF_HOLD // 3600, "ref_cap": REF_DAILY_CAP}[k]), v[2]) for k, v in CFG_KEYS.items()) + "\n\nللتغيير: <code>/setconfig المفتاح القيمة</code>\nللرجوع للافتراضي: <code>/setconfig المفتاح reset</code>"),
- "ms": ("📝 رسالة الترحيب", lambda: "📝 <b>رسالة الترحيب</b>\n\n<code>/setwelcome النص</code> تغيير الرسالة (تقبل HTML)\n<code>/resetwelcome</code> الرجوع للأصلية\n/help يعرض الرسالة الحالية"),
- "pa": ("⏸ إيقاف/استئناف", lambda: "⏯ <b>الإرسال التلقائي: %s</b>\n\n<code>/pause</code> يوقف الأخبار والتنبيهات والفيديوهات مؤقتا\n<code>/resume</code> يعيدها" % ("متوقف ⏸" if subs.get("paused") else "يعمل ▶️"))}
+ "rq": ("📬 الطلبات", lambda: requests_text() + "\n\n<b>كيف تسلّم جائزة؟</b>\n1) أرسل /requests فتظهر لك الطلبات كل طلب برسالة مستقلة.\n2) اضغط «✉️ تسليم» تحت الطلب.\n3) اكتب رسالة واحدة فيها الرابط أو التفاصيل، فتصل للمستخدم فورا ويُعلَّم الطلب «منتهيا».\nأو اضغط «❌ رفض» فتُرجع نقاطه ويُبلَّغ.\n\nاختصارات: <code>/msg المعرف</code> لمراسلة أي مشترك، و<code>/cancel</code> لإلغاء رسالة بدأتها، و<code>/send المعرف النص</code> لإرسال بسطر واحد."),
+ "st": ("📊 الإحصائيات", lambda: stats_text() + "\n\n<b>أوامر:</b>\n<code>/stats</code> هذه الأرقام\n<code>/top</code> أكثر المدعوين نقاطا\n<code>/user المعرف</code> بيانات مشترك (النمط، المواضيع، النقاط، من دعاه)"),
+ "bc": ("📢 الإرسال للجميع", lambda: "📢 <b>الإرسال لكل المشتركين</b>\n\n• نص: <code>/broadcast نص الرسالة</code>\n• صورة: أرسل صورة وفي وصفها <code>/broadcast النص</code>\n• فيديو أو ملف أو صوت: اعمل «رد» على الرسالة واكتب <code>/broadcast</code> فتُنسخ كما هي\n\nيقبل النص الخط العريض <code>&lt;b&gt;نص&lt;/b&gt;</code> والروابط. يرد البوت بعدد من وصلتهم.\n\n<code>/preview</code> يرسل لك خبرا كما يراه المشترك."),
+ "rw": ("🎁 الجوائز", _rewards_view),
+ "us": ("👥 المستخدمون", lambda: "👥 <b>إدارة المستخدمين</b>\n\n<code>/user المعرف</code> بيانات مشترك، وتحتها زر «✉️ مراسلته»\n<code>/msg المعرف</code> ثم اكتب الرسالة: ترسل رسالة لمشترك واحد\n<code>/addpoints المعرف 5</code> يضيف 5 نقاط، و<code>/addpoints المعرف -5</code> يخصم\n<code>/ban المعرف</code> يحذف المشترك ويمنعه من الاشتراك مجددا\n<code>/unban المعرف</code> يرفع الحظر\n<code>/top</code> أكثر المدعوين\n\nكيف أعرف المعرف؟ يظهر في إشعارات الطلبات وفي /top. المحظورون الآن: %d" % len(subs.get("ban", []))),
+ "cf": ("⚙️ الإعدادات", lambda: "⚙️ <b>الإعدادات الحالية</b>\n\n" + "\n".join("• <code>%s</code> = <b>%s</b>\n   %s" % (k, subs.get("cfg", {}).get(k, _cfgv()[k]), v[2]) for k, v in CFG_KEYS.items()) + "\n\n<b>التغيير:</b> <code>/setconfig المفتاح القيمة</code>\nمثال: <code>/setconfig instant_cap 5</code> (5 أخبار فورية يوميا لكل مشترك)\nمثال: <code>/setconfig digest_hours 8,20</code> (الملخصان 8 ص و8 م)\nللرجوع للأصل: <code>/setconfig المفتاح reset</code>\n\n💡 التغيير يسري على الدورة التالية."),
+ "ms": ("📝 رسالة الترحيب", lambda: "📝 <b>رسالة الترحيب</b>\n\nتصل لكل مشترك جديد وعند /help.\n\n<code>/setwelcome النص</code> يغيّرها (تقبل HTML مثل &lt;b&gt;عريض&lt;/b&gt; والروابط)\n<code>/resetwelcome</code> يعيد الرسالة الأصلية\n\n⚠️ اكتب الرسالة كاملة في أمر واحد. تظهر تحتها قائمة الأزرار تلقائيا."),
+ "pa": ("⏸ إيقاف/استئناف", lambda: "⏯ <b>الإرسال التلقائي: %s</b>\n\n<code>/pause</code> يوقف الأخبار الفورية والملخصات والتنبيهات والفيديوهات لكل المشتركين مؤقتا\n<code>/resume</code> يعيدها\n\nلا يؤثر على الأوامر والجوائز والإحالات والإرسال اليدوي." % ("متوقف ⏸" if subs.get("paused") else "يعمل ▶️")),
+ "gd": ("📖 الدليل الكامل", lambda: "📖 <b>دليل المالك</b>\n\n<b>يوميا:</b>\n• /stats لمعرفة العدد والانضمام\n• /requests لتسليم الجوائز\n\n<b>عند إعلان أو خبر خاص:</b> /broadcast\n\n<b>لتغيير شكل البوت:</b> /setwelcome ، /setconfig ، /addreward\n\n<b>عند مشكلة:</b> /pause لإيقاف الإرسال ثم /resume\n\n<b>المشتركون يرون:</b> القائمة الأزرار + /invite + /rewards\n\n<b>ملاحظات مهمة:</b>\n• الأوامر لا تعمل إلا من حسابك أنت\n• التغييرات تُحفظ مشفرة وتسري خلال دقائق\n• الأخبار الفورية تُفحص كل 15 دقيقة تقريبا\n• الملخصان بتوقيت %s الساعة %s\n• الجوائز تُسلَّم بموافقتك، لا تلقائيا" % (TZ, DIGEST_HOURS))}
 def admin_kb():
     keys = list(ADMIN_SECTIONS); rows = [[{"text": ADMIN_SECTIONS[k][0], "callback_data": "ad:" + k} for k in keys[i:i + 2]] for i in range(0, len(keys), 2)]
     return {"inline_keyboard": rows}
@@ -321,6 +347,10 @@ def admin_cb(cb):
     tg("answerCallbackQuery", callback_query_id=cb["id"])
     if not is_admin({"chat": cb["message"]["chat"], "from": cb.get("from")}): return
     k = d[3:]
+    if k.startswith(("dl:", "msg:")):
+        target = k.split(":", 1)[1]; subs["await"] = {"cid": target}
+        send(cid, "✍️ اكتب الآن الرسالة أو الرابط الذي تريد إرساله إلى <code>%s</code> (نص عادي، ويقبل الروابط). للإلغاء اكتب /cancel" % target); return
+    if k.startswith("rj:"): send(cid, reject(k[3:])); return
     if k in ADMIN_SECTIONS: edit(cid, mid, ADMIN_SECTIONS[k][1](), {"inline_keyboard": [[{"text": "↩️ رجوع للوحة", "callback_data": "ad:home"}]]})
     else: edit(cid, mid, ADMIN_HOME, admin_kb())
 def top_text():
@@ -338,7 +368,13 @@ def admin_command(cid, text, m):
     if c == "/pause": subs["paused"] = True; send(cid, "⏸ أُوقف الإرسال التلقائي. /resume لإعادته."); return True
     if c == "/resume": subs.pop("paused", None); send(cid, "▶️ استؤنف الإرسال التلقائي."); return True
     if c == "/top": send(cid, top_text()); return True
-    if c == "/user": send(cid, user_text(a[0]) if a else "الصيغة: /user المعرف"); return True
+    if c == "/user":
+        if not a: send(cid, "الصيغة: /user المعرف")
+        else: send(cid, user_text(a[0]), {"inline_keyboard": [[{"text": "✉️ مراسلته", "callback_data": "ad:msg:%s" % a[0]}]]} if a[0] in subs["users"] else None)
+        return True
+    if c == "/msg":
+        if not a or not a[0].lstrip("-").isdigit(): send(cid, "الصيغة: <code>/msg المعرف</code> ثم اكتب الرسالة في الخطوة التالية"); return True
+        subs["await"] = {"cid": a[0]}; send(cid, "✍️ اكتب الآن الرسالة أو الرابط لإرساله إلى <code>%s</code>. للإلغاء: /cancel" % a[0]); return True
     if c == "/addpoints":
         if len(a) < 2 or str(a[0]) not in subs["users"] or not a[1].lstrip("-").isdigit(): send(cid, "الصيغة: /addpoints المعرف عدد"); return True
         u = subs["users"][a[0]]; u["pts"] = max(0, u.get("pts", 0) + int(a[1])); send(cid, "تم. رصيده الآن %d." % u["pts"]); return True
@@ -405,6 +441,12 @@ def handle_message(m):
         return new
     if is_admin(m):
         subs["admin_cid"] = cid
+        aw = subs.get("await")
+        if aw and text and text != "/cancel" and not text.startswith("/") and text not in BTN:
+            r = send(int(aw["cid"]), text); subs.pop("await", None)
+            if r == "ok": finish_request(aw["cid"], "done")
+            send(cid, "تم إرسال رسالتك إلى %s ✅" % aw["cid"] if r == "ok" else "تعذر الإرسال (قد يكون المستخدم حظر البوت)."); return new
+        if text.split()[:1] == ["/cancel"]: subs.pop("await", None); send(cid, "أُلغي الإرسال."); return new
         if text.startswith("/") and admin_command(cid, text, m): return new
     elif text.startswith("/") and text.split()[0].split("@")[0].lower() in ADMIN_ONLY: send(cid, "هذا الأمر لمالك البوت فقط."); return new
     if str(cid) in subs.get("ban", []): return new
@@ -418,7 +460,7 @@ def handle_message(m):
                 if x.get("c") == parts[1] and x.get("st") == "pending": x["st"] = "done"; break
         send(cid, "تم الإرسال ✅" if r == "ok" else "تعذر الإرسال (قد يكون المستخدم حظر البوت)."); return new
     if cmd == "requests":
-        send(cid, requests_text() if is_admin(m) else "هذا الأمر لمالك البوت فقط."); return new
+        (requests_send(cid) if is_admin(m) else send(cid, "هذا الأمر لمالك البوت فقط.")); return new
     if str(cid) not in subs["users"]:
         first = seen_id(cid) not in subs.setdefault("seen", [])
         u0 = user(cid); new.append(cid)
@@ -433,8 +475,8 @@ def handle_message(m):
     if cmd == "invite": send(cid, invite_text(cid))
     elif cmd == "rewards": send(cid, rewards_text(user(cid)), rewards_kb(user(cid)))
     elif cmd == "topics": send(cid, settings_text(user(cid)), kb_main(user(cid)))
-    elif cmd == "daily": user(cid)["mode"] = "daily"; send(cid, "تم ✅ سيصلك **ملخص واحد** كل صباح بأهم 5 أخبار.".replace("**", ""))
-    elif cmd == "live": user(cid)["mode"] = "live"; send(cid, "تم ✅ ستصلك أهم الأخبار كل 6 ساعات.")
+    elif cmd == "daily": user(cid)["mode"] = "daily"; send(cid, "تم ✅ سيصلك ملخص بأهم %d أخبار الساعة 9 صباحا وملخص آخر الساعة 9 مساء (بتوقيت %s)." % (DIGEST_COUNT, "القاهرة" if TZ == "Africa/Cairo" else TZ))
+    elif cmd == "live": user(cid)["mode"] = "live"; send(cid, "تم ✅ ستصلك كل خبر مهم فور صدوره (حتى %d أخبار يوميا كحد أقصى)." % INSTANT_CAP)
     elif cmd == "status": send(cid, status_text(cid))
     elif cmd == "help": send(cid, subs.get("welcome") or WELCOME, MENU_KB)
     elif cmd == "start" and cid not in new: send(cid, "أهلا بعودتك 👋 القائمة جاهزة أسفل الشاشة. اختر ما تريد 👇", MENU_KB)
@@ -482,6 +524,14 @@ def watch_videos(targets):
     vs["sent"] = sorted(sent_v)[-600:]
     json.dump(vs, open(videos_path, "w"), separators=(",", ":")); return n
 
+def kick_news():
+    """GitHub's own cron is unreliable, so the always-running bot job starts the news job (fetch + instant stories + digests)."""
+    tok = os.environ.get("GH_TOKEN"); repo = os.environ.get("GITHUB_REPOSITORY")
+    if not (tok and repo): return
+    req = urllib.request.Request("https://api.github.com/repos/%s/actions/workflows/update-ai-news.yml/dispatches" % repo, data=json.dumps({"ref": os.environ.get("GITHUB_REF_NAME", "main")}).encode(),
+                                 headers={"Authorization": "Bearer " + tok, "Accept": "application/vnd.github+json"}, method="POST")
+    try: urllib.request.urlopen(req, timeout=20); print("news job started")
+    except Exception as e: print("could not start news job:", str(e).replace(tok, "***")[:80], file=sys.stderr)
 def targets_all():
     return [int(c) for c in subs["users"]] + ([EXTRA] if EXTRA else [])
 
@@ -493,13 +543,14 @@ if "--subs" in sys.argv:
     for g in state.get("gone", []): subs["users"].pop(str(g), None)
     tg("deleteWebhook")
     apply_cfg()
+    if dur: kick_news()
     if admin_chat():
         tg("setMyCommands", scope={"type": "chat", "chat_id": admin_chat()}, commands=[{"command": "admin", "description": "لوحة المالك"}, {"command": "stats", "description": "إحصائيات البوت"}, {"command": "broadcast", "description": "إرسال للجميع"},
             {"command": "requests", "description": "طلبات الجوائز"}, {"command": "preview", "description": "معاينة خبر"}, {"command": "pause", "description": "إيقاف الإرسال"}, {"command": "resume", "description": "استئناف الإرسال"}, {"command": "top", "description": "أكثر المدعوين"},
             {"command": "start", "description": "القائمة"}, {"command": "invite", "description": "الدعوة والنقاط"}, {"command": "rewards", "description": "الجوائز"}, {"command": "help", "description": "المساعدة"}])
     if not BOT_USER: BOT_USER = (tg("getMe").get("result") or {}).get("username", "")
     tg("setMyCommands", commands=[{"command": "start", "description": "الاشتراك في أخبار الذكاء الاصطناعي"}, {"command": "topics", "description": "اختيار المواضيع ونمط الإرسال"},
-        {"command": "daily", "description": "ملخص يومي واحد صباحا"}, {"command": "live", "description": "أهم الأخبار كل 6 ساعات"}, {"command": "status", "description": "حالتي"}, {"command": "invite", "description": "ادعُ أصدقاءك واربح نقاطا"}, {"command": "rewards", "description": "الجوائز واستبدال النقاط"}, {"command": "help", "description": "المساعدة وقائمة الأزرار"}, {"command": "stop", "description": "إيقاف الأخبار"}])
+        {"command": "daily", "description": "ملخص مرتين يوميا 9 ص و9 م"}, {"command": "live", "description": "كل خبر مهم فور صدوره"}, {"command": "status", "description": "حالتي"}, {"command": "invite", "description": "ادعُ أصدقاءك واربح نقاطا"}, {"command": "rewards", "description": "الجوائز واستبدال النقاط"}, {"command": "help", "description": "المساعدة وقائمة الأزرار"}, {"command": "stop", "description": "إيقاف الأخبار"}])
     welcomed = 0
     while True:
         r = tg("getUpdates", offset=subs["offset"], timeout=(POLL_T if dur else 0), allowed_updates=["message", "callback_query"])
@@ -554,37 +605,53 @@ for m in tracker.get("models", []):
         if deliver(c, text): stats["alerts"] += 1
 state["alerted"] = sorted(alerted)
 
-# (2) live: top stories every ~6 hours, filtered by each user's topics
-last_live = state.get("last_live", 0)
-if first_run: pass
-elif now - last_live >= LIVE_EVERY_H * 3600 * 0.9:
-    fresh = [i for i in ranked([i for i in news["items"] if i["u"] not in sent], LIVE_AGE_H)]
+# local time for the daily cap and the digests
+try:
+    import zoneinfo; local = datetime.datetime.now(zoneinfo.ZoneInfo(TZ))
+except Exception:
+    local = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=3)))
+ldate = local.strftime("%Y-%m-%d")
+dn = state.setdefault("dn", {})
+def left_today(c):
+    d = dn.get(str(c)); return INSTANT_CAP - (d["n"] if d and d["d"] == ldate else 0)
+def count_today(c):
+    d = dn.get(str(c)); 
+    if not d or d["d"] != ldate: d = dn[str(c)] = {"d": ldate, "n": 0}
+    d["n"] += 1
+# (2) instant: every new important story, as soon as it is published (per-user daily cap, topics respected)
+if not first_run:
+    fresh = [i for i in news["items"] if i["u"] not in sent and AUTH.get(i["s"], 0) >= INSTANT_MIN and age_h(i) <= LIVE_AGE_H]
+    fresh = ranked(fresh, LIVE_AGE_H)[:LIVE_COUNT * 3]
     used = set()
     for c, u in users.items():
         if u.get("mode", "live") != "live": continue
-        mine = [i for i in ranked(fresh, LIVE_AGE_H, u.get("topics"))][:LIVE_COUNT]
-        for it in mine:
+        for it in ranked(fresh, LIVE_AGE_H, u.get("topics"))[:LIVE_COUNT]:
+            if left_today(c) <= 0: break
             t = story_text(it)
-            if t and deliver(c, t): used.add(it["u"]); stats["live"] += 1
+            if t and deliver(c, t): used.add(it["u"]); stats["live"] += 1; count_today(c)
     if EXTRA:
         for it in fresh[:LIVE_COUNT]:
             t = story_text(it)
             if t and deliver(EXTRA, t): used.add(it["u"])
-    sent.update(used); state["last_live"] = now
-elif "last_live" not in state: state["last_live"] = now
+    sent.update(used)
+for k in [k for k, v in dn.items() if v["d"] != ldate and k not in users]: del dn[k]
 
-# (3) morning digest for "daily" users
-today = time.strftime("%Y-%m-%d", time.gmtime())
-if not first_run and time.gmtime().tm_hour == DIGEST_HOUR and state.get("last_digest") != today:
-    dusers = {c: u for c, u in users.items() if u.get("mode") == "daily"}
-    for c, u in dusers.items():
-        top = ranked(news["items"], 24, u.get("topics"))[:DIGEST_COUNT]
+# (3) digest for "daily" users at the configured local hours (default 9 am and 9 pm), catching up to 2 hours late
+done = state.setdefault("digests", [])
+try: hours = sorted({int(x) for x in str(DIGEST_HOURS).replace(" ", "").split(",") if x != ""})
+except Exception: hours = [9, 21]
+for h in hours:
+    key = "%s@%02d" % (ldate, h)
+    if first_run or key in done or not (h <= local.hour < h + 3): continue
+    done.append(key)
+    for c, u in {c: u for c, u in users.items() if u.get("mode") == "daily"}.items():
+        top = ranked(news["items"], 14, u.get("topics"))[:DIGEST_COUNT]
         lines = []
         for n_, it in enumerate(top, 1):
             a = arabic(it)
             if a: lines.append("%d. <b>%s</b>\n   <a href=\"%s\">اقرأ الملخص</a>" % (n_, html.escape(a["t"]), html.escape(link(it), quote=True)))
-        if lines and deliver(c, "☀️ <b>ملخص أخبار الذكاء الاصطناعي</b> — %s\n\n%s" % (ar_date(today), "\n\n".join(lines))): stats["digest"] += 1
-    state["last_digest"] = today
+        if lines and deliver(c, "%s <b>ملخص أخبار الذكاء الاصطناعي</b> — %s\n\n%s" % ("☀️ صباح الخير" if h < 15 else "🌙 مساء الخير", ar_date(ldate), "\n\n".join(lines))): stats["digest"] += 1
+state["digests"] = done[-12:]
 
 if first_run: sent.update(i["u"] for i in news["items"])
 state["sent"] = sorted(sent)[-1500:]; state["gone"] = sorted(gone)[-200:]
