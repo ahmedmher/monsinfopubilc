@@ -2,14 +2,16 @@
 """Build servers.json: popular MCP servers on GitHub (topic search), with install config extracted from each README,
 category, weekly star growth and an Arabic description (cached in ar-cache.json).
 Env: GITHUB_TOKEN (raises the API rate limit), GH_API (default https://api.github.com)."""
-import json, os, re, sys, time, datetime, urllib.request, urllib.parse
+import json, os, re, sys, time, datetime, functools, urllib.request, urllib.parse
+print = functools.partial(print, flush=True)
+T0 = time.time()
 here = os.path.dirname(os.path.abspath(__file__))
 API = os.environ.get("GH_API", "https://api.github.com"); TOKEN = os.environ.get("GITHUB_TOKEN", "")
 TOP = int(os.environ.get("MCP_TOP", 150)); today = datetime.date.today().isoformat()
 def get(url, raw=False):
     req = urllib.request.Request(url, headers={"Accept": "application/vnd.github.raw+json" if raw else "application/vnd.github+json", "User-Agent": "mcp-directory"})
     if TOKEN: req.add_header("Authorization", "Bearer " + TOKEN)
-    b = urllib.request.urlopen(req, timeout=60).read()
+    b = urllib.request.urlopen(req, timeout=20).read()
     return b.decode("utf8", "replace") if raw else json.loads(b)
 def jload(p, d):
     try: return json.load(open(os.path.join(here, p), encoding="utf8"))
@@ -64,13 +66,14 @@ def category(it):
 cache = jload("ar-cache.json", {})
 def translate(t):
     try:
-        j = json.loads(urllib.request.urlopen(urllib.request.Request("https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=en&tl=ar&q=" + urllib.parse.quote(t[:300]), headers={"User-Agent": "Mozilla/5.0"}), timeout=12).read())
+        j = json.loads(urllib.request.urlopen(urllib.request.Request("https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=en&tl=ar&q=" + urllib.parse.quote(t[:300]), headers={"User-Agent": "Mozilla/5.0"}), timeout=6).read())
         r = j[0] if isinstance(j[0], str) else j[0][0]
         return r if r and r != t else None
     except Exception: return None
-hist = jload("servers-hist.json", {}); items = []; tr_n = 0
+hist = jload("servers-hist.json", {}); items = []; tr_n = 0; tr_fail = 0
 for full, it in pick.items():
-    try: md = get("%s/repos/%s/readme" % (API, full), raw=True)
+    if len(items) % 20 == 0: print("progress:", len(items), "/", len(pick), "%ds" % (time.time() - T0))
+    try: md = get("%s/repos/%s/readme" % (API, full), raw=True) if time.time() - T0 < 420 else ""
     except Exception: md = ""
     cfg = find_config(md) if md else None
     d = (it.get("description") or "").strip()
