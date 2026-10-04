@@ -15,7 +15,9 @@ import xml.etree.ElementTree as ET
 here = os.path.dirname(os.path.abspath(__file__))
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 EXTRA = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
-ADMIN = [a for a in (os.environ.get("TELEGRAM_ADMIN_ID", "") + "," + os.environ.get("TELEGRAM_CHAT_ID", "")).replace(" ", "").split(",") if a.lstrip("-").isdigit() and not a.startswith("-")]
+_adm = [a.strip().lstrip("@") for a in (os.environ.get("TELEGRAM_ADMIN_ID", "") + "," + os.environ.get("TELEGRAM_CHAT_ID", "")).split(",") if a.strip()]
+ADMIN = [a for a in _adm if a.isdigit()]                       # numeric chat ids
+ADMIN_NAMES = [a.lower() for a in _adm if not a.lstrip("-").isdigit()]   # Telegram usernames
 API = os.environ.get("TELEGRAM_API", "https://api.telegram.org")
 NEWS_PAGE = os.environ.get("NEWS_PAGE", "https://www.monsinfo.com/p/ai-news.html")
 SITE = os.environ.get("SITE_URL", "https://www.monsinfo.com")
@@ -218,7 +220,7 @@ def handle_message(m):
     new = []
     if cmd == "myid": send(cid, "معرف محادثتك: <code>%s</code>\nضعه في سر GitHub باسم TELEGRAM_ADMIN_ID لتفعيل أمر /stats لك." % cid); return new
     if cmd == "stats":
-        send(cid, stats_text() if str(cid) in ADMIN else "هذا الأمر لمالك البوت فقط."); return new
+        send(cid, stats_text() if (str(cid) in ADMIN or str((m.get("from") or {}).get("username", "")).lower() in ADMIN_NAMES) else "هذا الأمر لمالك البوت فقط."); return new
     if cmd == "stop":
         if str(cid) in subs["users"]: subs["users"].pop(str(cid)); hist("stop"); send(cid, "تم إيقاف الأخبار ✅ لإعادة تشغيلها أرسل /start")
         return new
