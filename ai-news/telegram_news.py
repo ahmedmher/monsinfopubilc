@@ -123,6 +123,16 @@ except Exception: subs = {"offset": 0, "users": {}}
 if "chats" in subs:   # migrate the first version of the file
     subs["users"] = subs.get("users", {}); [subs["users"].setdefault(str(c), {"mode": "live", "topics": []}) for c in subs.pop("chats")]
 subs.setdefault("users", {}); subs.setdefault("offset", 0)
+CFG_KEYS = {  # key: (global name, converter, Arabic label)
+    "live_count": ("LIVE_COUNT", int, "عدد الأخبار في كل إرسال (كل 6 ساعات)"), "live_hours": ("LIVE_EVERY_H", float, "الفاصل بين إرسالات الأخبار بالساعات"),
+    "live_age": ("LIVE_AGE_H", int, "أقصى عمر للخبر المرسل بالساعات"), "digest_hour": ("DIGEST_HOUR", int, "ساعة الملخص اليومي (بتوقيت UTC)"),
+    "digest_count": ("DIGEST_COUNT", int, "عدد أخبار الملخص اليومي"), "ref_hold": ("REF_HOLD", lambda h: int(float(h) * 3600), "ساعات بقاء المدعو لاحتساب النقطة"),
+    "ref_cap": ("REF_DAILY_CAP", int, "أقصى نقاط إحالة يوميا للشخص")}
+def apply_cfg():
+    for k, v in subs.get("cfg", {}).items():
+        if k in CFG_KEYS:
+            try: globals()[CFG_KEYS[k][0]] = CFG_KEYS[k][1](v)
+            except Exception: pass
 def save_subs(): open(subs_path, "w").write(seal(subs))
 def hist(key):
     h = subs.setdefault("hist", {}); d = h.setdefault(time.strftime("%Y-%m-%d", time.gmtime()), {"new": 0, "stop": 0}); d[key] += 1
@@ -199,6 +209,7 @@ def stats_text():
 def edit(chat, mid, text, markup):
     tg("editMessageText", chat_id=chat, message_id=mid, text=text, parse_mode="HTML", reply_markup=markup)
 def handle_callback(cb):
+    if cb.get("data", "").startswith("ad:"): return admin_cb(cb)
     cid = cb["message"]["chat"]["id"]; mid = cb["message"]["message_id"]; d = cb.get("data", ""); u = user(cid)
     tg("answerCallbackQuery", callback_query_id=cb["id"])
     if d.startswith("m:"): u["mode"] = d[2:] if d[2:] in ("live", "daily") else "live"; edit(cid, mid, settings_text(u), kb_main(u))
@@ -214,6 +225,7 @@ def handle_callback(cb):
         edit(cid, mid, "📂 <b>%s</b>\nاضغط على الموضوع لتفعيله أو إلغائه:" % html.escape(GROUPS[int(gi)]), kb_group(u, int(gi)))
 CMD = {"/topics": "topics", "/مواضيع": "topics", "مواضيع": "topics", "/settings": "topics", "/daily": "daily", "/ملخص": "daily", "ملخص": "daily",
        "/live": "live", "/مباشر": "live", "/status": "status", "/الحالة": "status", "/stop": "stop", "/ايقاف": "stop", "/إيقاف": "stop", "/help": "help", "/start": "start", "/stats": "stats", "/broadcast": "broadcast", "/invite": "invite", "/دعوة": "invite", "/points": "invite", "/نقاطي": "invite", "/rewards": "rewards", "/جوائز": "rewards", "/send": "send", "/requests": "requests", "/نشر": "broadcast", "/اذاعة": "broadcast", "/إحصائيات": "stats", "/احصائيات": "stats", "/myid": "myid"}
+ADMIN_ONLY = {"/admin", "/pause", "/resume", "/top", "/user", "/addpoints", "/ban", "/unban", "/setconfig", "/setwelcome", "/resetwelcome", "/addreward", "/setcost", "/setstock", "/delreward", "/preview"}
 def is_admin(m):
     return str((m.get("chat") or {}).get("id")) in ADMIN or str((m.get("from") or {}).get("username", "")).lower() in ADMIN_NAMES
 def push(chats, text=None, photo=None, copy_from=None, plain=False):
@@ -238,7 +250,7 @@ MENU_KB = {"keyboard": [[{"text": "⚙️ المواضيع"}, {"text": "🎁 ا�
 REF_HOLD = int(os.environ.get("REF_HOLD_HOURS", 24)) * 3600     # an invited friend counts after staying subscribed this long
 REF_DAILY_CAP = int(os.environ.get("REF_DAILY_CAP", 15))        # max points one person can earn per day
 BOT_USER = os.environ.get("BOT_USERNAME", "")
-def rewards(): return load_json("rewards.json", [])
+def rewards(): return subs["rw"] if "rw" in subs else load_json("rewards.json", [])
 def ref_code(cid): return base64.b32encode(hmac.new(KEY, b"ref:" + str(cid).encode(), "sha256").digest())[:8].decode().lower()
 def seen_id(cid): return hmac.new(KEY, b"seen:" + str(cid).encode(), "sha256").hexdigest()[:12]
 def find_ref(code):
@@ -290,6 +302,87 @@ def requests_text():
     pend = [x for x in subs.get("red", []) if x.get("st") == "pending"]
     if not pend: return "لا توجد طلبات معلقة."
     return "🔔 <b>الطلبات المعلقة (%d)</b>\n\n" % len(pend) + "\n".join("• %s — <code>%s</code>" % (html.escape(x["n"]), x["c"]) for x in pend[:30]) + "\n\nللرد: <code>/send المعرف النص</code>"
+# ---------------- owner panel: manage the bot from Telegram ----------------
+ADMIN_SECTIONS = {
+ "st": ("📊 الإحصائيات", lambda: stats_text() + "\n\nأوامر: /stats  /top (أكثر المدعوين)  /user المعرف"),
+ "bc": ("📢 الإرسال للجميع", lambda: BROADCAST_HELP + "\n\n/preview يرسل لك نموذجا لخبر كما يراه المشترك"),
+ "rw": ("🎁 الجوائز", lambda: "🎁 <b>إدارة الجوائز</b>\n\n" + ("\n".join("• <code>%s</code> — %s — %d نقطة — متاح: %s" % (r["id"], html.escape(r["name"]), r["cost"], "بلا حد" if r.get("stock") is None else r["stock"] - subs.get("used", {}).get(r["id"], 0)) for r in rewards()) or "لا توجد جوائز") +
+      "\n\n<code>/addreward المعرف|الاسم|النقاط|العدد|الوصف</code>\n(العدد: رقم أو - لبلا حد)\n<code>/setcost المعرف النقاط</code>\n<code>/setstock المعرف العدد</code>\n<code>/delreward المعرف</code>\n\nالطلبات: /requests ثم <code>/send المعرف الرابط</code>"),
+ "us": ("👥 المستخدمون", lambda: "👥 <b>إدارة المستخدمين</b>\n\n<code>/user المعرف</code> بيانات مشترك\n<code>/addpoints المعرف عدد</code> إضافة نقاط (سالب للخصم)\n<code>/ban المعرف</code> حظر مشترك\n<code>/unban المعرف</code> رفع الحظر\n<code>/send المعرف نص</code> رسالة لمشترك واحد\n/top أكثر المدعوين نقاطا\n\nعدد المحظورين: %d" % len(subs.get("ban", []))),
+ "cf": ("⚙️ الإعدادات", lambda: "⚙️ <b>الإعدادات الحالية</b>\n\n" + "\n".join("• <code>%s</code> = <b>%s</b> — %s" % (k, subs.get("cfg", {}).get(k, {"live_count": LIVE_COUNT, "live_hours": LIVE_EVERY_H, "live_age": LIVE_AGE_H, "digest_hour": DIGEST_HOUR, "digest_count": DIGEST_COUNT, "ref_hold": REF_HOLD // 3600, "ref_cap": REF_DAILY_CAP}[k]), v[2]) for k, v in CFG_KEYS.items()) + "\n\nللتغيير: <code>/setconfig المفتاح القيمة</code>\nللرجوع للافتراضي: <code>/setconfig المفتاح reset</code>"),
+ "ms": ("📝 رسالة الترحيب", lambda: "📝 <b>رسالة الترحيب</b>\n\n<code>/setwelcome النص</code> تغيير الرسالة (تقبل HTML)\n<code>/resetwelcome</code> الرجوع للأصلية\n/help يعرض الرسالة الحالية"),
+ "pa": ("⏸ إيقاف/استئناف", lambda: "⏯ <b>الإرسال التلقائي: %s</b>\n\n<code>/pause</code> يوقف الأخبار والتنبيهات والفيديوهات مؤقتا\n<code>/resume</code> يعيدها" % ("متوقف ⏸" if subs.get("paused") else "يعمل ▶️"))}
+def admin_kb():
+    keys = list(ADMIN_SECTIONS); rows = [[{"text": ADMIN_SECTIONS[k][0], "callback_data": "ad:" + k} for k in keys[i:i + 2]] for i in range(0, len(keys), 2)]
+    return {"inline_keyboard": rows}
+ADMIN_HOME = "🛠 <b>لوحة المالك</b>\nاختر القسم الذي تريد إدارته:"
+def admin_cb(cb):
+    cid = cb["message"]["chat"]["id"]; mid = cb["message"]["message_id"]; d = cb.get("data", "")
+    tg("answerCallbackQuery", callback_query_id=cb["id"])
+    if not is_admin({"chat": cb["message"]["chat"], "from": cb.get("from")}): return
+    k = d[3:]
+    if k in ADMIN_SECTIONS: edit(cid, mid, ADMIN_SECTIONS[k][1](), {"inline_keyboard": [[{"text": "↩️ رجوع للوحة", "callback_data": "ad:home"}]]})
+    else: edit(cid, mid, ADMIN_HOME, admin_kb())
+def top_text():
+    t = sorted(((u.get("pts", 0), c) for c, u in subs["users"].items() if u.get("pts", 0) > 0), reverse=True)[:10]
+    return "🏆 <b>أكثر المدعوين</b>\n\n" + ("\n".join("%d. <code>%s</code> — %d نقطة" % (i + 1, c, p) for i, (p, c) in enumerate(t)) or "لا يوجد بعد")
+def user_text(cid):
+    u = subs["users"].get(str(cid))
+    if not u: return "لا يوجد مشترك بهذا المعرف."
+    inv = sum(1 for x in subs["users"].values() if x.get("ref") == str(cid))
+    return "👤 <b>مشترك</b> <code>%s</code>\nالنمط: %s\nالمواضيع: %s\nانضم: %s\nالنقاط: %d (مدعوون: %d، قيد التأكيد: %d)\nجاء عبر إحالة: %s" % (cid, u.get("mode", "live"), ("، ".join(CATL.get(t, t) for t in u.get("topics", [])) or "الكل"), u.get("j", "قبل التتبع"), u.get("pts", 0), inv, pending_refs(cid), "نعم" if u.get("ref") else "لا")
+def admin_command(cid, text, m):
+    """Owner-only commands. Returns True when the text was an owner command."""
+    parts = text.split(None, 2); c = parts[0].split("@")[0].lower(); a = parts[1:] if len(parts) > 1 else []
+    if c == "/admin": send(cid, ADMIN_HOME, admin_kb()); return True
+    if c == "/pause": subs["paused"] = True; send(cid, "⏸ أُوقف الإرسال التلقائي. /resume لإعادته."); return True
+    if c == "/resume": subs.pop("paused", None); send(cid, "▶️ استؤنف الإرسال التلقائي."); return True
+    if c == "/top": send(cid, top_text()); return True
+    if c == "/user": send(cid, user_text(a[0]) if a else "الصيغة: /user المعرف"); return True
+    if c == "/addpoints":
+        if len(a) < 2 or str(a[0]) not in subs["users"] or not a[1].lstrip("-").isdigit(): send(cid, "الصيغة: /addpoints المعرف عدد"); return True
+        u = subs["users"][a[0]]; u["pts"] = max(0, u.get("pts", 0) + int(a[1])); send(cid, "تم. رصيده الآن %d." % u["pts"]); return True
+    if c in ("/ban", "/unban"):
+        if not a or not a[0].lstrip("-").isdigit(): send(cid, "الصيغة: %s المعرف" % c); return True
+        b = subs.setdefault("ban", [])
+        if c == "/ban":
+            if a[0] not in b: b.append(a[0])
+            subs["users"].pop(a[0], None); send(cid, "تم حظر %s وحذفه من القائمة." % a[0])
+        else:
+            if a[0] in b: b.remove(a[0])
+            send(cid, "رُفع الحظر عن %s." % a[0])
+        return True
+    if c == "/setconfig":
+        if len(a) < 2 or a[0] not in CFG_KEYS: send(cid, "المفاتيح: " + "، ".join("<code>%s</code>" % k for k in CFG_KEYS) + "\nالصيغة: <code>/setconfig المفتاح القيمة</code>"); return True
+        cf = subs.setdefault("cfg", {})
+        if a[1].lower() == "reset": cf.pop(a[0], None); send(cid, "تمت إعادة %s للافتراضي بعد إعادة تشغيل الدورة." % a[0]); return True
+        try: CFG_KEYS[a[0]][1](a[1])
+        except Exception: send(cid, "قيمة غير صالحة."); return True
+        cf[a[0]] = a[1]; apply_cfg(); send(cid, "تم: %s = %s ✅" % (a[0], a[1])); return True
+    if c == "/setwelcome":
+        body = text.split(None, 1)[1].strip() if len(text.split(None, 1)) > 1 else ""
+        if not body: send(cid, "الصيغة: /setwelcome النص"); return True
+        subs["welcome"] = body; send(cid, "تم حفظ رسالة الترحيب ✅ جرّبها بـ /help"); return True
+    if c == "/resetwelcome": subs.pop("welcome", None); send(cid, "رجعت رسالة الترحيب للأصلية ✅"); return True
+    if c in ("/addreward", "/setcost", "/setstock", "/delreward"):
+        if "rw" not in subs: subs["rw"] = rewards()
+        rw = subs["rw"]; arg = text.split(None, 1)[1] if len(text.split(None, 1)) > 1 else ""
+        if c == "/addreward":
+            f = [x.strip() for x in arg.split("|")]
+            if len(f) < 3 or not f[2].isdigit(): send(cid, "الصيغة: <code>/addreward المعرف|الاسم|النقاط|العدد|الوصف</code>"); return True
+            rw[:] = [r for r in rw if r["id"] != f[0]] + [{"id": f[0], "name": f[1], "cost": int(f[2]), "stock": (int(f[3]) if len(f) > 3 and f[3].isdigit() else None), "desc": f[4] if len(f) > 4 else ""}]
+            send(cid, "تمت إضافة/تحديث الجائزة ✅"); return True
+        r = next((x for x in rw if a and x["id"] == a[0]), None)
+        if not r: send(cid, "لا توجد جائزة بهذا المعرف. المعرفات في لوحة الجوائز: /admin"); return True
+        if c == "/delreward": rw.remove(r); send(cid, "حُذفت الجائزة ✅"); return True
+        if len(a) < 2 or not (a[1].isdigit() or (c == "/setstock" and a[1] == "-")): send(cid, "الصيغة: %s المعرف رقم" % c); return True
+        if c == "/setcost": r["cost"] = int(a[1])
+        else: r["stock"] = None if a[1] == "-" else int(a[1])
+        send(cid, "تم ✅"); return True
+    if c == "/preview":
+        it = (ranked(news["items"], 72, None) or [None])[0]; t = story_text(it) if it else None
+        send(cid, t or "تعذر إنشاء معاينة الآن (قد تكون الترجمة غير متاحة)."); return True
+    return False
 def handle_message(m):
     chat = m.get("chat") or {}
     if chat.get("type") != "private" or "id" not in chat: return []
@@ -310,7 +403,11 @@ def handle_message(m):
     if cmd == "stop":
         if str(cid) in subs["users"]: subs["users"].pop(str(cid)); hist("stop"); send(cid, "تم إيقاف الأخبار ✅ لإعادة تشغيلها أرسل /start", {"remove_keyboard": True})
         return new
-    if is_admin(m): subs["admin_cid"] = cid
+    if is_admin(m):
+        subs["admin_cid"] = cid
+        if text.startswith("/") and admin_command(cid, text, m): return new
+    elif text.startswith("/") and text.split()[0].split("@")[0].lower() in ADMIN_ONLY: send(cid, "هذا الأمر لمالك البوت فقط."); return new
+    if str(cid) in subs.get("ban", []): return new
     if cmd == "send":
         if not is_admin(m): send(cid, "هذا الأمر لمالك البوت فقط."); return new
         parts = text.split(None, 2)
@@ -339,7 +436,7 @@ def handle_message(m):
     elif cmd == "daily": user(cid)["mode"] = "daily"; send(cid, "تم ✅ سيصلك **ملخص واحد** كل صباح بأهم 5 أخبار.".replace("**", ""))
     elif cmd == "live": user(cid)["mode"] = "live"; send(cid, "تم ✅ ستصلك أهم الأخبار كل 6 ساعات.")
     elif cmd == "status": send(cid, status_text(cid))
-    elif cmd == "help": send(cid, WELCOME, MENU_KB)
+    elif cmd == "help": send(cid, subs.get("welcome") or WELCOME, MENU_KB)
     elif cmd == "start" and cid not in new: send(cid, "أهلا بعودتك 👋 القائمة جاهزة أسفل الشاشة. اختر ما تريد 👇", MENU_KB)
     return new
 
@@ -395,6 +492,11 @@ if "--subs" in sys.argv:
     state = load_json("telegram-state.json", {})
     for g in state.get("gone", []): subs["users"].pop(str(g), None)
     tg("deleteWebhook")
+    apply_cfg()
+    if admin_chat():
+        tg("setMyCommands", scope={"type": "chat", "chat_id": admin_chat()}, commands=[{"command": "admin", "description": "لوحة المالك"}, {"command": "stats", "description": "إحصائيات البوت"}, {"command": "broadcast", "description": "إرسال للجميع"},
+            {"command": "requests", "description": "طلبات الجوائز"}, {"command": "preview", "description": "معاينة خبر"}, {"command": "pause", "description": "إيقاف الإرسال"}, {"command": "resume", "description": "استئناف الإرسال"}, {"command": "top", "description": "أكثر المدعوين"},
+            {"command": "start", "description": "القائمة"}, {"command": "invite", "description": "الدعوة والنقاط"}, {"command": "rewards", "description": "الجوائز"}, {"command": "help", "description": "المساعدة"}])
     if not BOT_USER: BOT_USER = (tg("getMe").get("result") or {}).get("username", "")
     tg("setMyCommands", commands=[{"command": "start", "description": "الاشتراك في أخبار الذكاء الاصطناعي"}, {"command": "topics", "description": "اختيار المواضيع ونمط الإرسال"},
         {"command": "daily", "description": "ملخص يومي واحد صباحا"}, {"command": "live", "description": "أهم الأخبار كل 6 ساعات"}, {"command": "status", "description": "حالتي"}, {"command": "invite", "description": "ادعُ أصدقاءك واربح نقاطا"}, {"command": "rewards", "description": "الجوائز واستبدال النقاط"}, {"command": "help", "description": "المساعدة وقائمة الأزرار"}, {"command": "stop", "description": "إيقاف الأخبار"}])
@@ -408,24 +510,27 @@ if "--subs" in sys.argv:
                 if "callback_query" in u: handle_callback(u["callback_query"])
                 elif "message" in u:
                     for cid in handle_message(u["message"]):
-                        send(cid, WELCOME, MENU_KB); welcomed += 1
+                        send(cid, subs.get("welcome") or WELCOME, MENU_KB); welcomed += 1
                         for it in ranked(news["items"], 72, None)[:LIVE_COUNT]:
                             t = story_text(it)
                             if t: send(cid, t); time.sleep(0.6)
             except Exception as e: print("update failed:", str(e).replace(TOKEN, "***")[:120], file=sys.stderr)
         if time.time() - last_vid > 300:
-            watch_videos(targets_all()); confirm_refs(); last_vid = time.time()
+            if not subs.get("paused"): watch_videos(targets_all())
+            confirm_refs(); last_vid = time.time()
         if time.time() >= deadline: break
         if not dur: break
     save_subs()
     print("subscribers:", len(subs["users"]), "| welcomed this run:", welcomed); sys.exit(0)
 
 # ================= mode 2: hourly broadcast job =================
+apply_cfg()
 try: state = json.load(open(state_path)); first_run = False
 except Exception: state = {"sent": []}; first_run = True
 sent = set(state["sent"]); trcache.update(state.get("tr", {})); gone = set(state.get("gone", []))
 now = time.time(); stats = {"alerts": 0, "live": 0, "digest": 0}
 users = {c: u for c, u in subs["users"].items() if int(c) not in gone}
+if subs.get("paused"): print("paused by owner; nothing sent"); sys.exit(0)
 if not users and not EXTRA:
     print("no subscribers yet and no TELEGRAM_CHAT_ID; nothing to send"); sys.exit(0)
 def deliver(chat, text, markup=None):
