@@ -6,17 +6,18 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: telegram-bot
+  group: telegram-subs
   cancel-in-progress: false
 jobs:
   subs:
     runs-on: ubuntu-latest
+    timeout-minutes: 16
     steps:
       - uses: actions/checkout@v4
       - name: Handle /start and /stop, welcome new subscribers
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-        run: python3 ai-news/telegram_news.py --subs
+        run: python3 ai-news/telegram_news.py --subs --duration 780
       - name: Commit subscriber list (encrypted) if changed
         run: |
           git config user.name "github-actions"

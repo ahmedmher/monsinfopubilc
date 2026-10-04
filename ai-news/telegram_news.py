@@ -1,28 +1,41 @@
 #!/usr/bin/env python3
-"""Telegram bot for the AI news.
-  python3 telegram_news.py --subs   : handle /start and /stop (runs every ~15 min), welcome new subscribers + send them the latest stories
-  python3 telegram_news.py          : broadcast the newest stories to every subscriber (and to TELEGRAM_CHAT_ID if set: a channel or your own chat)
-Secrets: TELEGRAM_BOT_TOKEN (required), TELEGRAM_CHAT_ID (optional extra target).
-The subscriber list is stored encrypted (telegram-subs.dat) because this repository is public; the token is the key. The token is never printed."""
-import base64, datetime, hashlib, hmac, html, json, os, sys, time, urllib.error, urllib.parse, urllib.request
+"""AI-news Telegram bot (Arabic only).
+
+  python3 telegram_news.py --subs [--duration 780]
+      Long-polls Telegram: /start, /topics (pick categories), /daily, /live, /status, /stop and the inline buttons.
+      Also announces new long YouTube videos. Writes telegram-subs.dat (encrypted) and telegram-videos.json.
+  python3 telegram_news.py
+      Hourly job after the news fetch: (1) model alerts when a rumoured model is released, (2) top stories every 6 hours
+      to subscribers in "live" mode (filtered by their topics), (3) one morning digest for "daily" subscribers.
+
+Secrets: TELEGRAM_BOT_TOKEN (required), TELEGRAM_CHAT_ID (optional extra target, e.g. a channel; gets everything).
+The subscriber list is encrypted because the repository is public; the token is the key and is never printed."""
+import base64, datetime, hashlib, hmac, html, json, os, re, sys, time, urllib.error, urllib.parse, urllib.request
+import xml.etree.ElementTree as ET
 here = os.path.dirname(os.path.abspath(__file__))
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
 EXTRA = os.environ.get("TELEGRAM_CHAT_ID", "").strip()
 API = os.environ.get("TELEGRAM_API", "https://api.telegram.org")
 NEWS_PAGE = os.environ.get("NEWS_PAGE", "https://www.monsinfo.com/p/ai-news.html")
 SITE = os.environ.get("SITE_URL", "https://www.monsinfo.com")
-MAX_PER_RUN = int(os.environ.get("MAX_PER_RUN", 3))
-MAX_AGE_H = int(os.environ.get("MAX_AGE_HOURS", 12))
+YT = os.environ.get("YT_BASE", "https://www.youtube.com")
+TRB = os.environ.get("TRANSLATE_BASE", "https://translate.googleapis.com")
+LIVE_EVERY_H = float(os.environ.get("LIVE_EVERY_HOURS", 6)); LIVE_COUNT = int(os.environ.get("LIVE_COUNT", 3)); LIVE_AGE_H = int(os.environ.get("LIVE_AGE_HOURS", 10))
+DIGEST_HOUR = int(os.environ.get("DIGEST_HOUR_UTC", 6)); DIGEST_COUNT = int(os.environ.get("DIGEST_COUNT", 5))
+POLL_T = int(os.environ.get("POLL_TIMEOUT", 25))
 AUTH = {"openai": 3, "anthropic": 3, "claude": 2.5, "anthropic-r": 2.5, "deepmind": 3, "googleai": 3, "hf": 2.5, "msai": 2.5, "nvidia": 2.5,
         "mit": 2, "ars": 2, "verge": 2, "techcrunch": 2, "venturebeat": 1.5, "aitnews": 2, "scmp": 1.5, "technode": 1, "pandaily": 1.5}
 if not TOKEN:
     print("TELEGRAM_BOT_TOKEN is not set; skipping"); sys.exit(0)
 KEY = hashlib.sha256(("subs:" + TOKEN).encode()).digest()
+MONTHS = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"]
+def ar_date(iso): d = datetime.date.fromisoformat(iso[:10]); return "%d %s" % (d.day, MONTHS[d.month - 1])
+def ar_days(n): return "اليوم نفسه" if n == 0 else "يوم واحد" if n == 1 else "يومين" if n == 2 else ("%d أيام" % n if n <= 10 else "%d يوما" % n)
 
+# ---------------- crypto for the subscriber file ----------------
 def _ks(nonce, n):
     out, c = b"", 0
-    while len(out) < n:
-        out += hmac.new(KEY, nonce + c.to_bytes(4, "big"), "sha256").digest(); c += 1
+    while len(out) < n: out += hmac.new(KEY, nonce + c.to_bytes(4, "big"), "sha256").digest(); c += 1
     return out[:n]
 def seal(obj):
     data = json.dumps(obj, separators=(",", ":")).encode(); nonce = os.urandom(16)
@@ -33,15 +46,17 @@ def unseal(s):
     if not hmac.compare_digest(tag, hmac.new(KEY, nonce + ct, "sha256").digest()): raise ValueError("bad subscriber file")
     return json.loads(bytes(a ^ b for a, b in zip(ct, _ks(nonce, len(ct)))))
 
+# ---------------- telegram + translation ----------------
 def tg(method, **p):
+    p = {k: (json.dumps(v) if isinstance(v, (dict, list)) else v) for k, v in p.items()}
     req = urllib.request.Request("%s/bot%s/%s" % (API, TOKEN, method), data=urllib.parse.urlencode(p).encode(), method="POST")
-    try:
-        return json.loads(urllib.request.urlopen(req, timeout=40).read())
+    try: return json.loads(urllib.request.urlopen(req, timeout=POLL_T + 20).read())
     except urllib.error.HTTPError as e:
         try: return json.loads(e.read())
         except Exception: return {"ok": False, "error_code": e.code, "description": str(e.code)}
+    except Exception as e:
+        return {"ok": False, "description": str(e).replace(TOKEN, "***")[:100]}
 TR_STATS = {"gtx": 0, "chrome": 0, "mymemory": 0, "lingva": 0, "fail": 0}
-TRB = os.environ.get("TRANSLATE_BASE", "https://translate.googleapis.com")
 def _get(url, timeout=12):
     return urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/120 Safari/537.36"}), timeout=timeout).read()
 def _providers(q):
@@ -52,7 +67,6 @@ def _providers(q):
     for inst in ("https://lingva.ml", "https://lingva.garudalinux.org"):
         yield "lingva", (lambda inst=inst: json.loads(_get("%s/api/v1/en/ar/%s" % (inst, qq)))["translation"])
 def tr(text, limit=450):
-    """Arabic translation of a short English text; tries several free providers, returns None if all fail."""
     text = (text or "").strip()
     if not text: return None
     parts, cur = [], ""
@@ -67,8 +81,7 @@ def tr(text, limit=450):
             try:
                 r = (fn() or "").strip()
                 if r and r != part: TR_STATS[name] += 1; got = r; break
-            except Exception:
-                continue
+            except Exception: continue
         if not got: TR_STATS["fail"] += 1; return None
         out.append(got)
     return " ".join(out)
@@ -79,67 +92,131 @@ def nid(u):  # same hash as the page JavaScript (djb2 over UTF-16 code units)
     while True:
         h, r = divmod(h, 36); s = "0123456789abcdefghijklmnopqrstuvwxyz"[r] + s
         if h == 0: return s
-
-news = json.load(open(os.path.join(here, "news.json"), encoding="utf8"))
-names = {s["id"]: s["name"] for s in news.get("sources", [])}
-langs = {s["id"]: s.get("lang", "en") for s in news.get("sources", [])}
-subs_path = os.path.join(here, "telegram-subs.dat"); state_path = os.path.join(here, "telegram-state.json")
-try: subs = unseal(open(subs_path).read())
-except Exception: subs = {"chats": [], "offset": 0}
-try: state = json.load(open(state_path)); first_run = False
-except Exception: state = {"sent": []}; first_run = True
-sent = set(state["sent"])
-
-def story_text(it):
-    en = langs.get(it["s"]) != "ar"
-    ar_t = tr(it["t"]) if en else None
-    d = (it.get("d") or "")
-    d = d[:260].rsplit(" ", 1)[0] + ("…" if len(d) > 260 else "") if d else ""
-    ar_d = tr(d) if (en and d) else None
-    head = "<b>%s</b>\n<i>%s</i>" % (html.escape(ar_t), html.escape(it["t"])) if ar_t else "<b>%s</b>" % html.escape(it["t"])
-    body = html.escape(ar_d or d)
-    link = "%s#/n/%s%s" % (NEWS_PAGE, nid(it["u"]), "/ar" if en else "")
-    label = "اقرأ ملخص الخبر مع الترجمة" if en else "اقرأ ملخص الخبر"
-    return "🆕 %s\n\n%s\n\n📰 المصدر: %s\n👉 <a href=\"%s\">%s</a>" % (head, body, html.escape(names.get(it["s"], it["s"])), html.escape(link, quote=True), label)
-def send(chat, text):
+def send(chat, text, markup=None):
     for _ in range(3):
-        r = tg("sendMessage", chat_id=chat, text=text, parse_mode="HTML", disable_web_page_preview="true")
+        kw = dict(chat_id=chat, text=text, parse_mode="HTML", disable_web_page_preview="true")
+        if markup: kw["reply_markup"] = markup
+        r = tg("sendMessage", **kw)
         if r.get("ok"): return "ok"
         if r.get("error_code") == 429: time.sleep(int(r.get("parameters", {}).get("retry_after", 3)) + 1); continue
-        if r.get("error_code") in (400, 403) and str(chat).lstrip("-").isdigit(): return "gone"   # blocked the bot / chat deleted
-        print("send failed:", str(r.get("description"))[:120], file=sys.stderr); return "err"
+        if r.get("error_code") in (400, 403) and str(chat).lstrip("-").isdigit(): return "gone"
+        print("send failed:", str(r.get("description"))[:100], file=sys.stderr); return "err"
     return "err"
+
+# ---------------- data ----------------
+def load_json(p, d):
+    try: return json.load(open(os.path.join(here, p), encoding="utf8"))
+    except Exception: return d
+news = load_json("news.json", {"items": [], "sources": [], "cats": []})
+tracker = load_json("model-tracker.json", {"models": []})
+names = {s["id"]: s["name"] for s in news.get("sources", [])}
+langs = {s["id"]: s.get("lang", "en") for s in news.get("sources", [])}
+CATS = [c for c in news.get("cats", []) if c["id"] != "other"]
+CATL = {c["id"]: c["l"] for c in CATS}
+GROUPS = list(dict.fromkeys(c["g"] for c in CATS))
+subs_path = os.path.join(here, "telegram-subs.dat"); state_path = os.path.join(here, "telegram-state.json"); videos_path = os.path.join(here, "telegram-videos.json")
+try: subs = unseal(open(subs_path).read())
+except Exception: subs = {"offset": 0, "users": {}}
+if "chats" in subs:   # migrate the first version of the file
+    subs["users"] = subs.get("users", {}); [subs["users"].setdefault(str(c), {"mode": "live", "topics": []}) for c in subs.pop("chats")]
+subs.setdefault("users", {}); subs.setdefault("offset", 0)
+def save_subs(): open(subs_path, "w").write(seal(subs))
+def user(cid): return subs["users"].setdefault(str(cid), {"mode": "live", "topics": []})
+
 def age_h(it):
     return (time.time() - datetime.datetime.strptime(it["p"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=datetime.timezone.utc).timestamp()) / 3600
-def ranked(items, limit_age=None):
-    c = [i for i in items if i["s"] in AUTH and (limit_age is None or age_h(i) <= limit_age)]
-    c.sort(key=lambda i: -(AUTH[i["s"]] + 0.4 * len([x for x in i.get("c", []) if x != "other"]) + max(0, 1 - age_h(i) / 72)))
+def ranked(items, limit_age, topics=None):
+    c = [i for i in items if i["s"] in AUTH and age_h(i) <= limit_age and (not topics or set(topics) & set(i.get("c", [])))]
+    c.sort(key=lambda i: -(AUTH[i["s"]] + 0.4 * len([x for x in i.get("c", []) if x != "other"]) + max(0, 1 - age_h(i) / max(limit_age, 1))))
     return c
+trcache = {}   # url -> {"t": arabic title, "d": arabic summary}; persisted in telegram-state.json
+def arabic(it):
+    """Arabic title/summary of a story, or None when it cannot be translated (we never send English)."""
+    if it["u"] in trcache: return trcache[it["u"]]
+    if langs.get(it["s"]) == "ar":
+        r = {"t": it["t"], "d": (it.get("d") or "")[:260]}
+    else:
+        t = tr(it["t"]);
+        if not t: return None
+        d = (it.get("d") or ""); d = d[:260].rsplit(" ", 1)[0] + ("…" if len(d) > 260 else "") if d else ""
+        r = {"t": t, "d": (tr(d) if d else "") or ""}
+    trcache[it["u"]] = r; return r
+def link(it): return "%s#/n/%s%s" % (NEWS_PAGE, nid(it["u"]), "" if langs.get(it["s"]) == "ar" else "/ar")
+def story_text(it):
+    a = arabic(it)
+    if not a: return None
+    lab = "اقرأ ملخص الخبر" if langs.get(it["s"]) == "ar" else "اقرأ ملخص الخبر مع الترجمة"
+    return "🆕 <b>%s</b>\n\n%s\n\n📰 المصدر: %s\n👉 <a href=\"%s\">%s</a>" % (html.escape(a["t"]), html.escape(a["d"]), html.escape(names.get(it["s"], it["s"])), html.escape(link(it), quote=True), lab)
 
-WELCOME = ("أهلا بك في بوت <b>أخبار الذكاء الاصطناعي</b> من مونستر للمعلوميات 👋\n\nسيصلك هنا أهم أخبار الذكاء الاصطناعي تلقائيا مع رابط لقراءة ملخص كل خبر على موقعنا.\n\n"
-           "🌐 <a href=\"%s\">الموقع</a>\nلإيقاف الأخبار أرسل /stop، ولإعادة تشغيلها أرسل /start." % SITE)
+# ---------------- interactive settings (inline keyboard) ----------------
+def kb_main(u):
+    mode = u.get("mode", "live"); n = len(u.get("topics", []))
+    rows = [[{"text": ("✅ " if mode == "live" else "") + "🕒 أهم الأخبار كل 6 ساعات", "callback_data": "m:live"}],
+            [{"text": ("✅ " if mode == "daily" else "") + "☀️ ملخص يومي صباحا", "callback_data": "m:daily"}],
+            [{"text": "📂 " + g, "callback_data": "g:%d" % i} for i, g in enumerate(GROUPS[:1])]]
+    rows = rows[:2] + [[{"text": "📂 " + g, "callback_data": "g:%d" % i}] for i, g in enumerate(GROUPS)]
+    rows.append([{"text": "🌐 كل المواضيع" + (" ✅" if not n else ""), "callback_data": "all"}, {"text": "تم ✔️", "callback_data": "done"}])
+    return {"inline_keyboard": rows}
+def kb_group(u, gi):
+    sel = set(u.get("topics", [])); cs = [c for c in CATS if c["g"] == GROUPS[gi]]
+    rows = []
+    for i in range(0, len(cs), 2):
+        rows.append([{"text": ("✅ " if c["id"] in sel else "⬜ ") + c["l"], "callback_data": "t:%s:%d" % (c["id"], gi)} for c in cs[i:i + 2]])
+    rows.append([{"text": "↩️ رجوع", "callback_data": "back"}, {"text": "تم ✔️", "callback_data": "done"}])
+    return {"inline_keyboard": rows}
+def settings_text(u):
+    n = len(u.get("topics", []))
+    return ("⚙️ <b>إعدادات الأخبار</b>\n\nنمط الإرسال: <b>%s</b>\nالمواضيع: <b>%s</b>\n\nاختر نمط الإرسال، ثم المجموعات لتحديد المواضيع التي تهمك. إن لم تختر شيئا تصلك كل المواضيع."
+            % ("أهم الأخبار كل 6 ساعات" if u.get("mode", "live") == "live" else "ملخص يومي صباحا", ("%d موضوعا" % n) if n else "كل المواضيع"))
+WELCOME = ("أهلا بك في بوت <b>أخبار الذكاء الاصطناعي</b> من مونستر للمعلوميات 👋\n\nسيصلك بالعربية أهم الأخبار مع رابط لقراءة ملخص كل خبر على موقعنا، وتنبيه فوري عندما يصدر نموذج كان مرتقبا، وفيديوهات القناة الجديدة.\n\n"
+           "⚙️ /topics اختيار المواضيع ونمط الإرسال\n☀️ /daily ملخص يومي واحد بدل الرسائل المتفرقة\n🕒 /live أهم الأخبار كل 6 ساعات\n📋 /status حالتك\n⛔ /stop إيقاف\n\n🌐 <a href=\"%s\">الموقع</a>" % SITE)
+def status_text(cid):
+    u = user(cid); n = len(u.get("topics", []))
+    names_ = "، ".join(CATL.get(t, t) for t in u.get("topics", [])[:12]) if n else "كل المواضيع"
+    return "📋 <b>حالتك</b>\nالنمط: %s\nالمواضيع: %s\n\n⚙️ /topics للتعديل" % ("أهم الأخبار كل 6 ساعات" if u["mode"] == "live" else "ملخص يومي صباحا", html.escape(names_))
+def edit(chat, mid, text, markup):
+    tg("editMessageText", chat_id=chat, message_id=mid, text=text, parse_mode="HTML", reply_markup=markup)
+def handle_callback(cb):
+    cid = cb["message"]["chat"]["id"]; mid = cb["message"]["message_id"]; d = cb.get("data", ""); u = user(cid)
+    tg("answerCallbackQuery", callback_query_id=cb["id"])
+    if d.startswith("m:"): u["mode"] = d[2:] if d[2:] in ("live", "daily") else "live"; edit(cid, mid, settings_text(u), kb_main(u))
+    elif d == "all": u["topics"] = []; edit(cid, mid, settings_text(u), kb_main(u))
+    elif d == "back": edit(cid, mid, settings_text(u), kb_main(u))
+    elif d == "done": edit(cid, mid, "تم حفظ إعداداتك ✅\n\n" + status_text(cid).split("\n\n")[0], {"inline_keyboard": []})
+    elif d.startswith("g:"):
+        gi = int(d[2:]); edit(cid, mid, "📂 <b>%s</b>\nاضغط على الموضوع لتفعيله أو إلغائه:" % html.escape(GROUPS[gi]), kb_group(u, gi))
+    elif d.startswith("t:"):
+        _, tid, gi = d.split(":"); t = set(u.get("topics", []))
+        (t.discard if tid in t else t.add)(tid); u["topics"] = sorted(t)
+        edit(cid, mid, "📂 <b>%s</b>\nاضغط على الموضوع لتفعيله أو إلغائه:" % html.escape(GROUPS[int(gi)]), kb_group(u, int(gi)))
+CMD = {"/topics": "topics", "/مواضيع": "topics", "مواضيع": "topics", "/settings": "topics", "/daily": "daily", "/ملخص": "daily", "ملخص": "daily",
+       "/live": "live", "/مباشر": "live", "/status": "status", "/الحالة": "status", "/stop": "stop", "/ايقاف": "stop", "/إيقاف": "stop", "/help": "help", "/start": "start"}
+def handle_message(m):
+    chat = m.get("chat") or {}
+    if chat.get("type") != "private" or "id" not in chat: return []
+    cid = chat["id"]; text = (m.get("text") or "").strip(); cmd = CMD.get(text.split("@")[0].split()[0].lower() if text else "", None)
+    new = []
+    if cmd == "stop":
+        if str(cid) in subs["users"]: subs["users"].pop(str(cid)); send(cid, "تم إيقاف الأخبار ✅ لإعادة تشغيلها أرسل /start")
+        return new
+    if str(cid) not in subs["users"]: user(cid); new.append(cid)
+    if cmd == "topics": send(cid, settings_text(user(cid)), kb_main(user(cid)))
+    elif cmd == "daily": user(cid)["mode"] = "daily"; send(cid, "تم ✅ سيصلك **ملخص واحد** كل صباح بأهم 5 أخبار.".replace("**", ""))
+    elif cmd == "live": user(cid)["mode"] = "live"; send(cid, "تم ✅ ستصلك أهم الأخبار كل 6 ساعات.")
+    elif cmd == "status": send(cid, status_text(cid))
+    elif cmd in ("help",): send(cid, WELCOME)
+    return new
 
-
-# ---------- new long YouTube videos -> subscribers (shorts are skipped) ----------
-import re as _re
-import xml.etree.ElementTree as _ET
-YT = os.environ.get("YT_BASE", "https://www.youtube.com")
-videos_path = os.path.join(here, "telegram-videos.json")
+# ---------------- YouTube: new long videos ----------------
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, *a, **k): return None
 def is_short(vid):
-    """/shorts/<id> answers 200 for Shorts and redirects to /watch for normal videos."""
     try:
-        op = urllib.request.build_opener(_NoRedirect)
-        r = op.open(urllib.request.Request("%s/shorts/%s" % (YT, vid), headers={"User-Agent": "Mozilla/5.0"}), timeout=15)
+        r = urllib.request.build_opener(_NoRedirect).open(urllib.request.Request("%s/shorts/%s" % (YT, vid), headers={"User-Agent": "Mozilla/5.0"}), timeout=15)
         return r.status == 200
-    except urllib.error.HTTPError as e:
-        return False if e.code in (301, 302, 303, 307, 308) else False
-    except Exception:
-        return False
+    except Exception: return False
 def watch_videos(targets):
-    try: cfg = json.load(open(os.path.join(here, "own.json"), encoding="utf8"))
-    except Exception: return 0
+    cfg = load_json("own.json", {})
     try: vs = json.load(open(videos_path)); first = False
     except Exception: vs = {"sent": [], "ids": {}}; first = True
     chans = list(cfg.get("youtube_channels", []))
@@ -148,83 +225,128 @@ def watch_videos(targets):
         if not cid:
             try:
                 page = _get("%s/%s" % (YT, h.lstrip("/")), 20).decode("utf8", "replace")
-                m = _re.search(r'"(?:channelId|externalId)":"(UC[\w-]{22})"', page) or _re.search(r'channel_id=(UC[\w-]{22})', page)
-                cid = m.group(1) if m else None
-            except Exception as e:
-                print("channel lookup failed:", h, str(e)[:80], file=sys.stderr)
+                mm = re.search(r'"(?:channelId|externalId)":"(UC[\w-]{22})"', page) or re.search(r'channel_id=(UC[\w-]{22})', page)
+                cid = mm.group(1) if mm else None
+            except Exception as e: print("channel lookup failed:", h, str(e)[:80], file=sys.stderr)
             if cid: vs["ids"][h] = cid
         if cid: chans.append(cid)
     sent_v = set(vs["sent"]); n = 0
+    ns = {"a": "http://www.w3.org/2005/Atom", "y": "http://www.youtube.com/xml/schemas/2015"}
     for cid in dict.fromkeys(chans):
-        try: root = _ET.fromstring(_get("%s/feeds/videos.xml?channel_id=%s" % (YT, cid), 20))
-        except Exception as e:
-            print("feed failed:", cid, str(e)[:80], file=sys.stderr); continue
-        ns = {"a": "http://www.w3.org/2005/Atom", "y": "http://www.youtube.com/xml/schemas/2015"}
-        author = (root.findtext("a:author/a:name", namespaces=ns) or "").strip()
-        entries = []
+        try: root = ET.fromstring(_get("%s/feeds/videos.xml?channel_id=%s" % (YT, cid), 20))
+        except Exception as e: print("feed failed:", cid, str(e)[:80], file=sys.stderr); continue
+        author = (root.findtext("a:author/a:name", namespaces=ns) or "").strip(); ents = []
         for e in root.findall("a:entry", ns):
             vid = e.findtext("y:videoId", namespaces=ns); title = (e.findtext("a:title", namespaces=ns) or "").strip()
-            pub = e.findtext("a:published", namespaces=ns) or ""
-            if vid and title: entries.append((pub, vid, title))
-        for pub, vid, title in sorted(entries):
+            if vid and title: ents.append((e.findtext("a:published", namespaces=ns) or "", vid, title))
+        for pub, vid, title in sorted(ents):
             if vid in sent_v: continue
             sent_v.add(vid)
-            if first: continue                       # first run: remember the existing videos, do not announce them
-            if is_short(vid): continue               # only long videos
+            if first or is_short(vid): continue
             text = "🎬 <b>فيديو جديد على قناة %s</b>\n\n%s\n\n▶️ <a href=\"https://www.youtube.com/watch?v=%s\">شاهد الفيديو الآن</a>" % (html.escape(author or "يوتيوب"), html.escape(title), vid)
-            for chat in targets:
-                send(chat, text); time.sleep(0.07)
+            for chat in targets: send(chat, text); time.sleep(0.07)
             n += 1; print("video announced:", title[:50])
     vs["sent"] = sorted(sent_v)[-600:]
-    json.dump(vs, open(videos_path, "w"), separators=(",", ":"))
-    return n
+    json.dump(vs, open(videos_path, "w"), separators=(",", ":")); return n
 
+def targets_all():
+    return [int(c) for c in subs["users"]] + ([EXTRA] if EXTRA else [])
+
+# ================= mode 1: interactive subscribers job =================
 if "--subs" in sys.argv:
-    tg("deleteWebhook")  # getUpdates does not work while a webhook is set
-    r = tg("getUpdates", offset=subs.get("offset", 0), timeout=0, allowed_updates=json.dumps(["message"]))
-    new_subs = []
-    if r.get("ok"):
-        for u in r.get("result", []):
-            subs["offset"] = max(subs.get("offset", 0), u["update_id"] + 1)
-            m = u.get("message") or {}; chat = (m.get("chat") or {}); text = (m.get("text") or "").strip().lower()
-            if chat.get("type") != "private" or "id" not in chat: continue
-            cid = chat["id"]
-            if text.startswith("/stop"):
-                if cid in subs["chats"]: subs["chats"].remove(cid); send(cid, "تم إيقاف الأخبار ✅ لإعادة تشغيلها أرسل /start")
-            elif text.startswith("/start") or text:   # any message subscribes
-                if cid not in subs["chats"]:
-                    subs["chats"].append(cid); new_subs.append(cid)
-    else:
-        print("getUpdates failed:", str(r.get("description"))[:120], file=sys.stderr)
-    new_subs = [c for c in new_subs if c in subs["chats"]]   # skip anyone who sent /stop in the same batch
-    top = ranked(news["items"], 72)[:MAX_PER_RUN]
-    for cid in new_subs:
-        send(cid, WELCOME); time.sleep(0.5)
-        for it in top: send(cid, story_text(it)); time.sleep(0.6)
-    open(subs_path, "w").write(seal(subs))
-    nv = watch_videos(list(subs["chats"]) + ([EXTRA] if EXTRA else []))
-    print("videos announced:", nv)
-    print("subscribers:", len(subs["chats"]), "| new this run:", len(new_subs)); sys.exit(0)
+    dur = int(sys.argv[sys.argv.index("--duration") + 1]) if "--duration" in sys.argv else 0
+    deadline = time.time() + dur; last_vid = 0
+    state = load_json("telegram-state.json", {})
+    for g in state.get("gone", []): subs["users"].pop(str(g), None)
+    tg("deleteWebhook")
+    tg("setMyCommands", commands=[{"command": "start", "description": "الاشتراك في أخبار الذكاء الاصطناعي"}, {"command": "topics", "description": "اختيار المواضيع ونمط الإرسال"},
+        {"command": "daily", "description": "ملخص يومي واحد صباحا"}, {"command": "live", "description": "أهم الأخبار كل 6 ساعات"}, {"command": "status", "description": "حالتي"}, {"command": "stop", "description": "إيقاف الأخبار"}])
+    welcomed = 0
+    while True:
+        r = tg("getUpdates", offset=subs["offset"], timeout=(POLL_T if dur else 0), allowed_updates=["message", "callback_query"])
+        if not r.get("ok"): print("getUpdates failed:", str(r.get("description"))[:100], file=sys.stderr)
+        for u in (r.get("result") or []) if r.get("ok") else []:
+            subs["offset"] = max(subs["offset"], u["update_id"] + 1)
+            try:
+                if "callback_query" in u: handle_callback(u["callback_query"])
+                elif "message" in u:
+                    for cid in handle_message(u["message"]):
+                        send(cid, WELCOME); welcomed += 1
+                        for it in ranked(news["items"], 72, None)[:LIVE_COUNT]:
+                            t = story_text(it)
+                            if t: send(cid, t); time.sleep(0.6)
+            except Exception as e: print("update failed:", str(e).replace(TOKEN, "***")[:120], file=sys.stderr)
+        if time.time() - last_vid > 300:
+            watch_videos(targets_all()); last_vid = time.time()
+        if time.time() >= deadline: break
+        if not dur: break
+    save_subs()
+    print("subscribers:", len(subs["users"]), "| welcomed this run:", welcomed); sys.exit(0)
 
-# --- broadcast mode ---
-fresh = [i for i in ranked([i for i in news["items"] if i["u"] not in sent], MAX_AGE_H)]
-pick = fresh[:MAX_PER_RUN]
-targets = list(subs["chats"]) + ([EXTRA] if EXTRA and EXTRA not in map(str, subs["chats"]) else [])
-if not targets:
+# ================= mode 2: hourly broadcast job =================
+try: state = json.load(open(state_path)); first_run = False
+except Exception: state = {"sent": []}; first_run = True
+sent = set(state["sent"]); trcache.update(state.get("tr", {})); gone = set(state.get("gone", []))
+now = time.time(); stats = {"alerts": 0, "live": 0, "digest": 0}
+users = {c: u for c, u in subs["users"].items() if int(c) not in gone}
+if not users and not EXTRA:
     print("no subscribers yet and no TELEGRAM_CHAT_ID; nothing to send"); sys.exit(0)
-removed = False
-done = 0
-for it in pick:
-    text = story_text(it); ok = 0
-    for chat in list(targets):
-        res = send(chat, text)
-        if res == "ok": ok += 1
-        elif res == "gone" and chat in subs["chats"]: subs["chats"].remove(chat); removed = True
-        time.sleep(0.07)
-    sent.add(it["u"]); done += 1; print("story sent to %d chats: %s" % (ok, it["t"][:50]))
-if first_run: sent.update(i["u"] for i in news["items"])   # never dump the whole archive on the first run
-state["sent"] = sorted(sent)[-1500:]
-state["last"] = {"at": time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime()), "translate": TR_STATS}
-json.dump(state, open(state_path, "w"), separators=(",", ":"))
-if removed: open(subs_path, "w").write(seal(subs))   # only rewrite the subscriber file when someone blocked the bot
-print("done; stories:", done, "| targets:", len(targets))
+def deliver(chat, text, markup=None):
+    res = send(chat, text, markup); time.sleep(0.07)
+    if res == "gone": gone.add(int(chat)) if str(chat).lstrip("-").isdigit() else None
+    return res == "ok"
+
+# (1) model alerts: rumour -> release
+alerted = set(state.get("alerted", []))
+for m in tracker.get("models", []):
+    if not (m.get("rel") and m.get("first") and not m.get("early") and m["rel"] >= m["first"]): continue
+    if m["k"] in alerted: continue
+    alerted.add(m["k"])
+    if first_run or "alerted" not in state: continue          # first run: only remember
+    gap = (datetime.date.fromisoformat(m["rel"]) - datetime.date.fromisoformat(m["first"])).days
+    ri = m.get("relItem") or {}
+    text = "🚨 <b>صدر %s</b>\n\nكان نموذجا مرتقبا: أول تسريب في %s، وصدر في %s (%s بعد التسريب).%s" % (
+        html.escape(m["n"]), ar_date(m["first"]), ar_date(m["rel"]), ar_days(gap) if gap else "في اليوم نفسه",
+        ("\n\n👉 <a href=\"%s#/n/%s/ar\">اقرأ خبر الإصدار</a>" % (NEWS_PAGE, nid(ri["u"]))) if ri.get("u") else "")
+    for c in list(users) + ([EXTRA] if EXTRA else []):
+        if deliver(c, text): stats["alerts"] += 1
+state["alerted"] = sorted(alerted)
+
+# (2) live: top stories every ~6 hours, filtered by each user's topics
+last_live = state.get("last_live", 0)
+if first_run: pass
+elif now - last_live >= LIVE_EVERY_H * 3600 * 0.9:
+    fresh = [i for i in ranked([i for i in news["items"] if i["u"] not in sent], LIVE_AGE_H)]
+    used = set()
+    for c, u in users.items():
+        if u.get("mode", "live") != "live": continue
+        mine = [i for i in ranked(fresh, LIVE_AGE_H, u.get("topics"))][:LIVE_COUNT]
+        for it in mine:
+            t = story_text(it)
+            if t and deliver(c, t): used.add(it["u"]); stats["live"] += 1
+    if EXTRA:
+        for it in fresh[:LIVE_COUNT]:
+            t = story_text(it)
+            if t and deliver(EXTRA, t): used.add(it["u"])
+    sent.update(used); state["last_live"] = now
+elif "last_live" not in state: state["last_live"] = now
+
+# (3) morning digest for "daily" users
+today = time.strftime("%Y-%m-%d", time.gmtime())
+if not first_run and time.gmtime().tm_hour == DIGEST_HOUR and state.get("last_digest") != today:
+    dusers = {c: u for c, u in users.items() if u.get("mode") == "daily"}
+    for c, u in dusers.items():
+        top = ranked(news["items"], 24, u.get("topics"))[:DIGEST_COUNT]
+        lines = []
+        for n_, it in enumerate(top, 1):
+            a = arabic(it)
+            if a: lines.append("%d. <b>%s</b>\n   <a href=\"%s\">اقرأ الملخص</a>" % (n_, html.escape(a["t"]), html.escape(link(it), quote=True)))
+        if lines and deliver(c, "☀️ <b>ملخص أخبار الذكاء الاصطناعي</b> — %s\n\n%s" % (ar_date(today), "\n\n".join(lines))): stats["digest"] += 1
+    state["last_digest"] = today
+
+if first_run: sent.update(i["u"] for i in news["items"])
+state["sent"] = sorted(sent)[-1500:]; state["gone"] = sorted(gone)[-200:]
+state["tr"] = dict(list(trcache.items())[-300:])
+state["last"] = {"at": time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime()), "translate": TR_STATS, "sent": stats, "users": len(users)}
+json.dump(state, open(state_path, "w"), ensure_ascii=False, separators=(",", ":"))
+print("done:", stats, "| users:", len(users))
