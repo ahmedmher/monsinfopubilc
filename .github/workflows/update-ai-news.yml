@@ -22,10 +22,12 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python3 ai-news/telegram_news.py
+      - name: Build today summary and static pages
+        run: python3 ai-news/build_today.py
       - name: Commit if changed
         run: |
           git config user.name "github-actions"
           git config user.email "actions@users.noreply.github.com"
-          git add ai-news/news.json ai-news/model-tracker.json
+          git add ai-news/news.json ai-news/model-tracker.json ai-news/today.json ai-news/ar-cache.json docs
           for f in ai-news/telegram-state.json; do if [ -f $f ]; then git add $f; fi; done
           git diff --cached --quiet || (git commit -m "chore: update AI news" && for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done)
