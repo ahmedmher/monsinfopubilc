@@ -79,8 +79,9 @@ for full, it in pick.items():
     except Exception: md = ""
     cfg = find_config(md) if md else None
     d = (it.get("description") or "").strip()
-    meta = (it["name"] + " " + d + " " + " ".join(it.get("topics", []))).lower()
-    if not ("mcp" in meta or "model context protocol" in meta or cfg or "mcpservers" in md.lower()): continue
+    meta = (it["name"] + " " + d).lower()
+    if not ("mcp" in meta or "model context protocol" in meta or '"mcpServers"' in md): continue
+    if "awesome" in it["name"].lower() or re.match(r"(a )?(curated )?(list|collection) of", d.lower()): continue
     if len(items) >= TOP and not (it["created_at"][:10] >= cutoff): continue
     da = cache.get(full + "|" + d)
     if d and da is None and tr_n < 120 and not re.search(r"[؀-ۿ]", d):
