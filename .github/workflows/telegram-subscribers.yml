@@ -5,6 +5,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: telegram-subs
   cancel-in-progress: false
@@ -24,3 +25,11 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           for f in ai-news/telegram-subs.dat ai-news/telegram-videos.json; do if [ -f $f ]; then git add $f; fi; done
           git diff --cached --quiet || (git commit -m "chore: update Telegram subscribers" && for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done)
+      - name: Start the next polling run right away (no gap for new subscribers)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl -sS -X POST -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/workflows/telegram-subscribers.yml/dispatches" \
+            -d '{"ref":"${{ github.ref_name }}"}' || true
