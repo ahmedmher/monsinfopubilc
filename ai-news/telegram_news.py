@@ -23,8 +23,10 @@ NEWS_PAGE = os.environ.get("NEWS_PAGE", "https://www.monsinfo.com/p/ai-news.html
 SITE = os.environ.get("SITE_URL", "https://www.monsinfo.com")
 YT = os.environ.get("YT_BASE", "https://www.youtube.com")
 TRB = os.environ.get("TRANSLATE_BASE", "https://translate.googleapis.com")
-LIVE_COUNT = int(os.environ.get("LIVE_COUNT", 5)); LIVE_AGE_H = int(os.environ.get("LIVE_AGE_HOURS", 10))   # instant mode: max stories per run, max age
-INSTANT_CAP = int(os.environ.get("INSTANT_CAP", 8)); INSTANT_MIN = float(os.environ.get("INSTANT_MIN_AUTH", 2))   # per user per day; minimum source authority
+LIVE_COUNT = int(os.environ.get("LIVE_COUNT", 10)); LIVE_AGE_H = int(os.environ.get("LIVE_AGE_HOURS", 12))   # batch mode: max stories in one message, max story age
+BATCH_H = float(os.environ.get("BATCH_HOURS", 3)); INSTANT_MIN = float(os.environ.get("INSTANT_MIN_AUTH", 2))   # hours between batches; minimum source authority
+PROMO_FROM = int(os.environ.get("PROMO_FROM_HOUR", 18))   # the daily promo links ride the first message sent after this local hour
+DEFAULT_PROMO = [["لشراء حسابات مواقع AI بسعر مخفض", "https://www.gamsgo.com/partner/phsyg"], ["أقوى موقع ذكاء اصطناعي مع خصم 50%", "https://higgsfield.ai/?fpr=register"], ["احصل على حساب بنكي أمريكي وبطاقة للدفع والتسوق", "https://www.kcard.site/"]]
 GATE = os.environ.get("BOT_GATE", "@code_hup")   # users must be members of this channel (set to off to disable)
 DIGEST_HOURS = os.environ.get("DIGEST_HOURS", "9,21"); DIGEST_COUNT = int(os.environ.get("DIGEST_COUNT", 5)); TZ = os.environ.get("BOT_TZ", "Africa/Cairo")   # digests at these local hours
 POLL_T = int(os.environ.get("POLL_TIMEOUT", 25))
@@ -126,8 +128,8 @@ if "chats" in subs:   # migrate the first version of the file
     subs["users"] = subs.get("users", {}); [subs["users"].setdefault(str(c), {"mode": "live", "topics": []}) for c in subs.pop("chats")]
 subs.setdefault("users", {}); subs.setdefault("offset", 0)
 CFG_KEYS = {  # key: (global name, converter, Arabic label)
-    "live_count": ("LIVE_COUNT", int, "أقصى عدد أخبار فورية في كل دورة فحص"), "instant_cap": ("INSTANT_CAP", int, "أقصى عدد أخبار فورية للمشترك في اليوم"),
-    "instant_min": ("INSTANT_MIN", float, "أقل وزن لمصدر الخبر الفوري (2 = المصادر الكبرى فقط، 1 = الكل)"), "live_age": ("LIVE_AGE_H", int, "أقصى عمر للخبر الفوري بالساعات"),
+    "live_count": ("LIVE_COUNT", int, "أقصى عدد أخبار في رسالة الأخبار الجديدة"), "batch_hours": ("BATCH_H", float, "الفاصل بالساعات بين رسائل الأخبار الجديدة (3 = كل 3 ساعات)"), "promo_from": ("PROMO_FROM", int, "الروابط الإعلانية تُرفق بأول رسالة بعد هذه الساعة المحلية (18 = 6 مساء)"),
+    "instant_min": ("INSTANT_MIN", float, "أقل وزن لمصدر الخبر (2 = المصادر الكبرى فقط، 1 = الكل)"), "live_age": ("LIVE_AGE_H", int, "أقصى عمر للخبر المرسل بالساعات"),
     "gate": ("GATE", str, "القناة التي يجب الاشتراك فيها قبل استخدام البوت (اكتب off لإيقاف الشرط)"), "digest_hours": ("DIGEST_HOURS", str, "ساعات الملخص اليومي بتوقيتك مفصولة بفاصلة، مثل 9,21"), "tz": ("TZ", str, "المنطقة الزمنية، مثل Africa/Cairo"),
     "digest_count": ("DIGEST_COUNT", int, "عدد أخبار كل ملخص"), "ref_hold": ("REF_HOLD", lambda h: int(float(h) * 3600), "ساعات بقاء المدعو لاحتساب النقطة"),
     "ref_cap": ("REF_DAILY_CAP", int, "أقصى نقاط إحالة يوميا للشخص")}
@@ -173,7 +175,7 @@ def story_text(it):
 # ---------------- interactive settings (inline keyboard) ----------------
 def kb_main(u):
     mode = u.get("mode", "live"); n = len(u.get("topics", []))
-    rows = [[{"text": ("✅ " if mode == "live" else "") + "⚡ كل خبر مهم فور صدوره", "callback_data": "m:live"}],
+    rows = [[{"text": ("✅ " if mode == "live" else "") + "📰 الأخبار الجديدة كل 3 ساعات", "callback_data": "m:live"}],
             [{"text": ("✅ " if mode == "daily" else "") + "☀️🌙 ملخص مرتين يوميا (9 ص و9 م)", "callback_data": "m:daily"}],
             [{"text": "📂 " + g, "callback_data": "g:%d" % i} for i, g in enumerate(GROUPS[:1])]]
     rows = rows[:2] + [[{"text": "📂 " + g, "callback_data": "g:%d" % i}] for i, g in enumerate(GROUPS)]
@@ -189,13 +191,13 @@ def kb_group(u, gi):
 def settings_text(u):
     n = len(u.get("topics", []))
     return ("⚙️ <b>إعدادات الأخبار</b>\n\nنمط الإرسال: <b>%s</b>\nالمواضيع: <b>%s</b>\n\nاختر نمط الإرسال، ثم المجموعات لتحديد المواضيع التي تهمك. إن لم تختر شيئا تصلك كل المواضيع."
-            % ("فوري: كل خبر مهم فور صدوره" if u.get("mode", "live") == "live" else "ملخص مرتين يوميا (9 صباحا و9 مساء)", ("%d موضوعا" % n) if n else "كل المواضيع"))
+            % ("الأخبار الجديدة كل 3 ساعات في رسالة واحدة" if u.get("mode", "live") == "live" else "ملخص مرتين يوميا (9 صباحا و9 مساء)", ("%d موضوعا" % n) if n else "كل المواضيع"))
 WELCOME = ("أهلا بك في بوت <b>أخبار الذكاء الاصطناعي</b> من مونستر للمعلوميات 👋\n\nسيصلك بالعربية أهم الأخبار مع رابط لقراءة ملخص كل خبر على موقعنا، وتنبيه فوري عندما يصدر نموذج كان مرتقبا، وفيديوهات القناة الجديدة.\n\n"
-           "⚙️ /topics اختيار المواضيع ونمط الإرسال\n☀️ /daily ملخص مرتين يوميا (9 ص و9 م) بدل الرسائل المتفرقة\n⚡ /live كل خبر مهم فور صدوره\n📋 /status حالتك\n🎁 /invite ادعُ أصدقاءك واربح جوائز\n⛔ /stop إيقاف\n\n🌐 <a href=\"%s\">الموقع</a>" % SITE)
+           "⚙️ /topics اختيار المواضيع ونمط الإرسال\n☀️ /daily ملخص مرتين يوميا (9 ص و9 م) بدل الرسائل المتفرقة\n📰 /live الأخبار الجديدة كل 3 ساعات في رسالة واحدة\n📋 /status حالتك\n🎁 /invite ادعُ أصدقاءك واربح جوائز\n⛔ /stop إيقاف\n\n🌐 <a href=\"%s\">الموقع</a>" % SITE)
 def status_text(cid):
     u = user(cid); n = len(u.get("topics", []))
     names_ = "، ".join(CATL.get(t, t) for t in u.get("topics", [])[:12]) if n else "كل المواضيع"
-    return "📋 <b>حالتك</b>\nالنمط: %s\nالمواضيع: %s\n\n⚙️ /topics للتعديل" % ("فوري: كل خبر مهم فور صدوره" if u["mode"] == "live" else "ملخص مرتين يوميا (9 صباحا و9 مساء)", html.escape(names_))
+    return "📋 <b>حالتك</b>\nالنمط: %s\nالمواضيع: %s\n\n⚙️ /topics للتعديل" % ("الأخبار الجديدة كل 3 ساعات في رسالة واحدة" if u["mode"] == "live" else "ملخص مرتين يوميا (9 صباحا و9 مساء)", html.escape(names_))
 def stats_text():
     us = subs["users"].values(); n = len(subs["users"]); today = time.strftime("%Y-%m-%d", time.gmtime()); h = subs.get("hist", {})
     def days(k, nd): return sum(h.get((datetime.date.today() - datetime.timedelta(days=i)).isoformat(), {}).get(k, 0) for i in range(nd))
@@ -206,7 +208,7 @@ def stats_text():
     top = "، ".join("%s (%d)" % (CATL.get(t, t), c) for t, c in sorted(cnt.items(), key=lambda x: -x[1])[:8]) or "لا يوجد بعد"
     last = (load_json("telegram-state.json", {}) or {}).get("last", {})
     gate_note = ("\n\n⚠️ شرط القناة غير مفعّل لأن البوت لا يستطيع قراءة الأعضاء: %s\nأضِف البوت <b>مشرفا</b> في القناة %s" % (subs["gate_err"], GATE)) if (gate_on() and subs.get("gate_err")) else (("\n\n🔒 شرط القناة %s مفعّل. خارج القناة الآن: %d" % (GATE, sum(1 for x in subs["users"].values() if x.get("nm")))) if gate_on() else "")
-    return ("📊 <b>إحصائيات البوت</b>\n\n👥 المشتركون الآن: <b>%d</b>\n⚡ نمط فوري: %d\n☀️ ملخص مرتين يوميا: %d\n⚙️ اختاروا مواضيع محددة: %d\n\n"
+    return ("📊 <b>إحصائيات البوت</b>\n\n👥 المشتركون الآن: <b>%d</b>\n📰 نمط كل 3 ساعات: %d\n☀️ ملخص مرتين يوميا: %d\n⚙️ اختاروا مواضيع محددة: %d\n\n"
             "➕ انضمام: اليوم %d | 7 أيام %d | 30 يوما %d\n➖ إيقاف: اليوم %d | 7 أيام %d | 30 يوما %d\n\n🔥 أكثر المواضيع: %s\n\n📨 آخر إرسال: %s (وصلت %s رسالة مباشرة، %s ملخص يومي)"
             % (n, live, daily, withtopics, days("new", 1), days("new", 7), days("new", 30), days("stop", 1), days("stop", 7), days("stop", 30), html.escape(top),
                last.get("at", "لم يحدث بعد"), (last.get("sent") or {}).get("live", 0), (last.get("sent") or {}).get("digest", 0)) + gate_note)
@@ -275,7 +277,7 @@ def handle_callback(cb):
         edit(cid, mid, "📂 <b>%s</b>\nاضغط على الموضوع لتفعيله أو إلغائه:" % html.escape(GROUPS[int(gi)]), kb_group(u, int(gi)))
 CMD = {"/topics": "topics", "/مواضيع": "topics", "مواضيع": "topics", "/settings": "topics", "/daily": "daily", "/ملخص": "daily", "ملخص": "daily",
        "/live": "live", "/مباشر": "live", "/status": "status", "/الحالة": "status", "/stop": "stop", "/ايقاف": "stop", "/إيقاف": "stop", "/help": "help", "/start": "start", "/stats": "stats", "/broadcast": "broadcast", "/invite": "invite", "/دعوة": "invite", "/points": "invite", "/نقاطي": "invite", "/rewards": "rewards", "/جوائز": "rewards", "/send": "send", "/requests": "requests", "/نشر": "broadcast", "/اذاعة": "broadcast", "/إحصائيات": "stats", "/احصائيات": "stats", "/myid": "myid"}
-ADMIN_ONLY = {"/admin", "/pause", "/resume", "/top", "/user", "/addpoints", "/ban", "/unban", "/setconfig", "/setwelcome", "/resetwelcome", "/addreward", "/setcost", "/setstock", "/delreward", "/preview", "/cancel", "/msg"}
+ADMIN_ONLY = {"/admin", "/pause", "/resume", "/top", "/user", "/addpoints", "/ban", "/unban", "/setconfig", "/setwelcome", "/resetwelcome", "/addreward", "/setcost", "/setstock", "/delreward", "/preview", "/cancel", "/msg", "/addpromo", "/delpromo", "/promooff", "/promoon", "/resetpromo"}
 def is_admin(m):
     return str((m.get("chat") or {}).get("id")) in ADMIN or str((m.get("from") or {}).get("username", "")).lower() in ADMIN_NAMES
 def push(chats, text=None, photo=None, copy_from=None, plain=False):
@@ -293,8 +295,8 @@ def push(chats, text=None, photo=None, copy_from=None, plain=False):
     return ok, gone
 BROADCAST_HELP = "لإرسال رسالة لكل المشتركين:\n• اكتب <code>/broadcast نص الرسالة</code> (يدعم الروابط)\n• أو أرسل صورة وفي وصفها <code>/broadcast النص</code>\n• أو اعمل «رد» على أي رسالة (نص، صورة، فيديو، ملف) واكتب <code>/broadcast</code> فتُنسخ كما هي"
 # ---------------- persistent button menu (shown under the chat box, so users need not type commands) ----------------
-BTN = {"⚙️ المواضيع": "topics", "🎁 ادعُ واربح": "invite", "🏆 الجوائز": "rewards", "📋 حالتي": "status", "☀️🌙 ملخص مرتين": "daily", "⚡ فوري": "live", "☀️ ملخص يومي": "daily", "🕒 كل 6 ساعات": "live", "❓ مساعدة": "help", "⛔ إيقاف": "stop"}
-MENU_KB = {"keyboard": [[{"text": "⚙️ المواضيع"}, {"text": "🎁 ادعُ واربح"}], [{"text": "🏆 الجوائز"}, {"text": "📋 حالتي"}], [{"text": "☀️🌙 ملخص مرتين"}, {"text": "⚡ فوري"}], [{"text": "❓ مساعدة"}, {"text": "⛔ إيقاف"}]],
+BTN = {"⚙️ المواضيع": "topics", "🎁 ادعُ واربح": "invite", "🏆 الجوائز": "rewards", "📋 حالتي": "status", "☀️🌙 ملخص مرتين": "daily", "📰 كل 3 ساعات": "live", "⚡ فوري": "live", "☀️ ملخص يومي": "daily", "🕒 كل 6 ساعات": "live", "❓ مساعدة": "help", "⛔ إيقاف": "stop"}
+MENU_KB = {"keyboard": [[{"text": "⚙️ المواضيع"}, {"text": "🎁 ادعُ واربح"}], [{"text": "🏆 الجوائز"}, {"text": "📋 حالتي"}], [{"text": "☀️🌙 ملخص مرتين"}, {"text": "📰 كل 3 ساعات"}], [{"text": "❓ مساعدة"}, {"text": "⛔ إيقاف"}]],
            "resize_keyboard": True, "is_persistent": True, "input_field_placeholder": "اختر من القائمة 👇"}
 # ---------------- referrals: invite friends, earn points, redeem rewards ----------------
 REF_HOLD = int(os.environ.get("REF_HOLD_HOURS", 24)) * 3600     # an invited friend counts after staying subscribed this long
@@ -368,7 +370,7 @@ def requests_send(cid):
     send(cid, requests_text())
     for x in pend[:10]: send(cid, "• %s — <code>%s</code>" % (html.escape(x["n"]), x["c"]), deliver_kb(x["c"]))
 # ---------------- owner panel: manage the bot from Telegram ----------------
-def _cfgv(): return {"live_count": LIVE_COUNT, "instant_cap": INSTANT_CAP, "instant_min": INSTANT_MIN, "live_age": LIVE_AGE_H, "gate": GATE, "digest_hours": DIGEST_HOURS, "tz": TZ, "digest_count": DIGEST_COUNT, "ref_hold": REF_HOLD // 3600, "ref_cap": REF_DAILY_CAP}
+def _cfgv(): return {"live_count": LIVE_COUNT, "batch_hours": BATCH_H, "promo_from": PROMO_FROM, "instant_min": INSTANT_MIN, "live_age": LIVE_AGE_H, "gate": GATE, "digest_hours": DIGEST_HOURS, "tz": TZ, "digest_count": DIGEST_COUNT, "ref_hold": REF_HOLD // 3600, "ref_cap": REF_DAILY_CAP}
 def _rewards_view():
     rows = "\n".join("• <code>%s</code> — %s — %d نقطة — متاح: %s" % (r["id"], html.escape(r["name"]), r["cost"], "بلا حد" if r.get("stock") is None else r["stock"] - subs.get("used", {}).get(r["id"], 0)) for r in rewards()) or "لا توجد جوائز بعد"
     return ("🎁 <b>إدارة الجوائز</b>\n\nالجوائز الحالية:\n" + rows + "\n\n<b>إضافة جائزة أو تعديلها كاملة:</b>\n<code>/addreward المعرف|الاسم|النقاط|العدد|الوصف</code>\n"
@@ -382,8 +384,9 @@ ADMIN_SECTIONS = {
  "bc": ("📢 الإرسال للجميع", lambda: "📢 <b>الإرسال لكل المشتركين</b>\n\n• نص: <code>/broadcast نص الرسالة</code>\n• صورة: أرسل صورة وفي وصفها <code>/broadcast النص</code>\n• فيديو أو ملف أو صوت: اعمل «رد» على الرسالة واكتب <code>/broadcast</code> فتُنسخ كما هي\n\nيقبل النص الخط العريض <code>&lt;b&gt;نص&lt;/b&gt;</code> والروابط. يرد البوت بعدد من وصلتهم.\n\n<code>/preview</code> يرسل لك خبرا كما يراه المشترك."),
  "rw": ("🎁 الجوائز", _rewards_view),
  "us": ("👥 المستخدمون", lambda: "👥 <b>إدارة المستخدمين</b>\n\n<code>/user المعرف</code> بيانات مشترك، وتحتها زر «✉️ مراسلته»\n<code>/msg المعرف</code> ثم اكتب الرسالة: ترسل رسالة لمشترك واحد\n<code>/addpoints المعرف 5</code> يضيف 5 نقاط، و<code>/addpoints المعرف -5</code> يخصم\n<code>/ban المعرف</code> يحذف المشترك ويمنعه من الاشتراك مجددا\n<code>/unban المعرف</code> يرفع الحظر\n<code>/top</code> أكثر المدعوين\n\nكيف أعرف المعرف؟ يظهر في إشعارات الطلبات وفي /top. المحظورون الآن: %d" % len(subs.get("ban", []))),
- "cf": ("⚙️ الإعدادات", lambda: "⚙️ <b>الإعدادات الحالية</b>\n\n" + "\n".join("• <code>%s</code> = <b>%s</b>\n   %s" % (k, subs.get("cfg", {}).get(k, _cfgv()[k]), v[2]) for k, v in CFG_KEYS.items()) + "\n\n<b>التغيير:</b> <code>/setconfig المفتاح القيمة</code>\nمثال: <code>/setconfig instant_cap 5</code> (5 أخبار فورية يوميا لكل مشترك)\nمثال: <code>/setconfig digest_hours 8,20</code> (الملخصان 8 ص و8 م)\nللرجوع للأصل: <code>/setconfig المفتاح reset</code>\n\n💡 التغيير يسري على الدورة التالية."),
+ "cf": ("⚙️ الإعدادات", lambda: "⚙️ <b>الإعدادات الحالية</b>\n\n" + "\n".join("• <code>%s</code> = <b>%s</b>\n   %s" % (k, subs.get("cfg", {}).get(k, _cfgv()[k]), v[2]) for k, v in CFG_KEYS.items()) + "\n\n<b>التغيير:</b> <code>/setconfig المفتاح القيمة</code>\nمثال: <code>/setconfig batch_hours 4</code> (رسالة الأخبار كل 4 ساعات)\nمثال: <code>/setconfig digest_hours 8,20</code> (الملخصان 8 ص و8 م)\nللرجوع للأصل: <code>/setconfig المفتاح reset</code>\n\n💡 التغيير يسري على الدورة التالية."),
  "ms": ("📝 رسالة الترحيب", lambda: "📝 <b>رسالة الترحيب</b>\n\nتصل لكل مشترك جديد وعند /help.\n\n<code>/setwelcome النص</code> يغيّرها (تقبل HTML مثل &lt;b&gt;عريض&lt;/b&gt; والروابط)\n<code>/resetwelcome</code> يعيد الرسالة الأصلية\n\n⚠️ اكتب الرسالة كاملة في أمر واحد. تظهر تحتها قائمة الأزرار تلقائيا."),
+ "pm": ("📣 الروابط الإعلانية", lambda: "📣 <b>الروابط الإعلانية</b> (%s)\n\nتُرفق مرة واحدة يوميا لكل مشترك بعد الأخبار، مفصولة عنها وبدون أي نص آخر:\n\n%s\n\n<code>/addpromo النص|الرابط</code> إضافة رابط\n<code>/delpromo رقم</code> حذف الرابط بهذا الرقم\n<code>/promooff</code> إيقاف الروابط\n<code>/promoon</code> تشغيلها\n<code>/resetpromo</code> الرجوع للروابط الأصلية\n\n⏰ تُرفق بالملخص المسائي، وبأول رسالة أخبار بعد الساعة %d محليا (تغيير: <code>/setconfig promo_from 18</code>)" % ("متوقفة ⏸" if subs.get("promo_off") else "تعمل ▶️", "\n".join("%d. %s\n    %s" % (i + 1, html.escape(t), html.escape(u)) for i, (t, u) in enumerate(subs.get("promo", DEFAULT_PROMO))) or "لا توجد روابط", PROMO_FROM)),
  "pa": ("⏸ إيقاف/استئناف", lambda: "⏯ <b>الإرسال التلقائي: %s</b>\n\n<code>/pause</code> يوقف الأخبار الفورية والملخصات والتنبيهات والفيديوهات لكل المشتركين مؤقتا\n<code>/resume</code> يعيدها\n\nلا يؤثر على الأوامر والجوائز والإحالات والإرسال اليدوي." % ("متوقف ⏸" if subs.get("paused") else "يعمل ▶️")),
  "gd": ("📖 الدليل الكامل", lambda: "📖 <b>دليل المالك</b>\n\n<b>يوميا:</b>\n• /stats لمعرفة العدد والانضمام\n• /requests لتسليم الجوائز\n\n<b>عند إعلان أو خبر خاص:</b> /broadcast\n\n<b>لتغيير شكل البوت:</b> /setwelcome ، /setconfig ، /addreward\n\n<b>عند مشكلة:</b> /pause لإيقاف الإرسال ثم /resume\n\n<b>المشتركون يرون:</b> القائمة الأزرار + /invite + /rewards\n\n<b>ملاحظات مهمة:</b>\n• الأوامر لا تعمل إلا من حسابك أنت\n• التغييرات تُحفظ مشفرة وتسري خلال دقائق\n• الأخبار الفورية تُفحص كل 15 دقيقة تقريبا\n• الملخصان بتوقيت %s الساعة %s\n• الجوائز تُسلَّم بموافقتك، لا تلقائيا" % (TZ, DIGEST_HOURS))}
 def admin_kb():
@@ -447,6 +450,17 @@ def admin_command(cid, text, m):
         body = text.split(None, 1)[1].strip() if len(text.split(None, 1)) > 1 else ""
         if not body: send(cid, "الصيغة: /setwelcome النص"); return True
         subs["welcome"] = body; send(cid, "تم حفظ رسالة الترحيب ✅ جرّبها بـ /help"); return True
+    if c == "/addpromo":
+        f = [x.strip() for x in (text.split(None, 1)[1] if len(text.split(None, 1)) > 1 else "").split("|")]
+        if len(f) != 2 or not f[1].startswith("http"): send(cid, "الصيغة: <code>/addpromo النص|https://الرابط</code>"); return True
+        subs.setdefault("promo", [list(x) for x in DEFAULT_PROMO]).append(f); send(cid, "أُضيف الرابط ✅ (%d روابط الآن)" % len(subs["promo"])); return True
+    if c == "/delpromo":
+        pl = subs.setdefault("promo", [list(x) for x in DEFAULT_PROMO])
+        if not a or not a[0].isdigit() or not (1 <= int(a[0]) <= len(pl)): send(cid, "الصيغة: <code>/delpromo رقم</code> (الأرقام في قسم الروابط الإعلانية)"); return True
+        pl.pop(int(a[0]) - 1); send(cid, "حُذف ✅ (%d روابط الآن)" % len(pl)); return True
+    if c == "/promooff": subs["promo_off"] = True; send(cid, "أُوقفت الروابط الإعلانية."); return True
+    if c == "/promoon": subs.pop("promo_off", None); send(cid, "عادت الروابط الإعلانية."); return True
+    if c == "/resetpromo": subs.pop("promo", None); send(cid, "رجعت الروابط الأصلية ✅"); return True
     if c == "/resetwelcome": subs.pop("welcome", None); send(cid, "رجعت رسالة الترحيب للأصلية ✅"); return True
     if c in ("/addreward", "/setcost", "/setstock", "/delreward"):
         if "rw" not in subs: subs["rw"] = rewards()
@@ -528,7 +542,7 @@ def handle_message(m):
     elif cmd == "rewards": send(cid, rewards_text(user(cid)), rewards_kb(user(cid)))
     elif cmd == "topics": send(cid, settings_text(user(cid)), kb_main(user(cid)))
     elif cmd == "daily": user(cid)["mode"] = "daily"; send(cid, "تم ✅ سيصلك ملخص بأهم %d أخبار الساعة 9 صباحا وملخص آخر الساعة 9 مساء (بتوقيت %s)." % (DIGEST_COUNT, "القاهرة" if TZ == "Africa/Cairo" else TZ))
-    elif cmd == "live": user(cid)["mode"] = "live"; send(cid, "تم ✅ ستصلك كل خبر مهم فور صدوره (حتى %d أخبار يوميا كحد أقصى)." % INSTANT_CAP)
+    elif cmd == "live": user(cid)["mode"] = "live"; send(cid, "تم ✅ ستصلك الأخبار الجديدة مجمّعة في رسالة واحدة كل %g ساعات تقريبا." % BATCH_H)
     elif cmd == "status": send(cid, status_text(cid))
     elif cmd == "help": send(cid, subs.get("welcome") or WELCOME, MENU_KB)
     elif cmd == "start" and cid not in new: send(cid, "أهلا بعودتك 👋 القائمة جاهزة أسفل الشاشة. اختر ما تريد 👇", MENU_KB)
@@ -576,6 +590,11 @@ def watch_videos(targets):
     vs["sent"] = sorted(sent_v)[-600:]
     json.dump(vs, open(videos_path, "w"), separators=(",", ":")); return n
 
+def promo_html():
+    """Three embedded links, separated from the news, no other text. Edited from Telegram with /promo."""
+    if subs.get("promo_off"): return ""
+    items = subs.get("promo", DEFAULT_PROMO)
+    return ("\n\n┄┄┄┄┄┄┄┄┄┄┄┄\n" + "\n".join('🔗 <a href="%s">%s</a>' % (html.escape(u, quote=True), html.escape(t)) for t, u in items)) if items else ""
 def kick_news():
     """GitHub's own cron is unreliable, so the always-running bot job starts the news job (fetch + instant stories + digests)."""
     tok = os.environ.get("GH_TOKEN"); repo = os.environ.get("GITHUB_REPOSITORY")
@@ -602,7 +621,7 @@ if "--subs" in sys.argv:
             {"command": "start", "description": "القائمة"}, {"command": "invite", "description": "الدعوة والنقاط"}, {"command": "rewards", "description": "الجوائز"}, {"command": "help", "description": "المساعدة"}])
     if not BOT_USER: BOT_USER = (tg("getMe").get("result") or {}).get("username", "")
     tg("setMyCommands", commands=[{"command": "start", "description": "الاشتراك في أخبار الذكاء الاصطناعي"}, {"command": "topics", "description": "اختيار المواضيع ونمط الإرسال"},
-        {"command": "daily", "description": "ملخص مرتين يوميا 9 ص و9 م"}, {"command": "live", "description": "كل خبر مهم فور صدوره"}, {"command": "status", "description": "حالتي"}, {"command": "invite", "description": "ادعُ أصدقاءك واربح نقاطا"}, {"command": "rewards", "description": "الجوائز واستبدال النقاط"}, {"command": "help", "description": "المساعدة وقائمة الأزرار"}, {"command": "stop", "description": "إيقاف الأخبار"}])
+        {"command": "daily", "description": "ملخص مرتين يوميا 9 ص و9 م"}, {"command": "live", "description": "الأخبار الجديدة كل 3 ساعات"}, {"command": "status", "description": "حالتي"}, {"command": "invite", "description": "ادعُ أصدقاءك واربح نقاطا"}, {"command": "rewards", "description": "الجوائز واستبدال النقاط"}, {"command": "help", "description": "المساعدة وقائمة الأزرار"}, {"command": "stop", "description": "إيقاف الأخبار"}])
     welcomed = 0
     while True:
         r = tg("getUpdates", offset=subs["offset"], timeout=(POLL_T if dur else 0), allowed_updates=["message", "callback_query"])
@@ -661,29 +680,36 @@ except Exception:
     local = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=3)))
 ldate = local.strftime("%Y-%m-%d")
 dn = state.setdefault("dn", {})
-def left_today(c):
-    d = dn.get(str(c)); return INSTANT_CAP - (d["n"] if d and d["d"] == ldate else 0)
-def count_today(c):
-    d = dn.get(str(c)); 
-    if not d or d["d"] != ldate: d = dn[str(c)] = {"d": ldate, "n": 0}
-    d["n"] += 1
-# (2) instant: every new important story, as soon as it is published (per-user daily cap, topics respected)
-if not first_run:
-    fresh = [i for i in news["items"] if i["u"] not in sent and AUTH.get(i["s"], 0) >= INSTANT_MIN and age_h(i) <= LIVE_AGE_H]
-    fresh = ranked(fresh, LIVE_AGE_H)[:LIVE_COUNT * 3]
+# (2) batch: all new important stories since the last batch, in ONE message every ~3 hours (topics respected)
+prd = state.setdefault("promo", {})   # user -> local date the daily promo links were last attached
+def with_promo(c, text, evening):
+    """Attach the promo links once per day, to the evening digest or the first batch after PROMO_FROM."""
+    if evening and prd.get(str(c)) != ldate and promo_html(): prd[str(c)] = ldate; return text + promo_html()
+    return text
+last_batch = state.get("last_batch", 0)
+if not first_run and now - last_batch >= BATCH_H * 3600 * 0.9:
+    fresh = ranked([i for i in news["items"] if i["u"] not in sent and AUTH.get(i["s"], 0) >= INSTANT_MIN], LIVE_AGE_H)
     used = set()
+    def batch_text(items):
+        lines = []
+        for n_, it in enumerate(items, 1):
+            a = arabic(it)
+            if a: lines.append("%d. <b>%s</b>\n   <a href=\"%s\">اقرأ الملخص</a>" % (n_, html.escape(a["t"]), html.escape(link(it), quote=True)))
+        return lines
     for c, u in users.items():
         if u.get("mode", "live") != "live": continue
-        for it in ranked(fresh, LIVE_AGE_H, u.get("topics"))[:LIVE_COUNT]:
-            if left_today(c) <= 0: break
-            t = story_text(it)
-            if t and deliver(c, t): used.add(it["u"]); stats["live"] += 1; count_today(c)
+        mine = ranked(fresh, LIVE_AGE_H, u.get("topics"))[:LIVE_COUNT]
+        lines = batch_text(mine)
+        if not lines: continue
+        txt = "📰 <b>آخر أخبار الذكاء الاصطناعي</b>\n\n" + "\n\n".join(lines)
+        if deliver(c, with_promo(c, txt, local.hour >= PROMO_FROM)): used.update(it["u"] for it in mine); stats["live"] += 1
     if EXTRA:
-        for it in fresh[:LIVE_COUNT]:
-            t = story_text(it)
-            if t and deliver(EXTRA, t): used.add(it["u"])
-    sent.update(used)
+        lines = batch_text(fresh[:LIVE_COUNT])
+        if lines and deliver(EXTRA, "📰 <b>آخر أخبار الذكاء الاصطناعي</b>\n\n" + "\n\n".join(lines)): used.update(it["u"] for it in fresh[:LIVE_COUNT])
+    sent.update(used); state["last_batch"] = now
+elif "last_batch" not in state: state["last_batch"] = now
 for k in [k for k, v in dn.items() if v["d"] != ldate and k not in users]: del dn[k]
+for k in [k for k, v in prd.items() if v != ldate]: del prd[k]
 
 # (3) digest for "daily" users at the configured local hours (default 9 am and 9 pm), catching up to 2 hours late
 done = state.setdefault("digests", [])
@@ -699,7 +725,7 @@ for h in hours:
         for n_, it in enumerate(top, 1):
             a = arabic(it)
             if a: lines.append("%d. <b>%s</b>\n   <a href=\"%s\">اقرأ الملخص</a>" % (n_, html.escape(a["t"]), html.escape(link(it), quote=True)))
-        if lines and deliver(c, "%s <b>ملخص أخبار الذكاء الاصطناعي</b> — %s\n\n%s" % ("☀️ صباح الخير" if h < 15 else "🌙 مساء الخير", ar_date(ldate), "\n\n".join(lines))): stats["digest"] += 1
+        if lines and deliver(c, with_promo(c, "%s <b>ملخص أخبار الذكاء الاصطناعي</b> — %s\n\n%s" % ("☀️ صباح الخير" if h < 15 else "🌙 مساء الخير", ar_date(ldate), "\n\n".join(lines)), h >= 15)): stats["digest"] += 1
 state["digests"] = done[-12:]
 
 if first_run: sent.update(i["u"] for i in news["items"])
