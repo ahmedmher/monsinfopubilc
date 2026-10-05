@@ -25,6 +25,7 @@ YT = os.environ.get("YT_BASE", "https://www.youtube.com")
 TRB = os.environ.get("TRANSLATE_BASE", "https://translate.googleapis.com")
 LIVE_COUNT = int(os.environ.get("LIVE_COUNT", 10)); LIVE_AGE_H = int(os.environ.get("LIVE_AGE_HOURS", 12))   # batch mode: max stories in one message, max story age
 BATCH_H = float(os.environ.get("BATCH_HOURS", 3)); INSTANT_MIN = float(os.environ.get("INSTANT_MIN_AUTH", 2))   # hours between batches; minimum source authority
+SUM_CHARS = int(os.environ.get("SUMMARY_CHARS", 200))   # length of each news summary in the batch/digest messages (about 2-3 phone lines)
 PROMO_FROM = int(os.environ.get("PROMO_FROM_HOUR", 18))   # the daily promo links ride the first message sent after this local hour
 DEFAULT_PROMO = [["لشراء حسابات مواقع AI بسعر مخفض", "https://www.gamsgo.com/partner/phsyg"], ["أقوى موقع ذكاء اصطناعي مع خصم 50%", "https://higgsfield.ai/?fpr=register"], ["احصل على حساب بنكي أمريكي وبطاقة للدفع والتسوق", "https://www.kcard.site/"]]
 GATE = os.environ.get("BOT_GATE", "@code_hup")   # users must be members of this channel (set to off to disable)
@@ -131,7 +132,7 @@ CFG_KEYS = {  # key: (global name, converter, Arabic label)
     "live_count": ("LIVE_COUNT", int, "أقصى عدد أخبار في رسالة الأخبار الجديدة"), "batch_hours": ("BATCH_H", float, "الفاصل بالساعات بين رسائل الأخبار الجديدة (3 = كل 3 ساعات)"), "promo_from": ("PROMO_FROM", int, "الروابط الإعلانية تُرفق بأول رسالة بعد هذه الساعة المحلية (18 = 6 مساء)"),
     "instant_min": ("INSTANT_MIN", float, "أقل وزن لمصدر الخبر (2 = المصادر الكبرى فقط، 1 = الكل)"), "live_age": ("LIVE_AGE_H", int, "أقصى عمر للخبر المرسل بالساعات"),
     "gate": ("GATE", str, "القناة التي يجب الاشتراك فيها قبل استخدام البوت (اكتب off لإيقاف الشرط)"), "digest_hours": ("DIGEST_HOURS", str, "ساعات الملخص اليومي بتوقيتك مفصولة بفاصلة، مثل 9,21"), "tz": ("TZ", str, "المنطقة الزمنية، مثل Africa/Cairo"),
-    "digest_count": ("DIGEST_COUNT", int, "عدد أخبار كل ملخص"), "ref_hold": ("REF_HOLD", lambda h: int(float(h) * 3600), "ساعات بقاء المدعو لاحتساب النقطة"),
+    "digest_count": ("DIGEST_COUNT", int, "عدد أخبار كل ملخص"), "sumchars": ("SUM_CHARS", int, "طول ملخص كل خبر بالحروف (200 = سطران أو ثلاثة، 0 = عنوان فقط)"), "ref_hold": ("REF_HOLD", lambda h: int(float(h) * 3600), "ساعات بقاء المدعو لاحتساب النقطة"),
     "ref_cap": ("REF_DAILY_CAP", int, "أقصى نقاط إحالة يوميا للشخص")}
 def apply_cfg():
     for k, v in subs.get("cfg", {}).items():
@@ -165,6 +166,44 @@ def arabic(it):
         d = (it.get("d") or ""); d = d[:260].rsplit(" ", 1)[0] + ("…" if len(d) > 260 else "") if d else ""
         r = {"t": t, "d": (tr(d) if d else "") or ""}
     trcache[it["u"]] = r; return r
+def _cut(t, n):
+    t = re.sub(r"\s+", " ", t).strip()
+    if len(t) <= n: return t
+    c = t[:n]; k = max(c.rfind(". "), c.rfind("، "), c.rfind("؛ "))
+    if k > n * 0.55: return c[:k + 1].rstrip("،؛ ")
+    return c.rsplit(" ", 1)[0].rstrip("،؛ .") + "…"
+def arsum(it):
+    """Arabic summary of about SUM_CHARS characters (2-3 phone lines), from the longer excerpt when the feed has one."""
+    if SUM_CHARS <= 0: return ""
+    a = arabic(it)
+    if not a: return ""
+    if "s" in a: return _cut(a["s"], SUM_CHARS)
+    src = re.sub(r"\s+", " ", (it.get("x") or it.get("d") or "")).strip()
+    out = ""
+    for sent in re.split(r"(?<=[.!?؟]) ", src):
+        if len(out) + len(sent) > 420 and out: break
+        out += (" " if out else "") + sent
+    out = out[:520]
+    if langs.get(it["s"]) != "ar" and out:
+        out = tr(out) or ""
+    a["s"] = out or a.get("d", ""); trcache[it["u"]] = a
+    return _cut(a["s"], SUM_CHARS)
+def item_block(n, it):
+    a = arabic(it)
+    if not a: return None
+    sm = arsum(it)
+    if sm and a["t"][:25] in sm[:40]: sm = ""
+    return "%d. <b>%s</b>%s\n<a href=\"%s\">اقرأ الملخص الكامل</a>" % (n, html.escape(a["t"]), ("\n" + html.escape(sm)) if sm else "", html.escape(link(it), quote=True))
+def pack(header, blocks, limit=None):
+    """Split into as few Telegram messages (max 4096 chars) as possible; the header goes on the first one."""
+    limit = limit or (4000 - len(promo_html()))   # leave room for the promo links that may ride the last message
+    msgs, cur = [], header
+    for b in blocks:
+        if len(cur) + len(b) + 2 > limit and cur != header and cur.strip():
+            msgs.append(cur); cur = ""
+        cur += ("\n\n" if cur else "") + b
+    if cur.strip(): msgs.append(cur)
+    return msgs
 def link(it): return "%s%sutm_source=telegram&utm_medium=bot&utm_campaign=news#/n/%s%s" % (NEWS_PAGE, "&" if "?" in NEWS_PAGE else "?", nid(it["u"]), "" if langs.get(it["s"]) == "ar" else "/ar")
 def story_text(it):
     a = arabic(it)
@@ -370,7 +409,7 @@ def requests_send(cid):
     send(cid, requests_text())
     for x in pend[:10]: send(cid, "• %s — <code>%s</code>" % (html.escape(x["n"]), x["c"]), deliver_kb(x["c"]))
 # ---------------- owner panel: manage the bot from Telegram ----------------
-def _cfgv(): return {"live_count": LIVE_COUNT, "batch_hours": BATCH_H, "promo_from": PROMO_FROM, "instant_min": INSTANT_MIN, "live_age": LIVE_AGE_H, "gate": GATE, "digest_hours": DIGEST_HOURS, "tz": TZ, "digest_count": DIGEST_COUNT, "ref_hold": REF_HOLD // 3600, "ref_cap": REF_DAILY_CAP}
+def _cfgv(): return {"live_count": LIVE_COUNT, "batch_hours": BATCH_H, "promo_from": PROMO_FROM, "instant_min": INSTANT_MIN, "live_age": LIVE_AGE_H, "gate": GATE, "digest_hours": DIGEST_HOURS, "tz": TZ, "digest_count": DIGEST_COUNT, "sumchars": SUM_CHARS, "ref_hold": REF_HOLD // 3600, "ref_cap": REF_DAILY_CAP}
 def _rewards_view():
     rows = "\n".join("• <code>%s</code> — %s — %d نقطة — متاح: %s" % (r["id"], html.escape(r["name"]), r["cost"], "بلا حد" if r.get("stock") is None else r["stock"] - subs.get("used", {}).get(r["id"], 0)) for r in rewards()) or "لا توجد جوائز بعد"
     return ("🎁 <b>إدارة الجوائز</b>\n\nالجوائز الحالية:\n" + rows + "\n\n<b>إضافة جائزة أو تعديلها كاملة:</b>\n<code>/addreward المعرف|الاسم|النقاط|العدد|الوصف</code>\n"
@@ -690,22 +729,24 @@ last_batch = state.get("last_batch", 0)
 if not first_run and now - last_batch >= BATCH_H * 3600 * 0.9:
     fresh = ranked([i for i in news["items"] if i["u"] not in sent and AUTH.get(i["s"], 0) >= INSTANT_MIN], LIVE_AGE_H)
     used = set()
-    def batch_text(items):
-        lines = []
-        for n_, it in enumerate(items, 1):
-            a = arabic(it)
-            if a: lines.append("%d. <b>%s</b>\n   <a href=\"%s\">اقرأ الملخص</a>" % (n_, html.escape(a["t"]), html.escape(link(it), quote=True)))
-        return lines
+    def batch_msgs(items):
+        blocks = [x for x in (item_block(n_, it) for n_, it in enumerate(items, 1)) if x]
+        return pack("📰 <b>آخر أخبار الذكاء الاصطناعي</b>", blocks)
+    def send_all(c, msgs, evening):
+        for i, m_ in enumerate(msgs):
+            last = i == len(msgs) - 1
+            ok = deliver(c, with_promo(c, m_, evening) if last else m_)
+            if not ok: return False
+        return True
     for c, u in users.items():
         if u.get("mode", "live") != "live": continue
         mine = ranked(fresh, LIVE_AGE_H, u.get("topics"))[:LIVE_COUNT]
-        lines = batch_text(mine)
-        if not lines: continue
-        txt = "📰 <b>آخر أخبار الذكاء الاصطناعي</b>\n\n" + "\n\n".join(lines)
-        if deliver(c, with_promo(c, txt, local.hour >= PROMO_FROM)): used.update(it["u"] for it in mine); stats["live"] += 1
+        msgs = batch_msgs(mine)
+        if not msgs: continue
+        if send_all(c, msgs, local.hour >= PROMO_FROM): used.update(it["u"] for it in mine); stats["live"] += 1
     if EXTRA:
-        lines = batch_text(fresh[:LIVE_COUNT])
-        if lines and deliver(EXTRA, "📰 <b>آخر أخبار الذكاء الاصطناعي</b>\n\n" + "\n\n".join(lines)): used.update(it["u"] for it in fresh[:LIVE_COUNT])
+        msgs = batch_msgs(fresh[:LIVE_COUNT])
+        if msgs and send_all(EXTRA, msgs, False): used.update(it["u"] for it in fresh[:LIVE_COUNT])
     sent.update(used); state["last_batch"] = now
 elif "last_batch" not in state: state["last_batch"] = now
 for k in [k for k, v in dn.items() if v["d"] != ldate and k not in users]: del dn[k]
@@ -721,11 +762,14 @@ for h in hours:
     done.append(key)
     for c, u in {c: u for c, u in users.items() if u.get("mode") == "daily"}.items():
         top = ranked(news["items"], 14, u.get("topics"))[:DIGEST_COUNT]
-        lines = []
-        for n_, it in enumerate(top, 1):
-            a = arabic(it)
-            if a: lines.append("%d. <b>%s</b>\n   <a href=\"%s\">اقرأ الملخص</a>" % (n_, html.escape(a["t"]), html.escape(link(it), quote=True)))
-        if lines and deliver(c, with_promo(c, "%s <b>ملخص أخبار الذكاء الاصطناعي</b> — %s\n\n%s" % ("☀️ صباح الخير" if h < 15 else "🌙 مساء الخير", ar_date(ldate), "\n\n".join(lines)), h >= 15)): stats["digest"] += 1
+        blocks = [x for x in (item_block(n_, it) for n_, it in enumerate(top, 1)) if x]
+        msgs = pack("%s <b>ملخص أخبار الذكاء الاصطناعي</b> — %s" % ("☀️ صباح الخير" if h < 15 else "🌙 مساء الخير", ar_date(ldate)), blocks)
+        if msgs:
+            ok = True
+            for i, m_ in enumerate(msgs):
+                ok = deliver(c, with_promo(c, m_, h >= 15) if i == len(msgs) - 1 else m_)
+                if not ok: break
+            if ok: stats["digest"] += 1
 state["digests"] = done[-12:]
 
 if first_run: sent.update(i["u"] for i in news["items"])
