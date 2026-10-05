@@ -18,6 +18,8 @@ jobs:
       - name: Handle /start and /stop, welcome new subscribers
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          OLD_TELEGRAM_BOT_TOKEN: ${{ secrets.OLD_TELEGRAM_BOT_TOKEN }}
+          ALLOW_RESET_SUBSCRIBERS: ${{ secrets.ALLOW_RESET_SUBSCRIBERS }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_ADMIN_ID: ${{ secrets.TELEGRAM_ADMIN_ID }}
           GH_TOKEN: ${{ github.token }}

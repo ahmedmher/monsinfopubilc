@@ -41,18 +41,18 @@ def ar_date(iso): d = datetime.date.fromisoformat(iso[:10]); return "%d %s" % (d
 def ar_days(n): return "اليوم نفسه" if n == 0 else "يوم واحد" if n == 1 else "يومين" if n == 2 else ("%d أيام" % n if n <= 10 else "%d يوما" % n)
 
 # ---------------- crypto for the subscriber file ----------------
-def _ks(nonce, n):
-    out, c = b"", 0
-    while len(out) < n: out += hmac.new(KEY, nonce + c.to_bytes(4, "big"), "sha256").digest(); c += 1
+def _ks(nonce, n, key=None):
+    key = key or KEY; out, c = b"", 0
+    while len(out) < n: out += hmac.new(key, nonce + c.to_bytes(4, "big"), "sha256").digest(); c += 1
     return out[:n]
 def seal(obj):
     data = json.dumps(obj, separators=(",", ":")).encode(); nonce = os.urandom(16)
     ct = bytes(a ^ b for a, b in zip(data, _ks(nonce, len(data))))
     return base64.b64encode(nonce + hmac.new(KEY, nonce + ct, "sha256").digest() + ct).decode()
-def unseal(s):
-    raw = base64.b64decode(s); nonce, tag, ct = raw[:16], raw[16:48], raw[48:]
-    if not hmac.compare_digest(tag, hmac.new(KEY, nonce + ct, "sha256").digest()): raise ValueError("bad subscriber file")
-    return json.loads(bytes(a ^ b for a, b in zip(ct, _ks(nonce, len(ct)))))
+def unseal(s, key=None):
+    key = key or KEY; raw = base64.b64decode(s); nonce, tag, ct = raw[:16], raw[16:48], raw[48:]
+    if not hmac.compare_digest(tag, hmac.new(key, nonce + ct, "sha256").digest()): raise ValueError("bad subscriber file")
+    return json.loads(bytes(a ^ b for a, b in zip(ct, _ks(nonce, len(ct), key))))
 
 # ---------------- telegram + translation ----------------
 def tg(method, **p):
@@ -123,8 +123,24 @@ CATS = [c for c in news.get("cats", []) if c["id"] != "other"]
 CATL = {c["id"]: c["l"] for c in CATS}
 GROUPS = list(dict.fromkeys(c["g"] for c in CATS))
 subs_path = os.path.join(here, "telegram-subs.dat"); state_path = os.path.join(here, "telegram-state.json"); videos_path = os.path.join(here, "telegram-videos.json")
-try: subs = unseal(open(subs_path).read())
-except Exception: subs = {"offset": 0, "users": {}}
+def _load_subs():
+    """Never start from an empty list when a subscriber file exists but cannot be read (for example after the bot token was changed):
+    that would overwrite every subscriber. Use OLD_TELEGRAM_BOT_TOKEN to migrate, or ALLOW_RESET_SUBSCRIBERS=1 to start over on purpose."""
+    try: raw = open(subs_path).read().strip()
+    except FileNotFoundError: raw = ""
+    if not raw: return {"offset": 0, "users": {}}
+    try: return unseal(raw)
+    except Exception: pass
+    old = os.environ.get("OLD_TELEGRAM_BOT_TOKEN", "").strip()
+    if old:
+        try:
+            d = unseal(raw, hashlib.sha256(("subs:" + old).encode()).digest()); print("subscriber file migrated from the old bot token: %d subscribers" % len(d.get("users", d.get("chats", [])))); return d
+        except Exception: pass
+    if os.environ.get("ALLOW_RESET_SUBSCRIBERS") == "1": print("WARNING: starting with an empty subscriber list (ALLOW_RESET_SUBSCRIBERS=1)", file=sys.stderr); return {"offset": 0, "users": {}}
+    print("ERROR: telegram-subs.dat cannot be decrypted with the current TELEGRAM_BOT_TOKEN. The token was probably changed.\n"
+          "Fix: add the previous token as the GitHub secret OLD_TELEGRAM_BOT_TOKEN (it migrates the subscribers), or set ALLOW_RESET_SUBSCRIBERS=1 to start over.", file=sys.stderr)
+    sys.exit(1)
+subs = _load_subs()
 if "chats" in subs:   # migrate the first version of the file
     subs["users"] = subs.get("users", {}); [subs["users"].setdefault(str(c), {"mode": "live", "topics": []}) for c in subs.pop("chats")]
 subs.setdefault("users", {}); subs.setdefault("offset", 0)

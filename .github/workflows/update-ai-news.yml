@@ -20,6 +20,8 @@ jobs:
       - name: Telegram alerts, 6-hour top stories and daily digest
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          OLD_TELEGRAM_BOT_TOKEN: ${{ secrets.OLD_TELEGRAM_BOT_TOKEN }}
+          ALLOW_RESET_SUBSCRIBERS: ${{ secrets.ALLOW_RESET_SUBSCRIBERS }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python3 ai-news/telegram_news.py
       - name: Build today summary and static pages
