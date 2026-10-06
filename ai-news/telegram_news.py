@@ -646,7 +646,7 @@ def watch_videos(targets):
             if vid in sent_v: continue
             sent_v.add(vid)
             if first or is_short(vid): continue
-            text = "🎬 <b>فيديو جديد على قناة %s</b>\n\n%s\n\n▶️ <a href=\"https://www.youtube.com/watch?v=%s\">شاهد الفيديو الآن</a>" % (html.escape(author or "يوتيوب"), html.escape(title), vid)
+            text = "توصيتنا لفيديو اليوم : <a href=\"https://www.youtube.com/watch?v=%s\">%s</a>" % (vid, html.escape(title))   # the title is the link; no channel name, no other text
             for chat in targets: send(chat, text); time.sleep(0.07)
             n += 1; print("video announced:", title[:50])
     vs["sent"] = sorted(sent_v)[-600:]
