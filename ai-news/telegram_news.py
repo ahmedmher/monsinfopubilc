@@ -212,6 +212,7 @@ def item_block(n, it):
     return "%d. <b>%s</b>%s\n<a href=\"%s\">اقرأ الملخص الكامل</a>" % (n, html.escape(a["t"]), ("\n" + html.escape(sm)) if sm else "", html.escape(link(it), quote=True))
 def pack(header, blocks, limit=None):
     """Split into as few Telegram messages (max 4096 chars) as possible; the header goes on the first one."""
+    if not blocks: return []          # never send a header with no news under it
     limit = limit or (4000 - len(promo_html()))   # leave room for the promo links that may ride the last message
     msgs, cur = [], header
     for b in blocks:
@@ -746,8 +747,12 @@ if not first_run and now - last_batch >= BATCH_H * 3600 * 0.9:
     fresh = ranked([i for i in news["items"] if i["u"] not in sent and AUTH.get(i["s"], 0) >= INSTANT_MIN], LIVE_AGE_H)
     used = set()
     def batch_msgs(items):
-        blocks = [x for x in (item_block(n_, it) for n_, it in enumerate(items, 1)) if x]
-        return pack("📰 <b>آخر أخبار الذكاء الاصطناعي</b>", blocks)
+        """-> (messages, the stories actually shown). Stories that could not be translated are not shown and not marked as sent."""
+        shown, blocks = [], []
+        for it in items:
+            b = item_block(len(blocks) + 1, it)
+            if b: blocks.append(b); shown.append(it)
+        return pack("📰 <b>آخر أخبار الذكاء الاصطناعي</b>", blocks), shown
     def send_all(c, msgs, evening):
         for i, m_ in enumerate(msgs):
             last = i == len(msgs) - 1
@@ -757,12 +762,12 @@ if not first_run and now - last_batch >= BATCH_H * 3600 * 0.9:
     for c, u in users.items():
         if u.get("mode", "live") != "live": continue
         mine = ranked(fresh, LIVE_AGE_H, u.get("topics"))[:LIVE_COUNT]
-        msgs = batch_msgs(mine)
+        msgs, shown = batch_msgs(mine)
         if not msgs: continue
-        if send_all(c, msgs, local.hour >= PROMO_FROM): used.update(it["u"] for it in mine); stats["live"] += 1
+        if send_all(c, msgs, local.hour >= PROMO_FROM): used.update(it["u"] for it in shown); stats["live"] += 1
     if EXTRA:
-        msgs = batch_msgs(fresh[:LIVE_COUNT])
-        if msgs and send_all(EXTRA, msgs, False): used.update(it["u"] for it in fresh[:LIVE_COUNT])
+        msgs, shown = batch_msgs(fresh[:LIVE_COUNT])
+        if msgs and send_all(EXTRA, msgs, False): used.update(it["u"] for it in shown)
     sent.update(used); state["last_batch"] = now
 elif "last_batch" not in state: state["last_batch"] = now
 for k in [k for k, v in dn.items() if v["d"] != ldate and k not in users]: del dn[k]
