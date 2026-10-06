@@ -15,6 +15,8 @@ jobs:
     timeout-minutes: 16
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main   # the newest main, not the commit that existed when this run was queued (a queued run used to start from stale state and re-send news)
       - name: Handle /start and /stop, welcome new subscribers
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -29,7 +31,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@users.noreply.github.com"
           for f in ai-news/telegram-subs.dat ai-news/telegram-videos.json; do if [ -f $f ]; then git add $f; fi; done
-          git diff --cached --quiet || (git commit -m "chore: update Telegram subscribers" && for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done)
+          git diff --cached --quiet || { git commit -m "chore: update Telegram subscribers"; ok=0; for i in 1 2 3 4 5; do if git pull --rebase origin main && git push; then ok=1; break; fi; git rebase --abort 2>/dev/null || true; sleep 5; done; [ "$ok" = 1 ] || { echo "push failed"; exit 1; }; }
       - name: Start the next polling run right away (no gap for new subscribers)
         if: always()
         env:
