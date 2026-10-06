@@ -28,11 +28,12 @@ jobs:
         run: python3 ai-news/telegram_news.py
       - name: Save the Telegram state right away (so a later failure can never cause a re-send)
         if: always()
+        continue-on-error: true   # the final commit step pushes the state again if this one fails
         run: |
           git config user.name "github-actions"
           git config user.email "actions@users.noreply.github.com"
           if [ -f ai-news/telegram-state.json ]; then git add ai-news/telegram-state.json; fi
-          git diff --cached --quiet || { git commit -m "chore: telegram state"; ok=0; for i in 1 2 3 4 5; do if git pull --rebase origin main && git push; then ok=1; break; fi; git rebase --abort 2>/dev/null || true; sleep 5; done; [ "$ok" = 1 ] || { echo "push failed"; exit 1; }; }
+          git diff --cached --quiet || { git commit -m "chore: telegram state"; ok=0; for i in 1 2 3 4 5; do if git pull --rebase --autostash origin main && git push; then ok=1; break; fi; git rebase --abort 2>/dev/null || true; sleep 5; done; [ "$ok" = 1 ] || { echo "push failed"; exit 1; }; }
       - name: Build today summary and static pages
         run: python3 ai-news/build_today.py
       - name: Commit if changed
@@ -41,4 +42,4 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add ai-news/news.json ai-news/model-tracker.json ai-news/today.json ai-news/ar-cache.json docs
           for f in ai-news/telegram-state.json; do if [ -f $f ]; then git add $f; fi; done
-          git diff --cached --quiet || { git commit -m "chore: update AI news"; ok=0; for i in 1 2 3 4 5; do if git pull --rebase origin main && git push; then ok=1; break; fi; git rebase --abort 2>/dev/null || true; sleep 5; done; [ "$ok" = 1 ] || { echo "push failed"; exit 1; }; }
+          git diff --cached --quiet || { git commit -m "chore: update AI news"; ok=0; for i in 1 2 3 4 5; do if git pull --rebase --autostash origin main && git push; then ok=1; break; fi; git rebase --abort 2>/dev/null || true; sleep 5; done; [ "$ok" = 1 ] || { echo "push failed"; exit 1; }; }
