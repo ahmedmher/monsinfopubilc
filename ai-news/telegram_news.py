@@ -123,20 +123,21 @@ CATS = [c for c in news.get("cats", []) if c["id"] != "other"]
 CATL = {c["id"]: c["l"] for c in CATS}
 GROUPS = list(dict.fromkeys(c["g"] for c in CATS))
 subs_path = os.path.join(here, "telegram-subs.dat"); state_path = os.path.join(here, "telegram-state.json"); videos_path = os.path.join(here, "telegram-videos.json")
+_force_save = False   # must exist before _load_subs() runs
 def _load_subs():
     """Never start from an empty list when a subscriber file exists but cannot be read (for example after the bot token was changed):
     that would overwrite every subscriber. Use OLD_TELEGRAM_BOT_TOKEN to migrate, or ALLOW_RESET_SUBSCRIBERS=1 to start over on purpose."""
     try: raw = open(subs_path).read().strip()
     except FileNotFoundError: raw = ""
-    if not raw: return {"offset": 0, "users": {}}
+    if not raw: globals()["_force_save"] = True; return {"offset": 0, "users": {}}
     try: return unseal(raw)
     except Exception: pass
     old = os.environ.get("OLD_TELEGRAM_BOT_TOKEN", "").strip()
     if old:
         try:
-            d = unseal(raw, hashlib.sha256(("subs:" + old).encode()).digest()); print("subscriber file migrated from the old bot token: %d subscribers" % len(d.get("users", d.get("chats", [])))); return d
+            d = unseal(raw, hashlib.sha256(("subs:" + old).encode()).digest()); print("subscriber file migrated from the old bot token: %d subscribers" % len(d.get("users", d.get("chats", [])))); globals()["_force_save"] = True; return d
         except Exception: pass
-    if os.environ.get("ALLOW_RESET_SUBSCRIBERS") == "1": print("WARNING: starting with an empty subscriber list (ALLOW_RESET_SUBSCRIBERS=1)", file=sys.stderr); return {"offset": 0, "users": {}}
+    if os.environ.get("ALLOW_RESET_SUBSCRIBERS") == "1": print("WARNING: starting with an empty subscriber list (ALLOW_RESET_SUBSCRIBERS=1)", file=sys.stderr); globals()["_force_save"] = True; return {"offset": 0, "users": {}}
     print("ERROR: telegram-subs.dat cannot be decrypted with the current TELEGRAM_BOT_TOKEN. The token was probably changed.\n"
           "Fix: add the previous token as the GitHub secret OLD_TELEGRAM_BOT_TOKEN (it migrates the subscribers), or set ALLOW_RESET_SUBSCRIBERS=1 to start over.", file=sys.stderr)
     sys.exit(1)
@@ -144,6 +145,7 @@ subs = _load_subs()
 if "chats" in subs:   # migrate the first version of the file
     subs["users"] = subs.get("users", {}); [subs["users"].setdefault(str(c), {"mode": "live", "topics": []}) for c in subs.pop("chats")]
 subs.setdefault("users", {}); subs.setdefault("offset", 0)
+SUBS_SNAP = json.dumps(subs, sort_keys=True, ensure_ascii=False)   # to detect real changes at save time
 CFG_KEYS = {  # key: (global name, converter, Arabic label)
     "live_count": ("LIVE_COUNT", int, "أقصى عدد أخبار في رسالة الأخبار الجديدة"), "batch_hours": ("BATCH_H", float, "الفاصل بالساعات بين رسائل الأخبار الجديدة (3 = كل 3 ساعات)"), "promo_from": ("PROMO_FROM", int, "الروابط الإعلانية تُرفق بأول رسالة بعد هذه الساعة المحلية (18 = 6 مساء)"),
     "instant_min": ("INSTANT_MIN", float, "أقل وزن لمصدر الخبر (2 = المصادر الكبرى فقط، 1 = الكل)"), "live_age": ("LIVE_AGE_H", int, "أقصى عمر للخبر المرسل بالساعات"),
@@ -155,7 +157,11 @@ def apply_cfg():
         if k in CFG_KEYS:
             try: globals()[CFG_KEYS[k][0]] = CFG_KEYS[k][1](v)
             except Exception: pass
-def save_subs(): open(subs_path, "w").write(seal(subs))
+def _snap(o): return json.dumps(o, sort_keys=True, ensure_ascii=False)
+def save_subs():
+    """Write the encrypted list only when it really changed: every write uses a fresh random nonce, so an unchanged list would still create a new commit."""
+    if not _force_save and _snap(subs) == SUBS_SNAP: return
+    open(subs_path, "w").write(seal(subs))
 def hist(key):
     h = subs.setdefault("hist", {}); d = h.setdefault(time.strftime("%Y-%m-%d", time.gmtime()), {"new": 0, "stop": 0}); d[key] += 1
     for k in sorted(h)[:-90]: del h[k]
@@ -702,6 +708,7 @@ if "--subs" in sys.argv:
 apply_cfg()
 try: state = json.load(open(state_path)); first_run = False
 except Exception: state = {"sent": []}; first_run = True
+STATE_BEFORE = json.dumps(state, sort_keys=True, ensure_ascii=False)
 sent = set(state["sent"]); trcache.update(state.get("tr", {})); gone = set(state.get("gone", []))
 now = time.time(); stats = {"alerts": 0, "live": 0, "digest": 0}
 users = {c: u for c, u in subs["users"].items() if int(c) not in gone and not u.get("nm")}
@@ -797,5 +804,11 @@ if first_run: sent.update(i["u"] for i in news["items"])
 state["sent"] = sorted(sent)[-1500:]; state["gone"] = sorted(gone)[-200:]
 state["tr"] = dict(list(trcache.items())[-300:])
 state["last"] = {"at": time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime()), "translate": TR_STATS, "sent": stats, "users": len(users)}
-json.dump(state, open(state_path, "w"), ensure_ascii=False, separators=(",", ":"))
+def _core(st):
+    d = json.loads(json.dumps(st)); d.get("last", {}).pop("at", None); return json.dumps(d, sort_keys=True, ensure_ascii=False)
+try:
+    prev_at = datetime.datetime.strptime(json.loads(STATE_BEFORE)["last"]["at"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=datetime.timezone.utc).timestamp()
+    unchanged = _core(state) == _core(json.loads(STATE_BEFORE)) and time.time() - prev_at < 3 * 3600
+except Exception: unchanged = False
+if not unchanged: json.dump(state, open(state_path, "w"), ensure_ascii=False, separators=(",", ":"))   # skip identical rewrites: keeps the git history small
 print("done:", stats, "| users:", len(users))

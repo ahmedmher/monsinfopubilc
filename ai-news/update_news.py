@@ -205,5 +205,14 @@ if not own:  # keep the previous list when both fetches fail
     try: own = json.load(open(os.path.join(here, "news.json"), encoding="utf8")).get("own", [])
     except Exception: own = []
 print("own items:", len(own))
-json.dump({"updated": now.strftime("%Y-%m-%dT%H:%MZ"), "sources": srcs, "items": out, "own": own, "cats": [{"id": c["id"], "l": c["l"], "g": c["g"]} for c in CATS] + [{"id": "other", "l": "أخبار عامة", "g": "أخرى"}]}, open(os.path.join(here, "news.json"), "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
+new_doc = ({"updated": now.strftime("%Y-%m-%dT%H:%MZ"), "sources": srcs, "items": out, "own": own, "cats": [{"id": c["id"], "l": c["l"], "g": c["g"]} for c in CATS] + [{"id": "other", "l": "أخبار عامة", "g": "أخرى"}]})
+# Keep the repository history small: write only when something other than the timestamp changed, or when the file is 3+ hours old.
+path_news = os.path.join(here, "news.json")
+try:
+    prev = json.load(open(path_news, encoding="utf8"))
+    same = all(prev.get(k) == new_doc.get(k) for k in ("sources", "items", "own", "cats"))
+    age_h = (now - datetime.datetime.strptime(prev["updated"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=datetime.timezone.utc)).total_seconds() / 3600
+except Exception: same, age_h = False, 99
+if same and age_h < 3: print("news unchanged; keeping the previous file")
+else: json.dump(new_doc, open(path_news, "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
 print("wrote", len(out), "items")

@@ -82,7 +82,13 @@ rel = sorted([m for m in trk if m.get("rel")], key=lambda m: m["rel"], reverse=T
 released = {"n": rel[0]["n"], "rel": rel[0]["rel"], "first": rel[0].get("first")} if rel else None
 
 today = {"updated": time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime()), "stories": stories, "price": change, "cheap": {"n": cheap["n"], "i": cheap["i"], "o": cheap["o"]} if cheap else None, "hot": hot, "rumor": rumor, "released": released}
-json.dump(today, open(os.path.join(root, "ai-news/today.json"), "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
+tp = os.path.join(root, "ai-news/today.json")
+try:
+    prev_t = json.load(open(tp, encoding="utf8"))
+    same_t = all(prev_t.get(k) == today.get(k) for k in today if k != "updated")
+    age_t = (time.time() - datetime.datetime.strptime(prev_t["updated"], "%Y-%m-%dT%H:%MZ").replace(tzinfo=datetime.timezone.utc).timestamp()) / 3600
+except Exception: same_t, age_t = False, 99
+if not (same_t and age_t < 3): json.dump(today, open(tp, "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))   # keep git history small
 json.dump(dict(list(cache.items())[-500:]), open(cache_path, "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
 
 # ---------------- static pages (docs/) ----------------
@@ -102,7 +108,7 @@ if hot: b += '<h2>الأكثر تداولا</h2><div class="c"><b>%s</b> — ذ�
 if rumor: b += '<h2>آخر تسريب</h2><div class="c"><b>%s</b> — أول ظهور %s. <a href="%s">%s</a> (%s)</div>' % (E(rumor["n"]), ar_date(rumor["first"]), E(rumor["u"]), E(rumor["t"]), E(rumor["s"]))
 b += '<h2>نماذج وأسعارها</h2><div class="c">' + " · ".join('<a href="models/%s.html">%s</a>' % (m["id"], E(m["n"])) for m in prices) + "</div>"
 urls.append(page("index.html", "أخبار الذكاء الاصطناعي اليوم وأسعار النماذج | مونستر للمعلوميات", "ملخص يومي بالعربية: أهم أخبار الذكاء الاصطناعي، أكبر تغيير في أسعار النماذج، الأكثر تداولا وآخر التسريبات.", b,
-    {"@context": "https://schema.org", "@type": "CollectionPage", "name": "أخبار الذكاء الاصطناعي اليوم", "inLanguage": "ar", "dateModified": today["updated"]}))
+    {"@context": "https://schema.org", "@type": "CollectionPage", "name": "أخبار الذكاء الاصطناعي اليوم", "inLanguage": "ar", "dateModified": today_iso}))
 FAMOF = lambda n: next((f for f, rx in FAM.items() if re.search(rx, n.lower())), None)
 for m in prices:
     hr = [(d, hist[d][m["id"]]) for d in sorted(hist) if m["id"] in hist[d]]
