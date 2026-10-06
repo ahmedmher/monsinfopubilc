@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """Fetch AI news from RSS/Atom feeds (feeds.json) and write news.json. No paid services.
 Each item gets: d = short card summary, x = longer excerpt (RSS content, or the article's own
-meta description + first paragraphs when the feed is too short). Items are archived 30 days.
-Env: FEEDS_FILE, DAYS (30), MAX_ITEMS (500), PAGE_FETCH (max article pages fetched per run, 40)."""
+meta description + first paragraphs when the feed is too short). Items are archived 20 days (at most 400).
+Env: FEEDS_FILE, DAYS (20), MAX_ITEMS (400), PAGE_FETCH (max article pages fetched per run, 40)."""
 import json, os, re, sys, html, datetime, email.utils, urllib.request
 from html.parser import HTMLParser
 import xml.etree.ElementTree as ET
 here = os.path.dirname(os.path.abspath(__file__))
-DAYS = int(os.environ.get("DAYS", 30)); MAX_ITEMS = int(os.environ.get("MAX_ITEMS", 500))
+DAYS = int(os.environ.get("DAYS", 20)); MAX_ITEMS = int(os.environ.get("MAX_ITEMS", 400))   # an item is dropped after 20 days, or earlier (oldest first) when more than 400 are kept
 PAGE_FETCH = int(os.environ.get("PAGE_FETCH", 40)); X_MAX = 1300; X_MIN = 450
 now = datetime.datetime.now(datetime.timezone.utc)
 KW = re.compile(r"\b(ai|a\.i\.|artificial intelligence|llm|gpt|chatgpt|claude|gemini|openai|anthropic|machine learning|deep learning|neural|agentic|agents?|copilot|diffusion|generative|genai|nvidia nim|inference)\b|ذكاء|نموذج", re.I)
