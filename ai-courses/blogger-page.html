@@ -15,7 +15,7 @@
 #aic .kick i{width:8px;height:8px;border-radius:50%;background:#7CFFB0;box-shadow:0 0 0 4px rgba(124,255,176,.25)}
 #aic h1{margin:0 0 12px;font-size:clamp(26px,4.2vw,44px);line-height:1.35;font-weight:700}
 #aic h1 em{font-style:normal;background:linear-gradient(transparent 62%,#2b0a3d 62%,#2b0a3d 92%,transparent 92%);padding:0 4px}
-#aic .lead{margin:0;max-width:680px;font-size:16px;opacity:.94}
+#aic .lead{margin:0;max-width:700px;font-size:16px;opacity:.94}
 #aic .meta{margin-top:16px;font-size:13px;opacity:.9}
 #aic .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 #aic .tags span{font-size:12.5px;font-weight:700;padding:2px 14px;border-radius:30px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4)}
@@ -28,12 +28,14 @@
 #aic .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:16px}
 #aic .card{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--ln);border-radius:20px;overflow:hidden;cursor:pointer;transition:.25s;box-shadow:0 8px 24px rgba(76,29,149,.06)}
 #aic .card:hover{transform:translateY(-5px);border-color:var(--ac);box-shadow:0 20px 40px rgba(76,29,149,.15)}
-#aic .im{aspect-ratio:16/9;background:linear-gradient(135deg,#ede9fe,#fbcfe8) center/cover no-repeat}
+#aic .cv{aspect-ratio:16/9;background:linear-gradient(135deg,#ede9fe,#fbcfe8)}
+#aic .cv img{width:100%;height:100%;object-fit:cover;display:block}
 #aic .rk{position:absolute;top:10px;inset-inline-start:10px;z-index:2;min-width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(124,58,237,.4)}
 #aic .bd{display:flex;flex-direction:column;gap:8px;padding:14px 16px 16px;flex:1}
 #aic .tp{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--mu)}
 #aic .src{font-weight:700;color:var(--ac);background:#efe9ff;border-radius:30px;padding:1px 12px}
 #aic .card h3{margin:0;font-size:16.5px;line-height:1.6;font-weight:700}
+#aic .card p{margin:0;font-size:13.5px;color:var(--mu);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 #aic .go{margin-top:auto;padding-top:10px;border-top:1px dashed var(--ln);display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;color:var(--ac)}
 #aic .go svg{transition:.2s}#aic .card:hover .go svg{transform:translateX(-5px)}
 #aic .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:14px;font-weight:700;font-size:13.5px;border:1px solid var(--ln);background:#fff;color:var(--ac);cursor:pointer;font-family:inherit}
@@ -42,47 +44,93 @@
 #aic .btn[disabled]{opacity:.45;cursor:default;box-shadow:none}
 #aic .back{display:inline-flex;align-items:center;gap:8px;margin:20px 0 0;padding:8px 18px;border-radius:30px;background:#fff;border:1px solid var(--ln);font-weight:700;font-size:13.5px;color:var(--ac);cursor:pointer;font-family:inherit}
 #aic .dh h1{font-size:clamp(22px,3.4vw,34px);line-height:1.5}
-#aic .lay{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);gap:16px;margin-top:16px;align-items:start}
-@media(max-width:900px){#aic .lay{grid-template-columns:1fr}}
-#aic .box{background:#fff;border:1px solid var(--ln);border-radius:20px;padding:14px;box-shadow:0 8px 24px rgba(76,29,149,.05)}
+#aic .box{background:#fff;border:1px solid var(--ln);border-radius:20px;padding:14px;margin-top:16px;box-shadow:0 8px 24px rgba(76,29,149,.05)}
 #aic .pl{width:100%;aspect-ratio:16/9;border:0;border-radius:14px;background:#1b1740;display:block}
 #aic .now{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px 4px 2px}
-#aic .now h2{margin:0;font-size:17px;flex:1 1 220px;line-height:1.7}
+#aic .now h2{margin:0;font-size:17px;flex:1 1 260px;line-height:1.7}
 #aic .nav{display:flex;gap:8px}
 #aic .yt{display:inline-block;margin-top:6px;color:var(--mu);font-size:12.5px;padding:0 4px}
-#aic .ls{max-height:640px;overflow:auto;position:relative}
-@media(max-width:900px){#aic .ls{max-height:none}}
-#aic .ls h4{margin:2px 4px 10px;font-size:14px;color:var(--mu)}
-#aic .ln{display:flex;gap:10px;align-items:center;padding:9px 12px;margin-bottom:8px;border-radius:14px;background:#faf9fe;border:1px solid var(--ln);cursor:pointer;transition:.2s}
+#aic .ls h2{margin:2px 4px 12px;font-size:16px}
+#aic .ln{display:flex;gap:12px;align-items:center;padding:10px 14px;margin-bottom:8px;border-radius:14px;background:#faf9fe;border:1px solid var(--ln);cursor:pointer;transition:.2s}
 #aic .ln:hover{border-color:var(--ac)}
 #aic .ln.on{background:#efe9ff;border-color:var(--ac)}
-#aic .ln b{flex:none;width:30px;height:30px;border-radius:50%;background:#e4dafc;color:var(--ac);display:flex;align-items:center;justify-content:center;font-size:13px}
+#aic .ln b{flex:none;width:32px;height:32px;border-radius:50%;background:#e4dafc;color:var(--ac);display:flex;align-items:center;justify-content:center;font-size:13px}
 #aic .ln.on b{background:var(--ac);color:#fff}
 #aic .ln.dn b{background:#bdf0d6;color:#047857}
-#aic .ln span{font-size:13.5px;font-weight:600;line-height:1.7}
+#aic .ln span{font-size:14px;font-weight:600;line-height:1.7}
 #aic .empty{padding:30px;text-align:center;color:var(--mu);background:#fff;border:1px dashed var(--ln);border-radius:18px;grid-column:1/-1}
 #aic .sk{height:260px;border-radius:20px;background:linear-gradient(90deg,#efe9fb 25%,#f8f5ff 50%,#efe9fb 75%);background-size:200% 100%;animation:aics 1.2s infinite}
 @keyframes aics{0%{background-position:200% 0}100%{background-position:-200% 0}}
 #aic .note{font-size:12px;color:var(--mu);margin-top:18px;text-align:center}
-#aic-seo{max-width:1200px;margin:24px auto 0;color:#3d3963;font-size:15px}
+#aic-seo{max-width:1200px;margin:28px auto 0;padding:0 8px;color:#3d3963;font-size:15.5px;line-height:1.95;direction:rtl;text-align:right;font-family:'IBM Plex Sans Arabic',Tahoma,Arial,sans-serif}
+#aic-seo h2{font-size:22px;color:#1b1740;margin:30px 0 10px}
+#aic-seo h3{font-size:17.5px;color:#4a0a68;margin:20px 0 6px}
+#aic-seo ul,#aic-seo ol{padding-inline-start:22px}
+#aic-seo details{background:#fff;border:1px solid #e6e1f5;border-radius:14px;padding:10px 16px;margin:8px 0}
+#aic-seo summary{cursor:pointer;font-weight:700;color:#1b1740}
+#aic-seo details p,#aic-seo details ol{margin:8px 0 2px}
+#aic-seo hr{border:0;border-top:1px solid #e6e1f5;margin:26px 0}
 @media(max-width:560px){#aic .w{padding:0 14px 18px}#aic .hero{margin:12px 14px 0;padding:30px 20px}}
 </style>
 
 <div id="aic"><div id="aic-root"><div class="w"><div class="grid" style="padding-top:24px"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div></div></div></div>
 
+<noscript><p dir="rtl" style="text-align:center">فعّل JavaScript لمشاهدة الكورسات، أو تصفح فهرس الكورسات والدروس في الأسفل.</p></noscript>
+
 <div id="aic-seo" lang="ar" dir="rtl">
 <hr>
-<h2>كورسات الذكاء الاصطناعي المجانية بالعربي</h2>
-<p>تجمع هذه الصفحة كورسات مجانية مرتبة درسا بعد درس من يوتيوب، تغطي Claude وSeedance وHiggsfield وأدوات جوجل وبناء المواقع والتطبيقات بالذكاء الاصطناعي والربح من يوتيوب بدون ظهور. اختر الكورس وابدأ من الدرس الأول، والصفحة تتذكر ما شاهدته.</p>
-<h3>الأسئلة الشائعة</h3>
-<details><summary>هل الكورسات مجانية؟</summary><p>نعم، كل الدروس فيديوهات عامة على يوتيوب ولا تحتاج اشتراكا.</p></details>
-<details><summary>كيف تتحدث الكورسات؟</summary><p>تُقرأ القائمة من مستودع GitHub، فتظهر الكورسات والدروس الجديدة تلقائيا بدون تعديل الصفحة.</p></details>
+<h2>كورسات الذكاء الاصطناعي المجانية بالعربي: ابدأ من الصفر وتعلّم بالترتيب</h2>
+<p>هذه الصفحة تجمع <strong>كورسات الذكاء الاصطناعي المجانية</strong> في مكان واحد، مرتبة درسًا بعد درس ومأخوذة من فيديوهات عامة على يوتيوب. لا تحتاج إلى اشتراك ولا إلى تسجيل حساب: تختار الكورس، فيفتح لك المشغّل في الأعلى والدروس تحته بالترتيب، وتكمل من حيث توقفت لأن الصفحة تتذكر ما شاهدته على جهازك.</p>
+<p>إن كنت تبحث عن <strong>كورس ذكاء اصطناعي مجاني</strong> يشرح الأدوات بالتطبيق العملي لا بالنظريات فقط، فستجد هنا كورسات عن Claude وSeedance وHiggsfield وأدوات جوجل، وكورسات لبناء المواقع والتطبيقات بدون برمجة، وأخرى لصناعة الإعلانات والفيديوهات والربح من يوتيوب بدون ظهور.</p>
+
+<h3>ماذا ستتعلم من هذه الكورسات؟</h3>
+<ul>
+<li>استخدام Claude وChatGPT وGemini في الكتابة والبرمجة وصناعة المحتوى.</li>
+<li>توليد الفيديو والصور بالذكاء الاصطناعي بنماذج مثل Seedance وVeo وKling وNano Banana.</li>
+<li>صناعة إعلانات احترافية للمنتجات من صورة واحدة.</li>
+<li>بناء موقع أو تطبيق كامل بدون خبرة في البرمجة.</li>
+<li>إنشاء قناة يوتيوب بدون ظهور وتحويلها إلى مصدر دخل.</li>
+</ul>
+
+<h2>فهرس كورسات الذكاء الاصطناعي المجانية</h2>
+<div id="aic-index"><h3>كورس شرح كلود Claude AI</h3><p>تعرّف على Claude خطوة بخطوة: مميزاته وكيف تستخدمه في صناعة الموشن جرافيك والمونتاج والإعلانات وبناء المواقع والألعاب، مع تجارب عملية على Claude Fable 5 وOpus 5.5.</p><details><summary>دروس الكورس (14 درس)</summary><ol><li>Claude AI بالعربي | أقوى مميزات Claude ولماذا يتحدث الجميع عنه؟</li><li>دليل كامل: Claude AI يصنع موشن جرافيك احترافي بالذكاء الاصطناعي مجاناً</li><li>نسخ المونتاج وتطبيقه على فيديو جديد باستخدام Claude AI</li><li>جعلت Claude Fable 5 يبني موقع ويب Motion ثلاثي الأبعاد</li><li>حوّلت Claude AI إلى شركة إعلانات وتسويق كاملة باستخدام Higgsfield MCP</li><li>أعطيت Claude Fable 5 صورة واحدة فأنشأ إعلانًا بمستوى 5000 دولار</li><li>إنشاء فيلم أنيميشن كرتوني أو حقيقي بجودة 4K بالذكاء الاصطناعي</li><li>آلة تصنع فيديوهات Shorts فيروسية تلقائيًا</li><li>أنشأت مصنع فيديوهات بدون ظهور باستخدام Claude AI</li><li>مصنع إعلانات تنافس الشركات العالمية باستخدام Seedance 2</li><li>فيديوهات وثائقية لليوتيوب بنمط Vox أنيميشن في 3 دقائق</li><li>Claude Opus 5.5 يتفوق على GPT Astra ويصنع هذه الفيديوهات بنفسه</li><li>إنشاء لعبة احترافية بـ Claude Fable 5 بدون خبرة برمجية</li><li>مهمة واحدة لـ Claude Fable 5: يجد العملاء ويصنع الإعلانات</li></ol></details><h3>كورس إنشاء الإعلانات بالذكاء الاصطناعي</h3><p>تعلّم صناعة إعلانات المنتجات بالذكاء الاصطناعي من صورة واحدة: إعلانات سينمائية وUGC وإعلانات الطعام باستخدام Seedance وHiggsfield وChatGPT، بدون فريق إنتاج ولا ميزانية كبيرة.</p><details><summary>دروس الكورس (11 درس)</summary><ol><li>من صورة إلى إعلان سينمائي بقيمة إنتاجية 5000$ في 3 خطوات | Seedance 2.5</li><li>حوّلت Claude AI إلى شركة إعلانات وتسويق كاملة باستخدام Higgsfield MCP</li><li>ارفع صورة المنتج فقط... والذكاء الاصطناعي يصنع إعلانات لانهائية بدون برومت</li><li>سر إعلانات الطعام الاحترافية بالذكاء الاصطناعي | Seedance 2.0 4K</li><li>مصنع إعلانات تنافس الشركات العالمية باستخدام Seedance 2</li><li>إعلانات UGC للمنتجات باستخدام Seedance 2.0</li><li>الأداة التي تكتب الـHook وتصنع الإعلان كاملًا | Higgsfield Marketing Studio 2.0</li><li>أقوى AI Workflow لصناعة الفيديو بأداة واحدة | Higgsfield Canvas</li><li>ChatGPT ينشئ فيديوهات إعلانية كاملة من صورة بدون برومت</li><li>Claude AI خبير تسويق بالعمولة يختار المنتجات الرابحة بنفسه</li><li>مجاناً: أداة تولد إعلانات للبراند أو المنتج لزيادة المبيعات</li></ol></details><h3>كورس احتراف توليد الفيديو بنموذج Seedance</h3><p>كورس متكامل عن Seedance 2.0 و2.5: كيف تكتب الأوامر وتصنع فيديوهات سينمائية وأفلامًا وإعلانات وفيديوهات طبخ، مع مقارنات بين النسخ والمواقع التي تتيحه مجانًا.</p><details><summary>دروس الكورس (14 درس)</summary><ol><li>أسهل طريقة لـ Seedance 2.5 يصنع فيديوهات POV وسينمائية وإعلانات وأكشن</li><li>سر النتائج الاحترافية في Seedance 2.5 | انسخ طريقتي لتوليد فيديوهات بدقة سينمائية</li><li>هل يستحق Seedance 2.5 كل هذه الضجة؟ مقارنة شاملة مع Seedance 2.0</li><li>معركة عمالقة الصين في توليد الفيديو | Seedance 2 ضد Happy Horse</li><li>أفضل 3 مواقع تستخدم Seedance 2 لتوليد فيديو احترافي مجانًا</li><li>فيديو سينمائي واقعي بالذكاء الاصطناعي بأرخص استخدام لـ Seedance 2</li><li>إخراج فيلم كامل بـ Seedance 2.5</li><li>اكتب فكرة واحدة فقط وGPT يصنع الفيلم كاملًا 4K في Seedance 2.0</li><li>طريقة تصنع فيديوهات فيرال بدلًا منك بدون كتابة برومت</li><li>نظام ينشئ فيديوهات طبخ فيروسية واقعية بدون ظهور بـ Seedance 2.5</li><li>إنشاء إعلان احترافي بجودة 4K في دقائق</li><li>إعلان منتج UGC بالذكاء الاصطناعي من فكرة بسيطة | Seedance 2.0</li><li>نظام يحول أي منتج إلى 10 إعلانات باستخدام ChatGPT و Seedance 2.0</li><li>إنشاء إعلانك بضغطة زر مع Higgsfield Marketing Studio</li></ol></details><h3>كورس أدوات جوجل للذكاء الاصطناعي المجانية</h3><p>أدوات جوجل المجانية للذكاء الاصطناعي: Google AI Studio وNotebookLM وOpal وNano Banana وVeo 3، مع التعليق الصوتي العربي وأحد وكلاء الذكاء الاصطناعي المجانيين.</p><details><summary>دروس الكورس (11 درس)</summary><ol><li>المنصة السرّية من جوجل: Google AI Studio أقوى موقع ذكاء اصطناعي مجاني</li><li>شرح أداة NotebookLM لشرح وتلخيص المواد الدراسية</li><li>شرح Google Opal: بديل n8n المجاني لعمل تطبيقات بدون كود</li><li>إنشاء تطبيق بالذكاء الاصطناعي مجانًا بدون برمجة مع جوجل</li><li>Nano Banana vs الفوتوشوب: تعديل الصور بالذكاء الاصطناعي مع الحفاظ على التفاصيل</li><li>استخدم Nano Banana Pro مجانًا لتوليد كتابة باللغة العربية</li><li>Veo 3 مجانًا بدون فيزا وبدون اشتراك</li><li>عمل إعلانات احترافية باستخدام VEO 3 مجانًا</li><li>تثبيت الشخصية على VEO 3 وتوليد فيديو بصورتك</li><li>تحويل النص إلى صوت: تعليق صوتي عربي بشري واقعي</li><li>اجعل متصفح كروم يعمل مكانك كوكيل ذكاء اصطناعي مجانًا | Nanobrowser</li></ol></details><h3>كورس بناء المواقع والتطبيقات بالذكاء الاصطناعي بدون خبرة</h3><p>ابنِ موقعًا أو تطبيقًا بالذكاء الاصطناعي بدون خبرة برمجية: Replit وDeepSite وChatGPT وCanva وغيرها، من الفكرة حتى الإطلاق، مع نظرة على لغات البرمجة الأكثر طلبًا.</p><details><summary>دروس الكورس (17 درس)</summary><ol><li>إنشاء موقع إلكتروني كامل في 5 دقائق بالذكاء الاصطناعي</li><li>إنشاء موقع ويب مجانًا في دقائق | Horizons AI</li><li>اصنع أي موقع بالذكاء الاصطناعي والربح من إنشاء المواقع | Stunning</li><li>طريقة إنشاء موقع إلكتروني باستخدام Canva مجانًا</li><li>اصنع تطبيقًا احترافيًا بـ DeepSite V2 بدون خبرة برمجية</li><li>برمجة تطبيق بالذكاء الاصطناعي بدون خبرة | شرح Replit</li><li>بناء تطبيق أندرويد كامل في 10 دقائق بأداة ذكاء اصطناعي واحدة</li><li>إنشاء تطبيق بالذكاء الاصطناعي مجانًا بدون برمجة مع جوجل</li><li>كيف يبني ChatGPT تطبيقك في دقائق بدون خبرة برمجية</li><li>برمجة موقع آلة حاسبة بـ ChatGPT بدون خبرة في JavaScript و CSS و HTML</li><li>برمجة متصفح إنترنت بالذكاء الاصطناعي على ChatGPT</li><li>جعلت Claude Fable 5 يبني موقع ويب Motion ثلاثي الأبعاد</li><li>عمل تطبيق أندرويد لأي موقع والربح منه بدون خبرة</li><li>بزنس في دقائق: هل يبني الذكاء الاصطناعي مشروعك بالكامل؟</li><li>مساعد AI مجاني على الكمبيوتر بدون تعقيدات | OpenClaw مع Nut Studio</li><li>البرمجة للمبتدئين: كيف تبدأ وأفضل كورسات لتعلمها</li><li>أهم لغات البرمجة الأكثر طلبًا في سوق العمل 2026</li></ol></details><h3>كورس احتراف Higgsfield ونماذج الفيديو بالذكاء الاصطناعي</h3><p>شرح شامل لمنصة Higgsfield ونماذج الفيديو: Cinema Studio وSoul ID وSeedance وKling وWAN وSora، وإضافات Photoshop وPremiere وDaVinci، وصناعة الإعلانات والمؤثر الافتراضي.</p><details><summary>دروس الكورس (51 درس)</summary><ol><li>كيفية استخدام Higgsfield AI في 2026 | شرح كامل من البداية للاحتراف</li><li>جرب أقوى موقع ذكاء اصطناعي مجانًا لمدة 24 ساعة بدون حدود | Higgsfield</li><li>بدل 10 أدوات استخدم أداة واحدة: أقوى AI Workflow | Higgsfield Canvas</li><li>الكمبيوتر الخارق من Higgsfield: وكيل ذكي ينفذ كل شيء من كلمة</li><li>حل مشكلة تغيّر الشخصية في توليد الصور والفيديو | Higgsfield Soul ID</li><li>ليه فيديوهات AI بتاعتك شكلها عادي؟ السر في Cinema Studio 2.5</li><li>تثبيت الشخصية وإنشاء فيلم سينمائي بسهولة | Cinema Studio</li><li>نموذج Seedance 2.5: صناعة فيديوهات 30 ثانية بدون أي Cuts</li><li>Seedance 2.0: فيديوهات سينمائية مع أقوى 50 برومت</li><li>فيديوهات AI واقعية Viral | شرح Seedance 2.0 + برومت احترافي</li><li>نظام يولّد فيديوهات أكشن وVFX كاملة بـ Seedance 2.5</li><li>فيلم طويل سينمائي واقعي أكشن بأرخص منصة Seedance 2</li><li>أخيرًا ظهر الوحش الصيني WAN 2.5 المنافس لـ VEO 3 | تجربة ومقارنة</li><li>اختبار Kling O1: تعديل الفيديو بالذكاء الاصطناعي بضغطة زر</li><li>لماذا Kling 3.0 هو أكثر تحديث منتظر؟</li><li>شرح SORA 2 PRO وتوليد فيديو بدون علامة مائية + مقارنة مع VEO 3</li><li>أسرع طريقة لصناعة فيديوهات احترافية مع Gemini Omni Flash</li><li>حرّرت Gemini 3.5 وأصبح ينفذ المستحيل</li><li>اكتشف قوة Nano Banana Pro: صور 4K وكتابة عربية بدون أخطاء</li><li>أقوى نموذج للتعديل على الصور بالذكاء الاصطناعي | Higgsfield Popcorn</li><li>تقنية Genjutsu: تعديل الأشخاص والعناصر داخل الفيديو بدون تغيير الحركة</li><li>استبدال الشخصية بالكامل وتوليد الفيديو خطوة بخطوة | Higgsfield WAN Animate</li><li>تقنية Face Swap: تبديل الوجه في أي صورة أو فيديو</li><li>التحول بالكامل إلى باتمان في الفيديو بضغطة زر</li><li>تحريك الأثاث في فيديوهات عرض الشقق والعقارات</li><li>Blender بالذكاء الاصطناعي: تحويل مشهد 3D إلى فيديو سينمائي</li><li>الذكاء الاصطناعي داخل DaVinci Resolve: هل انتهى عصر مواقع AI؟</li><li>إضافة تغنيك عن مواقع الذكاء الاصطناعي: المونتاج داخل Premiere Pro</li><li>أقوى إضافة ذكاء اصطناعي لفوتوشوب | Higgsfield Photoshop</li><li>ذكاء اصطناعي يتحكم في After Effects بدلًا مني</li><li>إنشاء AI Influencer والربح منه | Higgsfield AI Influencer Studio</li><li>من صورة إلى إعلان سينمائي بقيمة إنتاجية 5000$ في 3 خطوات | Seedance 2.5</li><li>سر إعلانات الطعام الاحترافية بالذكاء الاصطناعي | Seedance 2.0 4K</li><li>مصنع إعلانات تنافس الشركات العالمية باستخدام Seedance 2</li><li>إعلانات UGC للمنتجات باستخدام Seedance 2.0</li><li>ارفع صورة المنتج فقط والذكاء الاصطناعي يصنع إعلانات لانهائية</li><li>ChatGPT ينشئ فيديوهات إعلانية كاملة من صورة بدون برومت</li><li>الأداة التي تكتب الـHook وتصنع الإعلان كاملًا | Higgsfield Marketing Studio 2.0</li><li>مجانًا: أداة تولد إعلانات للبراند أو المنتج لزيادة المبيعات</li><li>حوّلت Claude AI إلى شركة إعلانات وتسويق كاملة باستخدام Higgsfield MCP</li><li>Claude AI خبير تسويق بالعمولة يختار المنتجات الرابحة بنفسه</li><li>آلة تصنع فيديوهات Shorts فيروسية تلقائيًا</li><li>أنشأت مصنع فيديوهات بدون ظهور باستخدام Claude AI</li><li>فيديوهات وثائقية لليوتيوب بنمط Vox أنيميشن في 3 دقائق</li><li>Claude يعمل صورًا وفيديو كاملًا لوحده</li><li>نسخ المونتاج وتطبيقه على فيديو جديد باستخدام Claude AI</li><li>إنشاء فيلم أنيميشن كرتوني أو حقيقي بجودة 4K بالذكاء الاصطناعي</li><li>Claude Opus 5.5 يتفوق على GPT Astra ويصنع هذه الفيديوهات بنفسه</li><li>جعلت Claude Fable 5 يبني موقع ويب Motion ثلاثي الأبعاد</li><li>إنشاء لعبة كاملة بـ GPT 6 Astra بدون خبرة برمجية</li><li>الذكاء الاصطناعي يحول أي فكرة إلى تطبيق كامل في دقائق</li></ol></details><h3>كورس الربح من يوتيوب بدون ظهور بالذكاء الاصطناعي</h3><p>أنشئ قناة يوتيوب بدون ظهور بالذكاء الاصطناعي: أفكار المحتوى وأدوات مثل InVideo وVidnoz وCanva وVeo 3، وأنواع الفيديوهات التي تحقق مشاهدات كالوثائقي والأنيميشن وقصص الأطفال والتايم لابس.</p><details><summary>دروس الكورس (29 درس)</summary><ol><li>90% من قنوات الذكاء الاصطناعي تفشل… وهذا السبب</li><li>اصنع فيديو كامل بالذكاء الاصطناعي لليوتيوب بدون ظهورك بأدوات مجانية</li><li>الربح من يوتيوب بدون ظهور باستخدام Canva</li><li>إنشاء فيديو بالذكاء الاصطناعي بضغطة زر | شرح InVideo AI</li><li>إنشاء فيديوهات احترافية بدون ظهور باستخدام Vidnoz AI</li><li>أفضل طريقة لإنشاء فيديو احترافي بدون خبرة باستخدام Canva و Lemon Slice</li><li>تحويل أي تغريدة على تويتر إلى فيديو مع Fliki</li><li>أنشأت مصنع فيديوهات بدون ظهور باستخدام Claude AI</li><li>إنشاء مئات الفيديوهات بضغطة زر | تصميم شورتس وتيك توك</li><li>فيديوهات سؤال وجواب تفاعلية للربح من اليوتيوب بدون ظهور</li><li>إنشاء فيديو إخباري بالذكاء الاصطناعي لليوتيوب</li><li>فيديوهات وثائقية مثل قناة عشوائيات والجانب المشرق</li><li>فيديوهات VOX Animation بالذكاء الاصطناعي مجانًا | أنيميشن ورقي</li><li>فيديوهات قصص أطفال بالذكاء الاصطناعي مجانًا لليوتيوب</li><li>فيديو أنيميشن بدون خبرة في دقائق والربح منه</li><li>فيديو أنيميشن ثلاثي الأبعاد بالذكاء الاصطناعي مجانًا بالكامل</li><li>فيديو أنيميشن كرتون طويل بالذكاء الاصطناعي من كلمة</li><li>فيلم أنيميشن كرتوني أو حقيقي بجودة 4K بالذكاء الاصطناعي</li><li>توليد فيديو طويل 50 دقيقة بضغطة زر مع ثبات الشخصيات</li><li>فيديوهات القطط بالذكاء الاصطناعي مجانًا بضغطة زر</li><li>فيديوهات قرود أبها والطائف بـ VEO 3 مجانًا</li><li>سر فيديوهات الأشياء التي تتكلم | من الصفر للمحترفين</li><li>فيديو تايم لابس لتصميم داخلي فاخر بالذكاء الاصطناعي مجانًا</li><li>فيديوهات السفر عبر الزمن باستخدام Edimakor</li><li>بودكاست احترافي بالذكاء الاصطناعي والربح منه | Edimakor</li><li>استغل كأس العالم 2026 واحصل على ملايين المشاهدات بالذكاء الاصطناعي</li><li>انسخ أي قناة على اليوتيوب بالذكاء الاصطناعي بدون مونتاج</li><li>أقوى موقع ذكاء اصطناعي مجانًا لمدة 24 ساعة بدون حدود | Higgsfield</li><li>دليل كامل: Claude AI يصنع موشن جرافيك احترافي مجانًا</li></ol></details></div>
+
+<h2>لمن تناسب كورسات الذكاء الاصطناعي المجانية؟</h2>
+<ul>
+<li><strong>المبتدئ</strong> الذي لم يجرّب أدوات الذكاء الاصطناعي من قبل ويريد نقطة بداية واضحة.</li>
+<li><strong>صانع المحتوى</strong> الذي يريد تسريع المونتاج وتوليد الفيديوهات والصور.</li>
+<li><strong>صاحب المشروع</strong> الذي يحتاج إعلانات ومواقع بدون فريق كبير.</li>
+<li><strong>الطالب</strong> الذي يريد تلخيص المواد وشرحها بأدوات مثل NotebookLM.</li>
+</ul>
+
+<h2>كيف تبدأ تعلّم الذكاء الاصطناعي مجانًا؟</h2>
+<ol>
+<li>اختر الكورس الأقرب لهدفك: فيديو، أو إعلانات، أو برمجة، أو يوتيوب.</li>
+<li>شاهد الدروس بالترتيب ولا تقفز، فكل درس يبني على الذي قبله.</li>
+<li>طبّق ما تشاهده على الأداة نفسها في نفس اللحظة، فالتطبيق هو ما يثبّت المعلومة.</li>
+<li>جرّب فكرة صغيرة خاصة بك بعد كل كورس، ثم انتقل إلى كورس آخر.</li>
+</ol>
+
+<h2>الأسئلة الشائعة عن كورسات الذكاء الاصطناعي المجانية</h2>
+<details><summary>هل كورسات الذكاء الاصطناعي هنا مجانية فعلًا؟</summary><p>نعم، كل الدروس فيديوهات عامة على يوتيوب، وتشاهدها بدون اشتراك أو دفع. بعض الأدوات المذكورة داخل الفيديوهات قد يكون لها خطط مدفوعة، لكن المشاهدة والتعلم مجانيان.</p></details>
+<details><summary>من أين أبدأ إن لم أكن أعرف شيئًا عن الذكاء الاصطناعي؟</summary><p>ابدأ بكورس شرح Claude لتفهم كيف يعمل مساعد الذكاء الاصطناعي، ثم انتقل إلى كورس أدوات جوجل المجانية، وبعدها اختر المسار الذي يناسب هدفك.</p></details>
+<details><summary>هل أحتاج إلى خبرة في البرمجة؟</summary><p>لا. كورس بناء المواقع والتطبيقات مخصص لمن ليست لديه أي خبرة، ويشرح الأدوات التي تحوّل الفكرة إلى موقع أو تطبيق بالأوامر النصية.</p></details>
+<details><summary>هل يمكنني متابعة الكورس من الموبايل؟</summary><p>نعم، الصفحة تعمل على الهاتف والكمبيوتر، والمشغّل يتكيّف مع حجم الشاشة.</p></details>
+<details><summary>كيف أعرف الدروس التي شاهدتها؟</summary><p>تظهر علامة ✓ بجانب كل درس شاهدته، وتُحفظ على متصفحك، فتعود لاحقًا وتكمل من حيث توقفت.</p></details>
+<details><summary>هل تُضاف كورسات جديدة؟</summary><p>نعم، تُحدَّث قائمة الكورسات والدروس تلقائيًا من غير الحاجة إلى تحديث الصفحة، فتابع الصفحة لتجد كل جديد.</p></details>
+<details><summary>ما الفرق بين هذه الكورسات والكورسات المدفوعة؟</summary><p>هذه الكورسات تعتمد على شروحات يوتيوب العامة المرتبة في مسارات واضحة. لا تتضمن شهادات ولا متابعة من مدرّب، لكنها تكفي لتعلّم الأدوات وتطبيقها عمليًا.</p></details>
+<details><summary>هل الكورسات بالعربية؟</summary><p>نعم، كل الدروس تقريبًا بالعربية، وقد تظهر أسماء الأدوات والمصطلحات التقنية بالإنجليزية كما هي.</p></details>
+<p style="font-size:13px;color:#65618a">الفيديوهات ملك لأصحاب قنواتها على يوتيوب، وتعرضها هذه الصفحة عبر مشغّل يوتيوب الرسمي مع رابط الدرس الأصلي.</p>
 </div>
+
+<script type="application/ld+json" id="aic-ld">{"@context": "https://schema.org", "@graph": [{"@type": "CollectionPage", "name": "كورسات الذكاء الاصطناعي المجانية بالعربي", "inLanguage": "ar", "isAccessibleForFree": true, "publisher": {"@type": "Organization", "name": "مدونة مونستر للمعلوماتية", "url": "https://www.youtube.com/@monsterinfo"}}, {"@type": "ItemList", "name": "كورسات الذكاء الاصطناعي المجانية", "numberOfItems": 7, "itemListElement": [{"@type": "ListItem", "position": 1, "item": {"@type": "Course", "name": "كورس شرح كلود Claude AI", "description": "تعرّف على Claude خطوة بخطوة: مميزاته وكيف تستخدمه في صناعة الموشن جرافيك والمونتاج والإعلانات وبناء المواقع والألعاب، مع تجارب عملية على Claude Fable 5 وOpus 5.5.", "inLanguage": "ar", "isAccessibleForFree": true, "provider": {"@type": "Organization", "name": "مدونة مونستر للمعلوماتية", "url": "https://www.youtube.com/@monsterinfo"}, "numberOfLessons": 14, "image": "https://drive.google.com/thumbnail?id=1bHhGS_YDbUZlKzhuRx7I95U6MlqdKi5z&sz=w800", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "category": "Free"}, "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online"}}}, {"@type": "ListItem", "position": 2, "item": {"@type": "Course", "name": "كورس إنشاء الإعلانات بالذكاء الاصطناعي", "description": "تعلّم صناعة إعلانات المنتجات بالذكاء الاصطناعي من صورة واحدة: إعلانات سينمائية وUGC وإعلانات الطعام باستخدام Seedance وHiggsfield وChatGPT، بدون فريق إنتاج ولا ميزانية كبيرة.", "inLanguage": "ar", "isAccessibleForFree": true, "provider": {"@type": "Organization", "name": "مدونة مونستر للمعلوماتية", "url": "https://www.youtube.com/@monsterinfo"}, "numberOfLessons": 11, "image": "https://drive.google.com/thumbnail?id=1J1RuV8vnt_oROlN9j33SQuqDUBS187QE&sz=w800", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "category": "Free"}, "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online"}}}, {"@type": "ListItem", "position": 3, "item": {"@type": "Course", "name": "كورس احتراف توليد الفيديو بنموذج Seedance", "description": "كورس متكامل عن Seedance 2.0 و2.5: كيف تكتب الأوامر وتصنع فيديوهات سينمائية وأفلامًا وإعلانات وفيديوهات طبخ، مع مقارنات بين النسخ والمواقع التي تتيحه مجانًا.", "inLanguage": "ar", "isAccessibleForFree": true, "provider": {"@type": "Organization", "name": "مدونة مونستر للمعلوماتية", "url": "https://www.youtube.com/@monsterinfo"}, "numberOfLessons": 14, "image": "https://drive.google.com/thumbnail?id=1Obm3Jim7VbLFv0-LCathfpKPEo9fChWp&sz=w800", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "category": "Free"}, "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online"}}}, {"@type": "ListItem", "position": 4, "item": {"@type": "Course", "name": "كورس أدوات جوجل للذكاء الاصطناعي المجانية", "description": "أدوات جوجل المجانية للذكاء الاصطناعي: Google AI Studio وNotebookLM وOpal وNano Banana وVeo 3، مع التعليق الصوتي العربي وأحد وكلاء الذكاء الاصطناعي المجانيين.", "inLanguage": "ar", "isAccessibleForFree": true, "provider": {"@type": "Organization", "name": "مدونة مونستر للمعلوماتية", "url": "https://www.youtube.com/@monsterinfo"}, "numberOfLessons": 11, "image": "https://drive.google.com/thumbnail?id=1EfouMLcm6Cix9AN0pbsteeU2L99KBOpy&sz=w800", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "category": "Free"}, "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online"}}}, {"@type": "ListItem", "position": 5, "item": {"@type": "Course", "name": "كورس بناء المواقع والتطبيقات بالذكاء الاصطناعي بدون خبرة", "description": "ابنِ موقعًا أو تطبيقًا بالذكاء الاصطناعي بدون خبرة برمجية: Replit وDeepSite وChatGPT وCanva وغيرها، من الفكرة حتى الإطلاق، مع نظرة على لغات البرمجة الأكثر طلبًا.", "inLanguage": "ar", "isAccessibleForFree": true, "provider": {"@type": "Organization", "name": "مدونة مونستر للمعلوماتية", "url": "https://www.youtube.com/@monsterinfo"}, "numberOfLessons": 17, "image": "https://drive.google.com/thumbnail?id=13TTEQjTfmxCCaZnbx9Nf0hr6a3azImCe&sz=w800", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "category": "Free"}, "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online"}}}, {"@type": "ListItem", "position": 6, "item": {"@type": "Course", "name": "كورس احتراف Higgsfield ونماذج الفيديو بالذكاء الاصطناعي", "description": "شرح شامل لمنصة Higgsfield ونماذج الفيديو: Cinema Studio وSoul ID وSeedance وKling وWAN وSora، وإضافات Photoshop وPremiere وDaVinci، وصناعة الإعلانات والمؤثر الافتراضي.", "inLanguage": "ar", "isAccessibleForFree": true, "provider": {"@type": "Organization", "name": "مدونة مونستر للمعلوماتية", "url": "https://www.youtube.com/@monsterinfo"}, "numberOfLessons": 51, "image": "https://drive.google.com/thumbnail?id=1jSSNm9E7of7TxDz6mBwt_UFkRvmQyBHk&sz=w800", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "category": "Free"}, "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online"}}}, {"@type": "ListItem", "position": 7, "item": {"@type": "Course", "name": "كورس الربح من يوتيوب بدون ظهور بالذكاء الاصطناعي", "description": "أنشئ قناة يوتيوب بدون ظهور بالذكاء الاصطناعي: أفكار المحتوى وأدوات مثل InVideo وVidnoz وCanva وVeo 3، وأنواع الفيديوهات التي تحقق مشاهدات كالوثائقي والأنيميشن وقصص الأطفال والتايم لابس.", "inLanguage": "ar", "isAccessibleForFree": true, "provider": {"@type": "Organization", "name": "مدونة مونستر للمعلوماتية", "url": "https://www.youtube.com/@monsterinfo"}, "numberOfLessons": 29, "image": "https://drive.google.com/thumbnail?id=13lG_cRV_orj2an3PYW40e3b4PH8cMdxi&sz=w800", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD", "category": "Free"}, "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online"}}}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "هل كورسات الذكاء الاصطناعي هنا مجانية فعلًا؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل الدروس فيديوهات عامة على يوتيوب، وتشاهدها بدون اشتراك أو دفع. بعض الأدوات المذكورة داخل الفيديوهات قد يكون لها خطط مدفوعة، لكن المشاهدة والتعلم مجانيان."}}, {"@type": "Question", "name": "من أين أبدأ إن لم أكن أعرف شيئًا عن الذكاء الاصطناعي؟", "acceptedAnswer": {"@type": "Answer", "text": "ابدأ بكورس شرح Claude لتفهم كيف يعمل مساعد الذكاء الاصطناعي، ثم انتقل إلى كورس أدوات جوجل المجانية، وبعدها اختر المسار الذي يناسب هدفك."}}, {"@type": "Question", "name": "هل أحتاج إلى خبرة في البرمجة؟", "acceptedAnswer": {"@type": "Answer", "text": "لا. كورس بناء المواقع والتطبيقات مخصص لمن ليست لديه أي خبرة، ويشرح الأدوات التي تحوّل الفكرة إلى موقع أو تطبيق بالأوامر النصية."}}, {"@type": "Question", "name": "هل يمكنني متابعة الكورس من الموبايل؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، الصفحة تعمل على الهاتف والكمبيوتر، والمشغّل يتكيّف مع حجم الشاشة."}}, {"@type": "Question", "name": "كيف أعرف الدروس التي شاهدتها؟", "acceptedAnswer": {"@type": "Answer", "text": "تظهر علامة ✓ بجانب كل درس شاهدته، وتُحفظ على متصفحك، فتعود لاحقًا وتكمل من حيث توقفت."}}, {"@type": "Question", "name": "هل تُضاف كورسات جديدة؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، تُحدَّث قائمة الكورسات والدروس تلقائيًا من غير الحاجة إلى تحديث الصفحة، فتابع الصفحة لتجد كل جديد."}}, {"@type": "Question", "name": "ما الفرق بين هذه الكورسات والكورسات المدفوعة؟", "acceptedAnswer": {"@type": "Answer", "text": "هذه الكورسات تعتمد على شروحات يوتيوب العامة المرتبة في مسارات واضحة. لا تتضمن شهادات ولا متابعة من مدرّب، لكنها تكفي لتعلّم الأدوات وتطبيقها عمليًا."}}, {"@type": "Question", "name": "هل الكورسات بالعربية؟", "acceptedAnswer": {"@type": "Answer", "text": "نعم، كل الدروس تقريبًا بالعربية، وقد تظهر أسماء الأدوات والمصطلحات التقنية بالإنجليزية كما هي."}}]}</script>
 
 <script>//<![CDATA[
 (function(){
 var SRC=["https://ahmedmher.github.io/monsinfopubilc/ai-courses/","https://raw.githubusercontent.com/ahmedmher/monsinfopubilc/main/ai-courses/"];
 var YT="https://www.youtube.com/@monsterinfo/videos";
+var T0=document.title,SITE="كورسات الذكاء الاصطناعي المجانية";
 var root=document.getElementById("aic-root"),D=null,q="";
 var AR='<svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
 var YI='<svg viewBox="0 0 24 24"><path d="M22 8.5a3 3 0 0 0-2-2C18 6 12 6 12 6s-6 0-8 .5a3 3 0 0 0-2 2C1.5 10.5 1.5 12 1.5 12s0 1.5.5 3.5a3 3 0 0 0 2 2c2 .5 8 .5 8 .5s6 0 8-.5a3 3 0 0 0 2-2c.5-2 .5-3.5.5-3.5s0-1.5-.5-3.5z"/><path d="m10 15 5-3-5-3z"/></svg>';
@@ -91,57 +139,86 @@ function vid(u){var m=String(u).match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za
 function cover(c,b){var u=String(c||"").trim();if(/^https?:\/\//i.test(u))return u;if(/^[\w\-.\/]+\.(jpe?g|png|webp|gif|avif)$/i.test(u))return b+u;return""}
 function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||"null");localStorage.setItem(k,JSON.stringify(v))}catch(e){}return null}
 function total(){return D.courses.reduce(function(a,c){return a+c.lessons.length},0)}
+function pageUrl(){return location.origin+location.pathname}
+
+function seoIndex(){
+  var el=document.getElementById("aic-index");if(!el)return;
+  el.innerHTML=D.courses.map(function(c){
+    return '<h3>'+esc(c.title)+'</h3><p>'+esc(c.description||"")+'</p>'+
+      '<details><summary>دروس الكورس ('+c.lessons.length+' درس)</summary><ol>'+
+      c.lessons.map(function(l){return '<li>'+esc(l.title)+'</li>'}).join("")+'</ol></details>';
+  }).join("");
+}
+function jsonld(){
+  var s=document.getElementById("aic-ld");if(!s)return;
+  var u=pageUrl(),pub={"@type":"Organization","name":"مدونة مونستر للمعلوماتية","url":"https://www.youtube.com/@monsterinfo"};
+  var items=D.courses.map(function(c,i){
+    var img=cover(c.cover,D.base);
+    var o={"@type":"Course","name":c.title,"description":c.description||c.title,"inLanguage":"ar","isAccessibleForFree":true,"url":u+"#aic/"+c.id,
+      "provider":pub,"numberOfLessons":c.lessons.length,
+      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD","category":"Free","availability":"https://schema.org/InStock"},
+      "hasCourseInstance":{"@type":"CourseInstance","courseMode":"online","courseWorkload":"PT"+Math.max(1,c.lessons.length)+"H"}};
+    if(img)o.image=img;
+    return {"@type":"ListItem","position":i+1,"item":o};
+  });
+  s.textContent=JSON.stringify({"@context":"https://schema.org","@graph":[
+    {"@type":"CollectionPage","name":SITE+" بالعربي","description":"كورسات ذكاء اصطناعي مجانية مرتبة درسا بعد درس: Claude وSeedance وHiggsfield وأدوات جوجل وبناء المواقع والتطبيقات والربح من يوتيوب.","inLanguage":"ar","url":u,"isAccessibleForFree":true,"publisher":pub},
+    {"@type":"ItemList","name":SITE,"numberOfItems":D.courses.length,"itemListElement":items}
+  ]});
+}
 
 function home(){
+  document.title=T0;
   var qq=q.trim().toLowerCase();
   var list=D.courses.filter(function(c){
     if(!qq)return true;
-    return c.title.toLowerCase().indexOf(qq)>-1||c.lessons.some(function(l){return l.title.toLowerCase().indexOf(qq)>-1});
+    return c.title.toLowerCase().indexOf(qq)>-1||(c.description||"").toLowerCase().indexOf(qq)>-1||c.lessons.some(function(l){return l.title.toLowerCase().indexOf(qq)>-1});
   });
   var h='<div class="hero"><span class="kick"><i></i>تعلّم مجانا من يوتيوب</span>'+
-    '<h1>كورسات <em>الذكاء الاصطناعي</em> المجانية</h1>'+
-    '<p class="lead">كورسات مرتبة درسا بعد درس: من Claude وSeedance وHiggsfield إلى بناء المواقع والتطبيقات والربح من يوتيوب. اختر كورسا وابدأ فورا.</p>'+
+    '<h1>كورسات <em>الذكاء الاصطناعي</em> المجانية بالعربي</h1>'+
+    '<p class="lead">كورس ذكاء اصطناعي مجاني لكل هدف: من Claude وSeedance وHiggsfield إلى بناء المواقع والتطبيقات والربح من يوتيوب. دروس مرتبة، تبدأ فورا بدون اشتراك.</p>'+
     '<div class="tags"><span>'+D.courses.length+' كورسات</span><span>'+total()+' درس</span><span>مجاني 100%</span></div>'+
     '<a class="gtb" href="'+YT+'" target="_blank" rel="noopener">'+YI+' قناتي على يوتيوب</a></div>'+
-    '<div class="w"><div class="bar"><input id="aic-q" type="search" placeholder="ابحث في الكورسات والدروس..." value="'+esc(q)+'"></div><div class="grid">';
+    '<div class="w"><div class="bar"><input id="aic-q" type="search" aria-label="بحث" placeholder="ابحث في الكورسات والدروس..." value="'+esc(q)+'"></div><div class="grid">';
   if(!list.length)h+='<div class="empty">لا توجد نتائج مطابقة.</div>';
   list.forEach(function(c){
     var i=D.courses.indexOf(c),img=cover(c.cover,D.base),done=(ls("aic-"+c.id)||[]).length;
     h+='<div class="card" data-id="'+esc(c.id)+'"><span class="rk">'+(i+1)+'</span>'+
-      '<div class="im"'+(img?' style="background-image:url(\''+esc(img)+'\')"':'')+'></div>'+
+      '<div class="cv">'+(img?'<img src="'+esc(img)+'" alt="'+esc(c.title)+'" width="1344" height="756" loading="lazy" decoding="async" onerror="this.remove()">':'')+'</div>'+
       '<div class="bd"><div class="tp"><span class="src">'+c.lessons.length+' درس</span>'+(done?'<span>شاهدت '+done+'</span>':'')+'</div>'+
-      '<h3>'+esc(c.title)+'</h3><div class="go"><span>ابدأ الكورس</span>'+AR+'</div></div></div>';
+      '<h3>'+esc(c.title)+'</h3>'+(c.description?'<p>'+esc(c.description)+'</p>':'')+'<div class="go"><span>ابدأ الكورس</span>'+AR+'</div></div></div>';
   });
-  root.innerHTML=h+'</div><div class="note">البيانات تُحدَّث تلقائيا من GitHub</div></div>';
+  root.innerHTML=h+'</div><div class="note">القائمة تُحدَّث تلقائيا</div></div>';
   var inp=document.getElementById("aic-q");
   inp.oninput=function(){q=inp.value;var p=inp.selectionStart;home();var n=document.getElementById("aic-q");n.focus();n.setSelectionRange(p,p)};
   root.querySelectorAll(".card").forEach(function(el){el.onclick=function(){location.hash="aic/"+el.dataset.id}});
 }
 
 function course(c,idx,auto){
+  document.title=c.title+" | "+SITE;
   var key="aic-"+c.id,done=ls(key)||[];
   if(done.indexOf(idx)<0){done.push(idx);ls(key,done)}
   var l=c.lessons[idx],n=c.lessons.length;
   var h='<div class="hero dh"><span class="kick"><i></i>كورس مجاني</span><h1>'+esc(c.title)+'</h1>'+
+    (c.description?'<p class="lead">'+esc(c.description)+'</p>':'')+
     '<div class="meta">'+n+' درس • شاهدت '+done.length+' من '+n+'</div></div>'+
-    '<div class="w"><button class="back">'+AR+' كل الكورسات</button><div class="lay"><div class="box">'+
+    '<div class="w"><button class="back">'+AR+' كل الكورسات</button>'+
+    '<div class="box">'+
     '<iframe class="pl" allowfullscreen title="'+esc(l.title)+'" allow="accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen" src="https://www.youtube-nocookie.com/embed/'+vid(l.url)+'?rel=0'+(auto?'&autoplay=1':'')+'"></iframe>'+
     '<div class="now"><h2>'+(idx+1)+'. '+esc(l.title)+'</h2><div class="nav">'+
     '<button class="btn" data-g="'+(idx-1)+'"'+(idx<=0?' disabled':'')+'>السابق</button>'+
     '<button class="btn d" data-g="'+(idx+1)+'"'+(idx+1>=n?' disabled':'')+'>الدرس التالي</button></div></div>'+
     '<a class="yt" target="_blank" rel="noopener" href="'+esc(l.url)+'">فتح الدرس على يوتيوب ↗</a></div>'+
-    '<div class="box ls"><h4>دروس الكورس ('+n+')</h4>';
+    '<div class="box ls"><h2>دروس الكورس ('+n+' درس)</h2>';
   c.lessons.forEach(function(x,i){
     var d=done.indexOf(i)>-1&&i!==idx;
     h+='<div class="ln'+(i===idx?' on':'')+(d?' dn':'')+'" data-i="'+i+'"><b>'+(d?'✓':i+1)+'</b><span>'+esc(x.title)+'</span></div>';
   });
-  root.innerHTML=h+'</div></div></div>';
+  root.innerHTML=h+'</div></div>';
   root.querySelector(".back").onclick=function(){location.hash=""};
   function go(i){course(c,i,true);try{document.getElementById("aic").scrollIntoView({behavior:"smooth",block:"start"})}catch(e){}}
   root.querySelectorAll(".ln").forEach(function(el){el.onclick=function(){go(+el.dataset.i)}});
   root.querySelectorAll(".btn[data-g]").forEach(function(el){el.onclick=function(){if(!el.disabled)go(+el.dataset.g)}});
-  var a=root.querySelector(".ln.on"),box=root.querySelector(".ls");
-  if(a&&box&&box.scrollHeight>box.clientHeight)box.scrollTop=Math.max(0,a.offsetTop-70);
 }
 
 function route(){
@@ -152,7 +229,7 @@ function route(){
 function load(i){
   if(i>=SRC.length){root.innerHTML='<div class="w"><div class="empty" style="margin-top:24px">تعذر جلب الكورسات حاليا. حاول لاحقا.</div></div>';return}
   fetch(SRC[i]+"courses.json?v="+Math.floor(Date.now()/600000)).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){
-    D=d;D.base=SRC[i];window.addEventListener("hashchange",route);route();
+    D=d;D.base=SRC[i];seoIndex();jsonld();window.addEventListener("hashchange",route);route();
   }).catch(function(){load(i+1)});
 }
 load(0);

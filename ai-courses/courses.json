@@ -4,198 +4,646 @@
     {
       "id": "claude-ai-explained",
       "title": "كورس شرح كلود Claude AI",
-      "cover": "رابط_الغلاف_هنا",
+      "cover": "https://drive.google.com/thumbnail?id=1bHhGS_YDbUZlKzhuRx7I95U6MlqdKi5z&sz=w800",
       "lessons": [
-        { "title": "Claude AI بالعربي | أقوى مميزات Claude ولماذا يتحدث الجميع عنه؟", "url": "https://www.youtube.com/watch?v=YVjJzqQSjYg" },
-        { "title": "دليل كامل: Claude AI يصنع موشن جرافيك احترافي بالذكاء الاصطناعي مجاناً", "url": "https://www.youtube.com/watch?v=Z3wwH4HL5gA" },
-        { "title": "نسخ المونتاج وتطبيقه على فيديو جديد باستخدام Claude AI", "url": "https://www.youtube.com/watch?v=dwzaXKfhyMk" },
-        { "title": "جعلت Claude Fable 5 يبني موقع ويب Motion ثلاثي الأبعاد", "url": "https://www.youtube.com/watch?v=OKV8nB_sXKk" },
-        { "title": "حوّلت Claude AI إلى شركة إعلانات وتسويق كاملة باستخدام Higgsfield MCP", "url": "https://www.youtube.com/watch?v=RWhV0upblrw" },
-        { "title": "أعطيت Claude Fable 5 صورة واحدة فأنشأ إعلانًا بمستوى 5000 دولار", "url": "https://www.youtube.com/watch?v=sGc95kamiIo" },
-        { "title": "إنشاء فيلم أنيميشن كرتوني أو حقيقي بجودة 4K بالذكاء الاصطناعي", "url": "https://www.youtube.com/watch?v=dMjuj3OtGkY" },
-        { "title": "آلة تصنع فيديوهات Shorts فيروسية تلقائيًا", "url": "https://www.youtube.com/watch?v=-Wx1z8AhthU" },
-        { "title": "أنشأت مصنع فيديوهات بدون ظهور باستخدام Claude AI", "url": "https://www.youtube.com/watch?v=DNyWdp5Acps" },
-        { "title": "مصنع إعلانات تنافس الشركات العالمية باستخدام Seedance 2", "url": "https://www.youtube.com/watch?v=90feQxm0Ukg" },
-        { "title": "فيديوهات وثائقية لليوتيوب بنمط Vox أنيميشن في 3 دقائق", "url": "https://www.youtube.com/watch?v=pYJ73fkJtc4" },
-        { "title": "Claude Opus 5.5 يتفوق على GPT Astra ويصنع هذه الفيديوهات بنفسه", "url": "https://www.youtube.com/watch?v=YpNrOfTd98k" },
-        { "title": "إنشاء لعبة احترافية بـ Claude Fable 5 بدون خبرة برمجية", "url": "https://www.youtube.com/watch?v=ayUhcmS1lVo" },
-        { "title": "مهمة واحدة لـ Claude Fable 5: يجد العملاء ويصنع الإعلانات", "url": "https://www.youtube.com/watch?v=tI_WLrAE08I" }
-      ]
+        {
+          "title": "Claude AI بالعربي | أقوى مميزات Claude ولماذا يتحدث الجميع عنه؟",
+          "url": "https://www.youtube.com/watch?v=YVjJzqQSjYg"
+        },
+        {
+          "title": "دليل كامل: Claude AI يصنع موشن جرافيك احترافي بالذكاء الاصطناعي مجاناً",
+          "url": "https://www.youtube.com/watch?v=Z3wwH4HL5gA"
+        },
+        {
+          "title": "نسخ المونتاج وتطبيقه على فيديو جديد باستخدام Claude AI",
+          "url": "https://www.youtube.com/watch?v=dwzaXKfhyMk"
+        },
+        {
+          "title": "جعلت Claude Fable 5 يبني موقع ويب Motion ثلاثي الأبعاد",
+          "url": "https://www.youtube.com/watch?v=OKV8nB_sXKk"
+        },
+        {
+          "title": "حوّلت Claude AI إلى شركة إعلانات وتسويق كاملة باستخدام Higgsfield MCP",
+          "url": "https://www.youtube.com/watch?v=RWhV0upblrw"
+        },
+        {
+          "title": "أعطيت Claude Fable 5 صورة واحدة فأنشأ إعلانًا بمستوى 5000 دولار",
+          "url": "https://www.youtube.com/watch?v=sGc95kamiIo"
+        },
+        {
+          "title": "إنشاء فيلم أنيميشن كرتوني أو حقيقي بجودة 4K بالذكاء الاصطناعي",
+          "url": "https://www.youtube.com/watch?v=dMjuj3OtGkY"
+        },
+        {
+          "title": "آلة تصنع فيديوهات Shorts فيروسية تلقائيًا",
+          "url": "https://www.youtube.com/watch?v=-Wx1z8AhthU"
+        },
+        {
+          "title": "أنشأت مصنع فيديوهات بدون ظهور باستخدام Claude AI",
+          "url": "https://www.youtube.com/watch?v=DNyWdp5Acps"
+        },
+        {
+          "title": "مصنع إعلانات تنافس الشركات العالمية باستخدام Seedance 2",
+          "url": "https://www.youtube.com/watch?v=90feQxm0Ukg"
+        },
+        {
+          "title": "فيديوهات وثائقية لليوتيوب بنمط Vox أنيميشن في 3 دقائق",
+          "url": "https://www.youtube.com/watch?v=pYJ73fkJtc4"
+        },
+        {
+          "title": "Claude Opus 5.5 يتفوق على GPT Astra ويصنع هذه الفيديوهات بنفسه",
+          "url": "https://www.youtube.com/watch?v=YpNrOfTd98k"
+        },
+        {
+          "title": "إنشاء لعبة احترافية بـ Claude Fable 5 بدون خبرة برمجية",
+          "url": "https://www.youtube.com/watch?v=ayUhcmS1lVo"
+        },
+        {
+          "title": "مهمة واحدة لـ Claude Fable 5: يجد العملاء ويصنع الإعلانات",
+          "url": "https://www.youtube.com/watch?v=tI_WLrAE08I"
+        }
+      ],
+      "description": "تعرّف على Claude خطوة بخطوة: مميزاته وكيف تستخدمه في صناعة الموشن جرافيك والمونتاج والإعلانات وبناء المواقع والألعاب، مع تجارب عملية على Claude Fable 5 وOpus 5.5."
     },
     {
       "id": "ai-ads-course",
       "title": "كورس إنشاء الإعلانات بالذكاء الاصطناعي",
-      "cover": "رابط_الغلاف_هنا",
+      "cover": "https://drive.google.com/thumbnail?id=1J1RuV8vnt_oROlN9j33SQuqDUBS187QE&sz=w800",
       "lessons": [
-        { "title": "من صورة إلى إعلان سينمائي بقيمة إنتاجية 5000$ في 3 خطوات | Seedance 2.5", "url": "https://www.youtube.com/watch?v=cJnTkbH99pQ" },
-        { "title": "حوّلت Claude AI إلى شركة إعلانات وتسويق كاملة باستخدام Higgsfield MCP", "url": "https://www.youtube.com/watch?v=RWhV0upblrw" },
-        { "title": "ارفع صورة المنتج فقط... والذكاء الاصطناعي يصنع إعلانات لانهائية بدون برومت", "url": "https://www.youtube.com/watch?v=26-iHSg_5XQ" },
-        { "title": "سر إعلانات الطعام الاحترافية بالذكاء الاصطناعي | Seedance 2.0 4K", "url": "https://www.youtube.com/watch?v=f6INMS8paO0" },
-        { "title": "مصنع إعلانات تنافس الشركات العالمية باستخدام Seedance 2", "url": "https://www.youtube.com/watch?v=90feQxm0Ukg" },
-        { "title": "إعلانات UGC للمنتجات باستخدام Seedance 2.0", "url": "https://www.youtube.com/watch?v=MedOxL5qBo0" },
-        { "title": "الأداة التي تكتب الـHook وتصنع الإعلان كاملًا | Higgsfield Marketing Studio 2.0", "url": "https://www.youtube.com/watch?v=VCndC1M2ZgE" },
-        { "title": "أقوى AI Workflow لصناعة الفيديو بأداة واحدة | Higgsfield Canvas", "url": "https://www.youtube.com/watch?v=z63-lZCv8_8" },
-        { "title": "ChatGPT ينشئ فيديوهات إعلانية كاملة من صورة بدون برومت", "url": "https://www.youtube.com/watch?v=j6NhfvHCOhc" },
-        { "title": "Claude AI خبير تسويق بالعمولة يختار المنتجات الرابحة بنفسه", "url": "https://www.youtube.com/watch?v=tk3I4o-ycvI" },
-        { "title": "مجاناً: أداة تولد إعلانات للبراند أو المنتج لزيادة المبيعات", "url": "https://www.youtube.com/watch?v=pOuhEH9M5JA" }
-      ]
+        {
+          "title": "من صورة إلى إعلان سينمائي بقيمة إنتاجية 5000$ في 3 خطوات | Seedance 2.5",
+          "url": "https://www.youtube.com/watch?v=cJnTkbH99pQ"
+        },
+        {
+          "title": "حوّلت Claude AI إلى شركة إعلانات وتسويق كاملة باستخدام Higgsfield MCP",
+          "url": "https://www.youtube.com/watch?v=RWhV0upblrw"
+        },
+        {
+          "title": "ارفع صورة المنتج فقط... والذكاء الاصطناعي يصنع إعلانات لانهائية بدون برومت",
+          "url": "https://www.youtube.com/watch?v=26-iHSg_5XQ"
+        },
+        {
+          "title": "سر إعلانات الطعام الاحترافية بالذكاء الاصطناعي | Seedance 2.0 4K",
+          "url": "https://www.youtube.com/watch?v=f6INMS8paO0"
+        },
+        {
+          "title": "مصنع إعلانات تنافس الشركات العالمية باستخدام Seedance 2",
+          "url": "https://www.youtube.com/watch?v=90feQxm0Ukg"
+        },
+        {
+          "title": "إعلانات UGC للمنتجات باستخدام Seedance 2.0",
+          "url": "https://www.youtube.com/watch?v=MedOxL5qBo0"
+        },
+        {
+          "title": "الأداة التي تكتب الـHook وتصنع الإعلان كاملًا | Higgsfield Marketing Studio 2.0",
+          "url": "https://www.youtube.com/watch?v=VCndC1M2ZgE"
+        },
+        {
+          "title": "أقوى AI Workflow لصناعة الفيديو بأداة واحدة | Higgsfield Canvas",
+          "url": "https://www.youtube.com/watch?v=z63-lZCv8_8"
+        },
+        {
+          "title": "ChatGPT ينشئ فيديوهات إعلانية كاملة من صورة بدون برومت",
+          "url": "https://www.youtube.com/watch?v=j6NhfvHCOhc"
+        },
+        {
+          "title": "Claude AI خبير تسويق بالعمولة يختار المنتجات الرابحة بنفسه",
+          "url": "https://www.youtube.com/watch?v=tk3I4o-ycvI"
+        },
+        {
+          "title": "مجاناً: أداة تولد إعلانات للبراند أو المنتج لزيادة المبيعات",
+          "url": "https://www.youtube.com/watch?v=pOuhEH9M5JA"
+        }
+      ],
+      "description": "تعلّم صناعة إعلانات المنتجات بالذكاء الاصطناعي من صورة واحدة: إعلانات سينمائية وUGC وإعلانات الطعام باستخدام Seedance وHiggsfield وChatGPT، بدون فريق إنتاج ولا ميزانية كبيرة."
     },
     {
       "id": "seedance-pro-course",
       "title": "كورس احتراف توليد الفيديو بنموذج Seedance",
-      "cover": "رابط_الغلاف_هنا",
+      "cover": "https://drive.google.com/thumbnail?id=1Obm3Jim7VbLFv0-LCathfpKPEo9fChWp&sz=w800",
       "lessons": [
-        { "title": "أسهل طريقة لـ Seedance 2.5 يصنع فيديوهات POV وسينمائية وإعلانات وأكشن", "url": "https://www.youtube.com/watch?v=vJ0t8pa1BEk" },
-        { "title": "سر النتائج الاحترافية في Seedance 2.5 | انسخ طريقتي لتوليد فيديوهات بدقة سينمائية", "url": "https://www.youtube.com/watch?v=t4yQCJ9dQcE" },
-        { "title": "هل يستحق Seedance 2.5 كل هذه الضجة؟ مقارنة شاملة مع Seedance 2.0", "url": "https://www.youtube.com/watch?v=AKy_qE0RLN4" },
-        { "title": "معركة عمالقة الصين في توليد الفيديو | Seedance 2 ضد Happy Horse", "url": "https://www.youtube.com/watch?v=7lqvTF19cjk" },
-        { "title": "أفضل 3 مواقع تستخدم Seedance 2 لتوليد فيديو احترافي مجانًا", "url": "https://www.youtube.com/watch?v=ggmYR9su_Og" },
-        { "title": "فيديو سينمائي واقعي بالذكاء الاصطناعي بأرخص استخدام لـ Seedance 2", "url": "https://www.youtube.com/watch?v=XlskwfsY5Ac" },
-        { "title": "إخراج فيلم كامل بـ Seedance 2.5", "url": "https://www.youtube.com/watch?v=GvnIWMJstGQ" },
-        { "title": "اكتب فكرة واحدة فقط وGPT يصنع الفيلم كاملًا 4K في Seedance 2.0", "url": "https://www.youtube.com/watch?v=_BCX_IFboX0" },
-        { "title": "طريقة تصنع فيديوهات فيرال بدلًا منك بدون كتابة برومت", "url": "https://www.youtube.com/watch?v=3QZrSQ1gcGo" },
-        { "title": "نظام ينشئ فيديوهات طبخ فيروسية واقعية بدون ظهور بـ Seedance 2.5", "url": "https://www.youtube.com/watch?v=apByOZX14Kk" },
-        { "title": "إنشاء إعلان احترافي بجودة 4K في دقائق", "url": "https://www.youtube.com/watch?v=An47Za8Y_uY" },
-        { "title": "إعلان منتج UGC بالذكاء الاصطناعي من فكرة بسيطة | Seedance 2.0", "url": "https://www.youtube.com/watch?v=E6BQJ1P42T4" },
-        { "title": "نظام يحول أي منتج إلى 10 إعلانات باستخدام ChatGPT و Seedance 2.0", "url": "https://www.youtube.com/watch?v=Me-OX95JTks" },
-        { "title": "إنشاء إعلانك بضغطة زر مع Higgsfield Marketing Studio", "url": "https://www.youtube.com/watch?v=8cSg_qRuxAM" }
-      ]
+        {
+          "title": "أسهل طريقة لـ Seedance 2.5 يصنع فيديوهات POV وسينمائية وإعلانات وأكشن",
+          "url": "https://www.youtube.com/watch?v=vJ0t8pa1BEk"
+        },
+        {
+          "title": "سر النتائج الاحترافية في Seedance 2.5 | انسخ طريقتي لتوليد فيديوهات بدقة سينمائية",
+          "url": "https://www.youtube.com/watch?v=t4yQCJ9dQcE"
+        },
+        {
+          "title": "هل يستحق Seedance 2.5 كل هذه الضجة؟ مقارنة شاملة مع Seedance 2.0",
+          "url": "https://www.youtube.com/watch?v=AKy_qE0RLN4"
+        },
+        {
+          "title": "معركة عمالقة الصين في توليد الفيديو | Seedance 2 ضد Happy Horse",
+          "url": "https://www.youtube.com/watch?v=7lqvTF19cjk"
+        },
+        {
+          "title": "أفضل 3 مواقع تستخدم Seedance 2 لتوليد فيديو احترافي مجانًا",
+          "url": "https://www.youtube.com/watch?v=ggmYR9su_Og"
+        },
+        {
+          "title": "فيديو سينمائي واقعي بالذكاء الاصطناعي بأرخص استخدام لـ Seedance 2",
+          "url": "https://www.youtube.com/watch?v=XlskwfsY5Ac"
+        },
+        {
+          "title": "إخراج فيلم كامل بـ Seedance 2.5",
+          "url": "https://www.youtube.com/watch?v=GvnIWMJstGQ"
+        },
+        {
+          "title": "اكتب فكرة واحدة فقط وGPT يصنع الفيلم كاملًا 4K في Seedance 2.0",
+          "url": "https://www.youtube.com/watch?v=_BCX_IFboX0"
+        },
+        {
+          "title": "طريقة تصنع فيديوهات فيرال بدلًا منك بدون كتابة برومت",
+          "url": "https://www.youtube.com/watch?v=3QZrSQ1gcGo"
+        },
+        {
+          "title": "نظام ينشئ فيديوهات طبخ فيروسية واقعية بدون ظهور بـ Seedance 2.5",
+          "url": "https://www.youtube.com/watch?v=apByOZX14Kk"
+        },
+        {
+          "title": "إنشاء إعلان احترافي بجودة 4K في دقائق",
+          "url": "https://www.youtube.com/watch?v=An47Za8Y_uY"
+        },
+        {
+          "title": "إعلان منتج UGC بالذكاء الاصطناعي من فكرة بسيطة | Seedance 2.0",
+          "url": "https://www.youtube.com/watch?v=E6BQJ1P42T4"
+        },
+        {
+          "title": "نظام يحول أي منتج إلى 10 إعلانات باستخدام ChatGPT و Seedance 2.0",
+          "url": "https://www.youtube.com/watch?v=Me-OX95JTks"
+        },
+        {
+          "title": "إنشاء إعلانك بضغطة زر مع Higgsfield Marketing Studio",
+          "url": "https://www.youtube.com/watch?v=8cSg_qRuxAM"
+        }
+      ],
+      "description": "كورس متكامل عن Seedance 2.0 و2.5: كيف تكتب الأوامر وتصنع فيديوهات سينمائية وأفلامًا وإعلانات وفيديوهات طبخ، مع مقارنات بين النسخ والمواقع التي تتيحه مجانًا."
     },
     {
       "id": "google-free-ai-tools",
       "title": "كورس أدوات جوجل للذكاء الاصطناعي المجانية",
-      "cover": "رابط_الغلاف_هنا",
+      "cover": "https://drive.google.com/thumbnail?id=1EfouMLcm6Cix9AN0pbsteeU2L99KBOpy&sz=w800",
       "lessons": [
-        { "title": "المنصة السرّية من جوجل: Google AI Studio أقوى موقع ذكاء اصطناعي مجاني", "url": "https://www.youtube.com/watch?v=YRzx42hqTzk" },
-        { "title": "شرح أداة NotebookLM لشرح وتلخيص المواد الدراسية", "url": "https://www.youtube.com/watch?v=z-5bBNUOEfY" },
-        { "title": "شرح Google Opal: بديل n8n المجاني لعمل تطبيقات بدون كود", "url": "https://www.youtube.com/watch?v=PRgzBNyvAGk" },
-        { "title": "إنشاء تطبيق بالذكاء الاصطناعي مجانًا بدون برمجة مع جوجل", "url": "https://www.youtube.com/watch?v=Rkd_jOKT2So" },
-        { "title": "Nano Banana vs الفوتوشوب: تعديل الصور بالذكاء الاصطناعي مع الحفاظ على التفاصيل", "url": "https://www.youtube.com/watch?v=uRrU7Osuedo" },
-        { "title": "استخدم Nano Banana Pro مجانًا لتوليد كتابة باللغة العربية", "url": "https://www.youtube.com/watch?v=saWgao0NKsY" },
-        { "title": "Veo 3 مجانًا بدون فيزا وبدون اشتراك", "url": "https://www.youtube.com/watch?v=YuHk1UjbgL4" },
-        { "title": "عمل إعلانات احترافية باستخدام VEO 3 مجانًا", "url": "https://www.youtube.com/watch?v=Llf86MBn3kE" },
-        { "title": "تثبيت الشخصية على VEO 3 وتوليد فيديو بصورتك", "url": "https://www.youtube.com/watch?v=3PDz5DZ37v0" },
-        { "title": "تحويل النص إلى صوت: تعليق صوتي عربي بشري واقعي", "url": "https://www.youtube.com/watch?v=V3ufRvadGyk" },
-        { "title": "اجعل متصفح كروم يعمل مكانك كوكيل ذكاء اصطناعي مجانًا | Nanobrowser", "url": "https://www.youtube.com/watch?v=kP2HjzEIszM" }
-      ]
+        {
+          "title": "المنصة السرّية من جوجل: Google AI Studio أقوى موقع ذكاء اصطناعي مجاني",
+          "url": "https://www.youtube.com/watch?v=YRzx42hqTzk"
+        },
+        {
+          "title": "شرح أداة NotebookLM لشرح وتلخيص المواد الدراسية",
+          "url": "https://www.youtube.com/watch?v=z-5bBNUOEfY"
+        },
+        {
+          "title": "شرح Google Opal: بديل n8n المجاني لعمل تطبيقات بدون كود",
+          "url": "https://www.youtube.com/watch?v=PRgzBNyvAGk"
+        },
+        {
+          "title": "إنشاء تطبيق بالذكاء الاصطناعي مجانًا بدون برمجة مع جوجل",
+          "url": "https://www.youtube.com/watch?v=Rkd_jOKT2So"
+        },
+        {
+          "title": "Nano Banana vs الفوتوشوب: تعديل الصور بالذكاء الاصطناعي مع الحفاظ على التفاصيل",
+          "url": "https://www.youtube.com/watch?v=uRrU7Osuedo"
+        },
+        {
+          "title": "استخدم Nano Banana Pro مجانًا لتوليد كتابة باللغة العربية",
+          "url": "https://www.youtube.com/watch?v=saWgao0NKsY"
+        },
+        {
+          "title": "Veo 3 مجانًا بدون فيزا وبدون اشتراك",
+          "url": "https://www.youtube.com/watch?v=YuHk1UjbgL4"
+        },
+        {
+          "title": "عمل إعلانات احترافية باستخدام VEO 3 مجانًا",
+          "url": "https://www.youtube.com/watch?v=Llf86MBn3kE"
+        },
+        {
+          "title": "تثبيت الشخصية على VEO 3 وتوليد فيديو بصورتك",
+          "url": "https://www.youtube.com/watch?v=3PDz5DZ37v0"
+        },
+        {
+          "title": "تحويل النص إلى صوت: تعليق صوتي عربي بشري واقعي",
+          "url": "https://www.youtube.com/watch?v=V3ufRvadGyk"
+        },
+        {
+          "title": "اجعل متصفح كروم يعمل مكانك كوكيل ذكاء اصطناعي مجانًا | Nanobrowser",
+          "url": "https://www.youtube.com/watch?v=kP2HjzEIszM"
+        }
+      ],
+      "description": "أدوات جوجل المجانية للذكاء الاصطناعي: Google AI Studio وNotebookLM وOpal وNano Banana وVeo 3، مع التعليق الصوتي العربي وأحد وكلاء الذكاء الاصطناعي المجانيين."
     },
     {
       "id": "ai-coding-no-experience",
       "title": "كورس بناء المواقع والتطبيقات بالذكاء الاصطناعي بدون خبرة",
-      "cover": "رابط_الغلاف_هنا",
+      "cover": "https://drive.google.com/thumbnail?id=13TTEQjTfmxCCaZnbx9Nf0hr6a3azImCe&sz=w800",
       "lessons": [
-        { "title": "إنشاء موقع إلكتروني كامل في 5 دقائق بالذكاء الاصطناعي", "url": "https://www.youtube.com/watch?v=ZknJoCG4CFQ" },
-        { "title": "إنشاء موقع ويب مجانًا في دقائق | Horizons AI", "url": "https://www.youtube.com/watch?v=8d9bZogpJhs" },
-        { "title": "اصنع أي موقع بالذكاء الاصطناعي والربح من إنشاء المواقع | Stunning", "url": "https://www.youtube.com/watch?v=AlK8NtNF3Yw" },
-        { "title": "طريقة إنشاء موقع إلكتروني باستخدام Canva مجانًا", "url": "https://www.youtube.com/watch?v=4fw7Vfj0yOw" },
-        { "title": "اصنع تطبيقًا احترافيًا بـ DeepSite V2 بدون خبرة برمجية", "url": "https://www.youtube.com/watch?v=yTYQ8FIZu2g" },
-        { "title": "برمجة تطبيق بالذكاء الاصطناعي بدون خبرة | شرح Replit", "url": "https://www.youtube.com/watch?v=ejDP8ozF7HU" },
-        { "title": "بناء تطبيق أندرويد كامل في 10 دقائق بأداة ذكاء اصطناعي واحدة", "url": "https://www.youtube.com/watch?v=Sljw_2H2umA" },
-        { "title": "إنشاء تطبيق بالذكاء الاصطناعي مجانًا بدون برمجة مع جوجل", "url": "https://www.youtube.com/watch?v=Rkd_jOKT2So" },
-        { "title": "كيف يبني ChatGPT تطبيقك في دقائق بدون خبرة برمجية", "url": "https://www.youtube.com/watch?v=Ex-z7aMS8DI" },
-        { "title": "برمجة موقع آلة حاسبة بـ ChatGPT بدون خبرة في JavaScript و CSS و HTML", "url": "https://www.youtube.com/watch?v=gjaNU2D-iWk" },
-        { "title": "برمجة متصفح إنترنت بالذكاء الاصطناعي على ChatGPT", "url": "https://www.youtube.com/watch?v=ePhgjaiItQ0" },
-        { "title": "جعلت Claude Fable 5 يبني موقع ويب Motion ثلاثي الأبعاد", "url": "https://www.youtube.com/watch?v=OKV8nB_sXKk" },
-        { "title": "عمل تطبيق أندرويد لأي موقع والربح منه بدون خبرة", "url": "https://www.youtube.com/watch?v=CkheakZ7X3Y" },
-        { "title": "بزنس في دقائق: هل يبني الذكاء الاصطناعي مشروعك بالكامل؟", "url": "https://www.youtube.com/watch?v=fZRFj9lpa3U" },
-        { "title": "مساعد AI مجاني على الكمبيوتر بدون تعقيدات | OpenClaw مع Nut Studio", "url": "https://www.youtube.com/watch?v=l00vSEOKr38" },
-        { "title": "البرمجة للمبتدئين: كيف تبدأ وأفضل كورسات لتعلمها", "url": "https://www.youtube.com/watch?v=9flOOXKiRrs" },
-        { "title": "أهم لغات البرمجة الأكثر طلبًا في سوق العمل 2026", "url": "https://www.youtube.com/watch?v=2YNppJ6-NQs" }
-      ]
+        {
+          "title": "إنشاء موقع إلكتروني كامل في 5 دقائق بالذكاء الاصطناعي",
+          "url": "https://www.youtube.com/watch?v=ZknJoCG4CFQ"
+        },
+        {
+          "title": "إنشاء موقع ويب مجانًا في دقائق | Horizons AI",
+          "url": "https://www.youtube.com/watch?v=8d9bZogpJhs"
+        },
+        {
+          "title": "اصنع أي موقع بالذكاء الاصطناعي والربح من إنشاء المواقع | Stunning",
+          "url": "https://www.youtube.com/watch?v=AlK8NtNF3Yw"
+        },
+        {
+          "title": "طريقة إنشاء موقع إلكتروني باستخدام Canva مجانًا",
+          "url": "https://www.youtube.com/watch?v=4fw7Vfj0yOw"
+        },
+        {
+          "title": "اصنع تطبيقًا احترافيًا بـ DeepSite V2 بدون خبرة برمجية",
+          "url": "https://www.youtube.com/watch?v=yTYQ8FIZu2g"
+        },
+        {
+          "title": "برمجة تطبيق بالذكاء الاصطناعي بدون خبرة | شرح Replit",
+          "url": "https://www.youtube.com/watch?v=ejDP8ozF7HU"
+        },
+        {
+          "title": "بناء تطبيق أندرويد كامل في 10 دقائق بأداة ذكاء اصطناعي واحدة",
+          "url": "https://www.youtube.com/watch?v=Sljw_2H2umA"
+        },
+        {
+          "title": "إنشاء تطبيق بالذكاء الاصطناعي مجانًا بدون برمجة مع جوجل",
+          "url": "https://www.youtube.com/watch?v=Rkd_jOKT2So"
+        },
+        {
+          "title": "كيف يبني ChatGPT تطبيقك في دقائق بدون خبرة برمجية",
+          "url": "https://www.youtube.com/watch?v=Ex-z7aMS8DI"
+        },
+        {
+          "title": "برمجة موقع آلة حاسبة بـ ChatGPT بدون خبرة في JavaScript و CSS و HTML",
+          "url": "https://www.youtube.com/watch?v=gjaNU2D-iWk"
+        },
+        {
+          "title": "برمجة متصفح إنترنت بالذكاء الاصطناعي على ChatGPT",
+          "url": "https://www.youtube.com/watch?v=ePhgjaiItQ0"
+        },
+        {
+          "title": "جعلت Claude Fable 5 يبني موقع ويب Motion ثلاثي الأبعاد",
+          "url": "https://www.youtube.com/watch?v=OKV8nB_sXKk"
+        },
+        {
+          "title": "عمل تطبيق أندرويد لأي موقع والربح منه بدون خبرة",
+          "url": "https://www.youtube.com/watch?v=CkheakZ7X3Y"
+        },
+        {
+          "title": "بزنس في دقائق: هل يبني الذكاء الاصطناعي مشروعك بالكامل؟",
+          "url": "https://www.youtube.com/watch?v=fZRFj9lpa3U"
+        },
+        {
+          "title": "مساعد AI مجاني على الكمبيوتر بدون تعقيدات | OpenClaw مع Nut Studio",
+          "url": "https://www.youtube.com/watch?v=l00vSEOKr38"
+        },
+        {
+          "title": "البرمجة للمبتدئين: كيف تبدأ وأفضل كورسات لتعلمها",
+          "url": "https://www.youtube.com/watch?v=9flOOXKiRrs"
+        },
+        {
+          "title": "أهم لغات البرمجة الأكثر طلبًا في سوق العمل 2026",
+          "url": "https://www.youtube.com/watch?v=2YNppJ6-NQs"
+        }
+      ],
+      "description": "ابنِ موقعًا أو تطبيقًا بالذكاء الاصطناعي بدون خبرة برمجية: Replit وDeepSite وChatGPT وCanva وغيرها، من الفكرة حتى الإطلاق، مع نظرة على لغات البرمجة الأكثر طلبًا."
     },
     {
       "id": "higgsfield-ai-video-pro",
       "title": "كورس احتراف Higgsfield ونماذج الفيديو بالذكاء الاصطناعي",
-      "cover": "رابط_الغلاف_هنا",
+      "cover": "https://drive.google.com/thumbnail?id=1jSSNm9E7of7TxDz6mBwt_UFkRvmQyBHk&sz=w800",
       "lessons": [
-        { "title": "كيفية استخدام Higgsfield AI في 2026 | شرح كامل من البداية للاحتراف", "url": "https://www.youtube.com/watch?v=4oy52gDbCZo" },
-        { "title": "جرب أقوى موقع ذكاء اصطناعي مجانًا لمدة 24 ساعة بدون حدود | Higgsfield", "url": "https://www.youtube.com/watch?v=mD5LZzVVARA" },
-        { "title": "بدل 10 أدوات استخدم أداة واحدة: أقوى AI Workflow | Higgsfield Canvas", "url": "https://www.youtube.com/watch?v=z63-lZCv8_8" },
-        { "title": "الكمبيوتر الخارق من Higgsfield: وكيل ذكي ينفذ كل شيء من كلمة", "url": "https://www.youtube.com/watch?v=B462ILMYRFk" },
-        { "title": "حل مشكلة تغيّر الشخصية في توليد الصور والفيديو | Higgsfield Soul ID", "url": "https://www.youtube.com/watch?v=eolYHyRUuWA" },
-        { "title": "ليه فيديوهات AI بتاعتك شكلها عادي؟ السر في Cinema Studio 2.5", "url": "https://www.youtube.com/watch?v=GgkWAJIWN9k" },
-        { "title": "تثبيت الشخصية وإنشاء فيلم سينمائي بسهولة | Cinema Studio", "url": "https://www.youtube.com/watch?v=ZrcAbqk_b2Y" },
-        { "title": "نموذج Seedance 2.5: صناعة فيديوهات 30 ثانية بدون أي Cuts", "url": "https://www.youtube.com/watch?v=sy9hGf01aEg" },
-        { "title": "Seedance 2.0: فيديوهات سينمائية مع أقوى 50 برومت", "url": "https://www.youtube.com/watch?v=1DwrmQ4WV0g" },
-        { "title": "فيديوهات AI واقعية Viral | شرح Seedance 2.0 + برومت احترافي", "url": "https://www.youtube.com/watch?v=NsTzlGivAn8" },
-        { "title": "نظام يولّد فيديوهات أكشن وVFX كاملة بـ Seedance 2.5", "url": "https://www.youtube.com/watch?v=HM_PQ3pS36g" },
-        { "title": "فيلم طويل سينمائي واقعي أكشن بأرخص منصة Seedance 2", "url": "https://www.youtube.com/watch?v=UHTCjRdutgQ" },
-        { "title": "أخيرًا ظهر الوحش الصيني WAN 2.5 المنافس لـ VEO 3 | تجربة ومقارنة", "url": "https://www.youtube.com/watch?v=L1l-ChVyiqY" },
-        { "title": "اختبار Kling O1: تعديل الفيديو بالذكاء الاصطناعي بضغطة زر", "url": "https://www.youtube.com/watch?v=dGUJt0eeOFY" },
-        { "title": "لماذا Kling 3.0 هو أكثر تحديث منتظر؟", "url": "https://www.youtube.com/watch?v=c57zy1p0knM" },
-        { "title": "شرح SORA 2 PRO وتوليد فيديو بدون علامة مائية + مقارنة مع VEO 3", "url": "https://www.youtube.com/watch?v=1oUTqej_-70" },
-        { "title": "أسرع طريقة لصناعة فيديوهات احترافية مع Gemini Omni Flash", "url": "https://www.youtube.com/watch?v=DTroxWnWUro" },
-        { "title": "حرّرت Gemini 3.5 وأصبح ينفذ المستحيل", "url": "https://www.youtube.com/watch?v=--gWQx7FDBY" },
-        { "title": "اكتشف قوة Nano Banana Pro: صور 4K وكتابة عربية بدون أخطاء", "url": "https://www.youtube.com/watch?v=nX4bzkS_cZo" },
-        { "title": "أقوى نموذج للتعديل على الصور بالذكاء الاصطناعي | Higgsfield Popcorn", "url": "https://www.youtube.com/watch?v=jJyog7k_olA" },
-        { "title": "تقنية Genjutsu: تعديل الأشخاص والعناصر داخل الفيديو بدون تغيير الحركة", "url": "https://www.youtube.com/watch?v=bdTXc2Hi79I" },
-        { "title": "استبدال الشخصية بالكامل وتوليد الفيديو خطوة بخطوة | Higgsfield WAN Animate", "url": "https://www.youtube.com/watch?v=ORLvrM3m1Gk" },
-        { "title": "تقنية Face Swap: تبديل الوجه في أي صورة أو فيديو", "url": "https://www.youtube.com/watch?v=IYq8LFQO-bs" },
-        { "title": "التحول بالكامل إلى باتمان في الفيديو بضغطة زر", "url": "https://www.youtube.com/watch?v=87xE24NGMA4" },
-        { "title": "تحريك الأثاث في فيديوهات عرض الشقق والعقارات", "url": "https://www.youtube.com/watch?v=XnSOa4Jz7XQ" },
-        { "title": "Blender بالذكاء الاصطناعي: تحويل مشهد 3D إلى فيديو سينمائي", "url": "https://www.youtube.com/watch?v=iZNloezpdGM" },
-        { "title": "الذكاء الاصطناعي داخل DaVinci Resolve: هل انتهى عصر مواقع AI؟", "url": "https://www.youtube.com/watch?v=-D6p3lsw1cA" },
-        { "title": "إضافة تغنيك عن مواقع الذكاء الاصطناعي: المونتاج داخل Premiere Pro", "url": "https://www.youtube.com/watch?v=U6fubmGG-zc" },
-        { "title": "أقوى إضافة ذكاء اصطناعي لفوتوشوب | Higgsfield Photoshop", "url": "https://www.youtube.com/watch?v=6FLZ36V-lJw" },
-        { "title": "ذكاء اصطناعي يتحكم في After Effects بدلًا مني", "url": "https://www.youtube.com/watch?v=i-wv5mHUh5A" },
-        { "title": "إنشاء AI Influencer والربح منه | Higgsfield AI Influencer Studio", "url": "https://www.youtube.com/watch?v=KadloMw_urE" },
-        { "title": "من صورة إلى إعلان سينمائي بقيمة إنتاجية 5000$ في 3 خطوات | Seedance 2.5", "url": "https://www.youtube.com/watch?v=cJnTkbH99pQ" },
-        { "title": "سر إعلانات الطعام الاحترافية بالذكاء الاصطناعي | Seedance 2.0 4K", "url": "https://www.youtube.com/watch?v=f6INMS8paO0" },
-        { "title": "مصنع إعلانات تنافس الشركات العالمية باستخدام Seedance 2", "url": "https://www.youtube.com/watch?v=90feQxm0Ukg" },
-        { "title": "إعلانات UGC للمنتجات باستخدام Seedance 2.0", "url": "https://www.youtube.com/watch?v=MedOxL5qBo0" },
-        { "title": "ارفع صورة المنتج فقط والذكاء الاصطناعي يصنع إعلانات لانهائية", "url": "https://www.youtube.com/watch?v=26-iHSg_5XQ" },
-        { "title": "ChatGPT ينشئ فيديوهات إعلانية كاملة من صورة بدون برومت", "url": "https://www.youtube.com/watch?v=j6NhfvHCOhc" },
-        { "title": "الأداة التي تكتب الـHook وتصنع الإعلان كاملًا | Higgsfield Marketing Studio 2.0", "url": "https://www.youtube.com/watch?v=VCndC1M2ZgE" },
-        { "title": "مجانًا: أداة تولد إعلانات للبراند أو المنتج لزيادة المبيعات", "url": "https://www.youtube.com/watch?v=pOuhEH9M5JA" },
-        { "title": "حوّلت Claude AI إلى شركة إعلانات وتسويق كاملة باستخدام Higgsfield MCP", "url": "https://www.youtube.com/watch?v=RWhV0upblrw" },
-        { "title": "Claude AI خبير تسويق بالعمولة يختار المنتجات الرابحة بنفسه", "url": "https://www.youtube.com/watch?v=tk3I4o-ycvI" },
-        { "title": "آلة تصنع فيديوهات Shorts فيروسية تلقائيًا", "url": "https://www.youtube.com/watch?v=-Wx1z8AhthU" },
-        { "title": "أنشأت مصنع فيديوهات بدون ظهور باستخدام Claude AI", "url": "https://www.youtube.com/watch?v=DNyWdp5Acps" },
-        { "title": "فيديوهات وثائقية لليوتيوب بنمط Vox أنيميشن في 3 دقائق", "url": "https://www.youtube.com/watch?v=pYJ73fkJtc4" },
-        { "title": "Claude يعمل صورًا وفيديو كاملًا لوحده", "url": "https://www.youtube.com/watch?v=7lCAsc3ZAl4" },
-        { "title": "نسخ المونتاج وتطبيقه على فيديو جديد باستخدام Claude AI", "url": "https://www.youtube.com/watch?v=dwzaXKfhyMk" },
-        { "title": "إنشاء فيلم أنيميشن كرتوني أو حقيقي بجودة 4K بالذكاء الاصطناعي", "url": "https://www.youtube.com/watch?v=dMjuj3OtGkY" },
-        { "title": "Claude Opus 5.5 يتفوق على GPT Astra ويصنع هذه الفيديوهات بنفسه", "url": "https://www.youtube.com/watch?v=YpNrOfTd98k" },
-        { "title": "جعلت Claude Fable 5 يبني موقع ويب Motion ثلاثي الأبعاد", "url": "https://www.youtube.com/watch?v=OKV8nB_sXKk" },
-        { "title": "إنشاء لعبة كاملة بـ GPT 6 Astra بدون خبرة برمجية", "url": "https://www.youtube.com/watch?v=IEmsVMO15c0" },
-        { "title": "الذكاء الاصطناعي يحول أي فكرة إلى تطبيق كامل في دقائق", "url": "https://www.youtube.com/watch?v=M8cr46J433M" }
-      ]
+        {
+          "title": "كيفية استخدام Higgsfield AI في 2026 | شرح كامل من البداية للاحتراف",
+          "url": "https://www.youtube.com/watch?v=4oy52gDbCZo"
+        },
+        {
+          "title": "جرب أقوى موقع ذكاء اصطناعي مجانًا لمدة 24 ساعة بدون حدود | Higgsfield",
+          "url": "https://www.youtube.com/watch?v=mD5LZzVVARA"
+        },
+        {
+          "title": "بدل 10 أدوات استخدم أداة واحدة: أقوى AI Workflow | Higgsfield Canvas",
+          "url": "https://www.youtube.com/watch?v=z63-lZCv8_8"
+        },
+        {
+          "title": "الكمبيوتر الخارق من Higgsfield: وكيل ذكي ينفذ كل شيء من كلمة",
+          "url": "https://www.youtube.com/watch?v=B462ILMYRFk"
+        },
+        {
+          "title": "حل مشكلة تغيّر الشخصية في توليد الصور والفيديو | Higgsfield Soul ID",
+          "url": "https://www.youtube.com/watch?v=eolYHyRUuWA"
+        },
+        {
+          "title": "ليه فيديوهات AI بتاعتك شكلها عادي؟ السر في Cinema Studio 2.5",
+          "url": "https://www.youtube.com/watch?v=GgkWAJIWN9k"
+        },
+        {
+          "title": "تثبيت الشخصية وإنشاء فيلم سينمائي بسهولة | Cinema Studio",
+          "url": "https://www.youtube.com/watch?v=ZrcAbqk_b2Y"
+        },
+        {
+          "title": "نموذج Seedance 2.5: صناعة فيديوهات 30 ثانية بدون أي Cuts",
+          "url": "https://www.youtube.com/watch?v=sy9hGf01aEg"
+        },
+        {
+          "title": "Seedance 2.0: فيديوهات سينمائية مع أقوى 50 برومت",
+          "url": "https://www.youtube.com/watch?v=1DwrmQ4WV0g"
+        },
+        {
+          "title": "فيديوهات AI واقعية Viral | شرح Seedance 2.0 + برومت احترافي",
+          "url": "https://www.youtube.com/watch?v=NsTzlGivAn8"
+        },
+        {
+          "title": "نظام يولّد فيديوهات أكشن وVFX كاملة بـ Seedance 2.5",
+          "url": "https://www.youtube.com/watch?v=HM_PQ3pS36g"
+        },
+        {
+          "title": "فيلم طويل سينمائي واقعي أكشن بأرخص منصة Seedance 2",
+          "url": "https://www.youtube.com/watch?v=UHTCjRdutgQ"
+        },
+        {
+          "title": "أخيرًا ظهر الوحش الصيني WAN 2.5 المنافس لـ VEO 3 | تجربة ومقارنة",
+          "url": "https://www.youtube.com/watch?v=L1l-ChVyiqY"
+        },
+        {
+          "title": "اختبار Kling O1: تعديل الفيديو بالذكاء الاصطناعي بضغطة زر",
+          "url": "https://www.youtube.com/watch?v=dGUJt0eeOFY"
+        },
+        {
+          "title": "لماذا Kling 3.0 هو أكثر تحديث منتظر؟",
+          "url": "https://www.youtube.com/watch?v=c57zy1p0knM"
+        },
+        {
+          "title": "شرح SORA 2 PRO وتوليد فيديو بدون علامة مائية + مقارنة مع VEO 3",
+          "url": "https://www.youtube.com/watch?v=1oUTqej_-70"
+        },
+        {
+          "title": "أسرع طريقة لصناعة فيديوهات احترافية مع Gemini Omni Flash",
+          "url": "https://www.youtube.com/watch?v=DTroxWnWUro"
+        },
+        {
+          "title": "حرّرت Gemini 3.5 وأصبح ينفذ المستحيل",
+          "url": "https://www.youtube.com/watch?v=--gWQx7FDBY"
+        },
+        {
+          "title": "اكتشف قوة Nano Banana Pro: صور 4K وكتابة عربية بدون أخطاء",
+          "url": "https://www.youtube.com/watch?v=nX4bzkS_cZo"
+        },
+        {
+          "title": "أقوى نموذج للتعديل على الصور بالذكاء الاصطناعي | Higgsfield Popcorn",
+          "url": "https://www.youtube.com/watch?v=jJyog7k_olA"
+        },
+        {
+          "title": "تقنية Genjutsu: تعديل الأشخاص والعناصر داخل الفيديو بدون تغيير الحركة",
+          "url": "https://www.youtube.com/watch?v=bdTXc2Hi79I"
+        },
+        {
+          "title": "استبدال الشخصية بالكامل وتوليد الفيديو خطوة بخطوة | Higgsfield WAN Animate",
+          "url": "https://www.youtube.com/watch?v=ORLvrM3m1Gk"
+        },
+        {
+          "title": "تقنية Face Swap: تبديل الوجه في أي صورة أو فيديو",
+          "url": "https://www.youtube.com/watch?v=IYq8LFQO-bs"
+        },
+        {
+          "title": "التحول بالكامل إلى باتمان في الفيديو بضغطة زر",
+          "url": "https://www.youtube.com/watch?v=87xE24NGMA4"
+        },
+        {
+          "title": "تحريك الأثاث في فيديوهات عرض الشقق والعقارات",
+          "url": "https://www.youtube.com/watch?v=XnSOa4Jz7XQ"
+        },
+        {
+          "title": "Blender بالذكاء الاصطناعي: تحويل مشهد 3D إلى فيديو سينمائي",
+          "url": "https://www.youtube.com/watch?v=iZNloezpdGM"
+        },
+        {
+          "title": "الذكاء الاصطناعي داخل DaVinci Resolve: هل انتهى عصر مواقع AI؟",
+          "url": "https://www.youtube.com/watch?v=-D6p3lsw1cA"
+        },
+        {
+          "title": "إضافة تغنيك عن مواقع الذكاء الاصطناعي: المونتاج داخل Premiere Pro",
+          "url": "https://www.youtube.com/watch?v=U6fubmGG-zc"
+        },
+        {
+          "title": "أقوى إضافة ذكاء اصطناعي لفوتوشوب | Higgsfield Photoshop",
+          "url": "https://www.youtube.com/watch?v=6FLZ36V-lJw"
+        },
+        {
+          "title": "ذكاء اصطناعي يتحكم في After Effects بدلًا مني",
+          "url": "https://www.youtube.com/watch?v=i-wv5mHUh5A"
+        },
+        {
+          "title": "إنشاء AI Influencer والربح منه | Higgsfield AI Influencer Studio",
+          "url": "https://www.youtube.com/watch?v=KadloMw_urE"
+        },
+        {
+          "title": "من صورة إلى إعلان سينمائي بقيمة إنتاجية 5000$ في 3 خطوات | Seedance 2.5",
+          "url": "https://www.youtube.com/watch?v=cJnTkbH99pQ"
+        },
+        {
+          "title": "سر إعلانات الطعام الاحترافية بالذكاء الاصطناعي | Seedance 2.0 4K",
+          "url": "https://www.youtube.com/watch?v=f6INMS8paO0"
+        },
+        {
+          "title": "مصنع إعلانات تنافس الشركات العالمية باستخدام Seedance 2",
+          "url": "https://www.youtube.com/watch?v=90feQxm0Ukg"
+        },
+        {
+          "title": "إعلانات UGC للمنتجات باستخدام Seedance 2.0",
+          "url": "https://www.youtube.com/watch?v=MedOxL5qBo0"
+        },
+        {
+          "title": "ارفع صورة المنتج فقط والذكاء الاصطناعي يصنع إعلانات لانهائية",
+          "url": "https://www.youtube.com/watch?v=26-iHSg_5XQ"
+        },
+        {
+          "title": "ChatGPT ينشئ فيديوهات إعلانية كاملة من صورة بدون برومت",
+          "url": "https://www.youtube.com/watch?v=j6NhfvHCOhc"
+        },
+        {
+          "title": "الأداة التي تكتب الـHook وتصنع الإعلان كاملًا | Higgsfield Marketing Studio 2.0",
+          "url": "https://www.youtube.com/watch?v=VCndC1M2ZgE"
+        },
+        {
+          "title": "مجانًا: أداة تولد إعلانات للبراند أو المنتج لزيادة المبيعات",
+          "url": "https://www.youtube.com/watch?v=pOuhEH9M5JA"
+        },
+        {
+          "title": "حوّلت Claude AI إلى شركة إعلانات وتسويق كاملة باستخدام Higgsfield MCP",
+          "url": "https://www.youtube.com/watch?v=RWhV0upblrw"
+        },
+        {
+          "title": "Claude AI خبير تسويق بالعمولة يختار المنتجات الرابحة بنفسه",
+          "url": "https://www.youtube.com/watch?v=tk3I4o-ycvI"
+        },
+        {
+          "title": "آلة تصنع فيديوهات Shorts فيروسية تلقائيًا",
+          "url": "https://www.youtube.com/watch?v=-Wx1z8AhthU"
+        },
+        {
+          "title": "أنشأت مصنع فيديوهات بدون ظهور باستخدام Claude AI",
+          "url": "https://www.youtube.com/watch?v=DNyWdp5Acps"
+        },
+        {
+          "title": "فيديوهات وثائقية لليوتيوب بنمط Vox أنيميشن في 3 دقائق",
+          "url": "https://www.youtube.com/watch?v=pYJ73fkJtc4"
+        },
+        {
+          "title": "Claude يعمل صورًا وفيديو كاملًا لوحده",
+          "url": "https://www.youtube.com/watch?v=7lCAsc3ZAl4"
+        },
+        {
+          "title": "نسخ المونتاج وتطبيقه على فيديو جديد باستخدام Claude AI",
+          "url": "https://www.youtube.com/watch?v=dwzaXKfhyMk"
+        },
+        {
+          "title": "إنشاء فيلم أنيميشن كرتوني أو حقيقي بجودة 4K بالذكاء الاصطناعي",
+          "url": "https://www.youtube.com/watch?v=dMjuj3OtGkY"
+        },
+        {
+          "title": "Claude Opus 5.5 يتفوق على GPT Astra ويصنع هذه الفيديوهات بنفسه",
+          "url": "https://www.youtube.com/watch?v=YpNrOfTd98k"
+        },
+        {
+          "title": "جعلت Claude Fable 5 يبني موقع ويب Motion ثلاثي الأبعاد",
+          "url": "https://www.youtube.com/watch?v=OKV8nB_sXKk"
+        },
+        {
+          "title": "إنشاء لعبة كاملة بـ GPT 6 Astra بدون خبرة برمجية",
+          "url": "https://www.youtube.com/watch?v=IEmsVMO15c0"
+        },
+        {
+          "title": "الذكاء الاصطناعي يحول أي فكرة إلى تطبيق كامل في دقائق",
+          "url": "https://www.youtube.com/watch?v=M8cr46J433M"
+        }
+      ],
+      "description": "شرح شامل لمنصة Higgsfield ونماذج الفيديو: Cinema Studio وSoul ID وSeedance وKling وWAN وSora، وإضافات Photoshop وPremiere وDaVinci، وصناعة الإعلانات والمؤثر الافتراضي."
     },
     {
       "id": "faceless-youtube-ai",
       "title": "كورس الربح من يوتيوب بدون ظهور بالذكاء الاصطناعي",
-      "cover": "رابط_الغلاف_هنا",
+      "cover": "https://drive.google.com/thumbnail?id=13lG_cRV_orj2an3PYW40e3b4PH8cMdxi&sz=w800",
       "lessons": [
-        { "title": "90% من قنوات الذكاء الاصطناعي تفشل… وهذا السبب", "url": "https://www.youtube.com/watch?v=YhbKMN8eD40" },
-        { "title": "اصنع فيديو كامل بالذكاء الاصطناعي لليوتيوب بدون ظهورك بأدوات مجانية", "url": "https://www.youtube.com/watch?v=hD17-2ZwYeo" },
-        { "title": "الربح من يوتيوب بدون ظهور باستخدام Canva", "url": "https://www.youtube.com/watch?v=JtuR8F-HmsM" },
-        { "title": "إنشاء فيديو بالذكاء الاصطناعي بضغطة زر | شرح InVideo AI", "url": "https://www.youtube.com/watch?v=RPQoWeDiJxQ" },
-        { "title": "إنشاء فيديوهات احترافية بدون ظهور باستخدام Vidnoz AI", "url": "https://www.youtube.com/watch?v=sDjoFCUPXww" },
-        { "title": "أفضل طريقة لإنشاء فيديو احترافي بدون خبرة باستخدام Canva و Lemon Slice", "url": "https://www.youtube.com/watch?v=dTgkItrT3oY" },
-        { "title": "تحويل أي تغريدة على تويتر إلى فيديو مع Fliki", "url": "https://www.youtube.com/watch?v=HGAqI9COThQ" },
-        { "title": "أنشأت مصنع فيديوهات بدون ظهور باستخدام Claude AI", "url": "https://www.youtube.com/watch?v=DNyWdp5Acps" },
-        { "title": "إنشاء مئات الفيديوهات بضغطة زر | تصميم شورتس وتيك توك", "url": "https://www.youtube.com/watch?v=6BwgtBhsibY" },
-        { "title": "فيديوهات سؤال وجواب تفاعلية للربح من اليوتيوب بدون ظهور", "url": "https://www.youtube.com/watch?v=VWQCQs9Q9F8" },
-        { "title": "إنشاء فيديو إخباري بالذكاء الاصطناعي لليوتيوب", "url": "https://www.youtube.com/watch?v=9UMI9s8SqaA" },
-        { "title": "فيديوهات وثائقية مثل قناة عشوائيات والجانب المشرق", "url": "https://www.youtube.com/watch?v=IHDjuOJliFY" },
-        { "title": "فيديوهات VOX Animation بالذكاء الاصطناعي مجانًا | أنيميشن ورقي", "url": "https://www.youtube.com/watch?v=biheS0ZB4OM" },
-        { "title": "فيديوهات قصص أطفال بالذكاء الاصطناعي مجانًا لليوتيوب", "url": "https://www.youtube.com/watch?v=sWIFolvmFas" },
-        { "title": "فيديو أنيميشن بدون خبرة في دقائق والربح منه", "url": "https://www.youtube.com/watch?v=pXjN2BB18i8" },
-        { "title": "فيديو أنيميشن ثلاثي الأبعاد بالذكاء الاصطناعي مجانًا بالكامل", "url": "https://www.youtube.com/watch?v=C2gg_uaG3sk" },
-        { "title": "فيديو أنيميشن كرتون طويل بالذكاء الاصطناعي من كلمة", "url": "https://www.youtube.com/watch?v=v4WAUzTLsh4" },
-        { "title": "فيلم أنيميشن كرتوني أو حقيقي بجودة 4K بالذكاء الاصطناعي", "url": "https://www.youtube.com/watch?v=dMjuj3OtGkY" },
-        { "title": "توليد فيديو طويل 50 دقيقة بضغطة زر مع ثبات الشخصيات", "url": "https://www.youtube.com/watch?v=cnqj1ScKP5s" },
-        { "title": "فيديوهات القطط بالذكاء الاصطناعي مجانًا بضغطة زر", "url": "https://www.youtube.com/watch?v=wM1-Z3RJWaQ" },
-        { "title": "فيديوهات قرود أبها والطائف بـ VEO 3 مجانًا", "url": "https://www.youtube.com/watch?v=AKG_bp_rVqw" },
-        { "title": "سر فيديوهات الأشياء التي تتكلم | من الصفر للمحترفين", "url": "https://www.youtube.com/watch?v=mssVRStzIy8" },
-        { "title": "فيديو تايم لابس لتصميم داخلي فاخر بالذكاء الاصطناعي مجانًا", "url": "https://www.youtube.com/watch?v=qq1pDvaqWDM" },
-        { "title": "فيديوهات السفر عبر الزمن باستخدام Edimakor", "url": "https://www.youtube.com/watch?v=WiI0rNiV9NU" },
-        { "title": "بودكاست احترافي بالذكاء الاصطناعي والربح منه | Edimakor", "url": "https://www.youtube.com/watch?v=XQ2wi6bLd04" },
-        { "title": "استغل كأس العالم 2026 واحصل على ملايين المشاهدات بالذكاء الاصطناعي", "url": "https://www.youtube.com/watch?v=iO4f_JeA8Tc" },
-        { "title": "انسخ أي قناة على اليوتيوب بالذكاء الاصطناعي بدون مونتاج", "url": "https://www.youtube.com/watch?v=dnIKWlUnoeI" },
-        { "title": "أقوى موقع ذكاء اصطناعي مجانًا لمدة 24 ساعة بدون حدود | Higgsfield", "url": "https://www.youtube.com/watch?v=mD5LZzVVARA" },
-        { "title": "دليل كامل: Claude AI يصنع موشن جرافيك احترافي مجانًا", "url": "https://www.youtube.com/watch?v=Z3wwH4HL5gA" }
-      ]
+        {
+          "title": "90% من قنوات الذكاء الاصطناعي تفشل… وهذا السبب",
+          "url": "https://www.youtube.com/watch?v=YhbKMN8eD40"
+        },
+        {
+          "title": "اصنع فيديو كامل بالذكاء الاصطناعي لليوتيوب بدون ظهورك بأدوات مجانية",
+          "url": "https://www.youtube.com/watch?v=hD17-2ZwYeo"
+        },
+        {
+          "title": "الربح من يوتيوب بدون ظهور باستخدام Canva",
+          "url": "https://www.youtube.com/watch?v=JtuR8F-HmsM"
+        },
+        {
+          "title": "إنشاء فيديو بالذكاء الاصطناعي بضغطة زر | شرح InVideo AI",
+          "url": "https://www.youtube.com/watch?v=RPQoWeDiJxQ"
+        },
+        {
+          "title": "إنشاء فيديوهات احترافية بدون ظهور باستخدام Vidnoz AI",
+          "url": "https://www.youtube.com/watch?v=sDjoFCUPXww"
+        },
+        {
+          "title": "أفضل طريقة لإنشاء فيديو احترافي بدون خبرة باستخدام Canva و Lemon Slice",
+          "url": "https://www.youtube.com/watch?v=dTgkItrT3oY"
+        },
+        {
+          "title": "تحويل أي تغريدة على تويتر إلى فيديو مع Fliki",
+          "url": "https://www.youtube.com/watch?v=HGAqI9COThQ"
+        },
+        {
+          "title": "أنشأت مصنع فيديوهات بدون ظهور باستخدام Claude AI",
+          "url": "https://www.youtube.com/watch?v=DNyWdp5Acps"
+        },
+        {
+          "title": "إنشاء مئات الفيديوهات بضغطة زر | تصميم شورتس وتيك توك",
+          "url": "https://www.youtube.com/watch?v=6BwgtBhsibY"
+        },
+        {
+          "title": "فيديوهات سؤال وجواب تفاعلية للربح من اليوتيوب بدون ظهور",
+          "url": "https://www.youtube.com/watch?v=VWQCQs9Q9F8"
+        },
+        {
+          "title": "إنشاء فيديو إخباري بالذكاء الاصطناعي لليوتيوب",
+          "url": "https://www.youtube.com/watch?v=9UMI9s8SqaA"
+        },
+        {
+          "title": "فيديوهات وثائقية مثل قناة عشوائيات والجانب المشرق",
+          "url": "https://www.youtube.com/watch?v=IHDjuOJliFY"
+        },
+        {
+          "title": "فيديوهات VOX Animation بالذكاء الاصطناعي مجانًا | أنيميشن ورقي",
+          "url": "https://www.youtube.com/watch?v=biheS0ZB4OM"
+        },
+        {
+          "title": "فيديوهات قصص أطفال بالذكاء الاصطناعي مجانًا لليوتيوب",
+          "url": "https://www.youtube.com/watch?v=sWIFolvmFas"
+        },
+        {
+          "title": "فيديو أنيميشن بدون خبرة في دقائق والربح منه",
+          "url": "https://www.youtube.com/watch?v=pXjN2BB18i8"
+        },
+        {
+          "title": "فيديو أنيميشن ثلاثي الأبعاد بالذكاء الاصطناعي مجانًا بالكامل",
+          "url": "https://www.youtube.com/watch?v=C2gg_uaG3sk"
+        },
+        {
+          "title": "فيديو أنيميشن كرتون طويل بالذكاء الاصطناعي من كلمة",
+          "url": "https://www.youtube.com/watch?v=v4WAUzTLsh4"
+        },
+        {
+          "title": "فيلم أنيميشن كرتوني أو حقيقي بجودة 4K بالذكاء الاصطناعي",
+          "url": "https://www.youtube.com/watch?v=dMjuj3OtGkY"
+        },
+        {
+          "title": "توليد فيديو طويل 50 دقيقة بضغطة زر مع ثبات الشخصيات",
+          "url": "https://www.youtube.com/watch?v=cnqj1ScKP5s"
+        },
+        {
+          "title": "فيديوهات القطط بالذكاء الاصطناعي مجانًا بضغطة زر",
+          "url": "https://www.youtube.com/watch?v=wM1-Z3RJWaQ"
+        },
+        {
+          "title": "فيديوهات قرود أبها والطائف بـ VEO 3 مجانًا",
+          "url": "https://www.youtube.com/watch?v=AKG_bp_rVqw"
+        },
+        {
+          "title": "سر فيديوهات الأشياء التي تتكلم | من الصفر للمحترفين",
+          "url": "https://www.youtube.com/watch?v=mssVRStzIy8"
+        },
+        {
+          "title": "فيديو تايم لابس لتصميم داخلي فاخر بالذكاء الاصطناعي مجانًا",
+          "url": "https://www.youtube.com/watch?v=qq1pDvaqWDM"
+        },
+        {
+          "title": "فيديوهات السفر عبر الزمن باستخدام Edimakor",
+          "url": "https://www.youtube.com/watch?v=WiI0rNiV9NU"
+        },
+        {
+          "title": "بودكاست احترافي بالذكاء الاصطناعي والربح منه | Edimakor",
+          "url": "https://www.youtube.com/watch?v=XQ2wi6bLd04"
+        },
+        {
+          "title": "استغل كأس العالم 2026 واحصل على ملايين المشاهدات بالذكاء الاصطناعي",
+          "url": "https://www.youtube.com/watch?v=iO4f_JeA8Tc"
+        },
+        {
+          "title": "انسخ أي قناة على اليوتيوب بالذكاء الاصطناعي بدون مونتاج",
+          "url": "https://www.youtube.com/watch?v=dnIKWlUnoeI"
+        },
+        {
+          "title": "أقوى موقع ذكاء اصطناعي مجانًا لمدة 24 ساعة بدون حدود | Higgsfield",
+          "url": "https://www.youtube.com/watch?v=mD5LZzVVARA"
+        },
+        {
+          "title": "دليل كامل: Claude AI يصنع موشن جرافيك احترافي مجانًا",
+          "url": "https://www.youtube.com/watch?v=Z3wwH4HL5gA"
+        }
+      ],
+      "description": "أنشئ قناة يوتيوب بدون ظهور بالذكاء الاصطناعي: أفكار المحتوى وأدوات مثل InVideo وVidnoz وCanva وVeo 3، وأنواع الفيديوهات التي تحقق مشاهدات كالوثائقي والأنيميشن وقصص الأطفال والتايم لابس."
     }
   ]
 }
