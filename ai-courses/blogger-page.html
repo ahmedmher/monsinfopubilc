@@ -1,0 +1,160 @@
+<meta charset="utf-8"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+#aic{--ink:#1b1740;--mu:#65618a;--ac:#7c3aed;--ac2:#db2777;--bg:#f6f4fc;--ln:#e6e1f5;font-family:'IBM Plex Sans Arabic',Tahoma,Arial,sans-serif;color:var(--ink);direction:rtl;text-align:right;line-height:1.8;background:var(--bg);border-radius:26px;overflow:hidden;max-width:1200px;margin:0 auto}
+#aic *{box-sizing:border-box}
+#aic a{color:inherit;text-decoration:none}
+#aic svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+#aic .w{padding:0 26px 26px}
+#aic .hero{position:relative;margin:20px 26px 0;padding:44px 34px;border-radius:22px;color:#fff;overflow:hidden;background:radial-gradient(circle at 85% 10%,rgba(255,255,255,.18),transparent 40%),linear-gradient(120deg,#4a0a68 0%,#7b1fa2 55%,#a24bf0 100%)}
+#aic .hero:before,#aic .hero:after{content:"";position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,.14)}
+#aic .hero:before{width:420px;height:420px;left:-120px;bottom:-200px}
+#aic .hero:after{width:260px;height:260px;left:60px;bottom:-90px}
+#aic .hero>*{position:relative;z-index:1}
+#aic .kick{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);padding:4px 16px;border-radius:30px;font-size:13.5px;font-weight:600;margin-bottom:14px}
+#aic .kick i{width:8px;height:8px;border-radius:50%;background:#7CFFB0;box-shadow:0 0 0 4px rgba(124,255,176,.25)}
+#aic h1{margin:0 0 12px;font-size:clamp(26px,4.2vw,44px);line-height:1.35;font-weight:700}
+#aic h1 em{font-style:normal;background:linear-gradient(transparent 62%,#2b0a3d 62%,#2b0a3d 92%,transparent 92%);padding:0 4px}
+#aic .lead{margin:0;max-width:680px;font-size:16px;opacity:.94}
+#aic .meta{margin-top:16px;font-size:13px;opacity:.9}
+#aic .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+#aic .tags span{font-size:12.5px;font-weight:700;padding:2px 14px;border-radius:30px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4)}
+#aic .gtb{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:10px 22px;border-radius:30px;background:#fff;color:#7b1fa2;border:0;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.28);transition:.2s}
+#aic .gtb:hover{background:#ffd54f;color:#3a0a52;transform:translateY(-2px)}
+#aic .bar{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0 16px}
+#aic .bar>*{flex:1 1 220px}
+#aic input{width:100%;font:inherit;font-size:14px;color:var(--ink);background:#fff;border:1px solid var(--ln);border-radius:12px;padding:10px 14px}
+#aic input:focus{outline:2px solid var(--ac);outline-offset:1px}
+#aic .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:16px}
+#aic .card{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--ln);border-radius:20px;overflow:hidden;cursor:pointer;transition:.25s;box-shadow:0 8px 24px rgba(76,29,149,.06)}
+#aic .card:hover{transform:translateY(-5px);border-color:var(--ac);box-shadow:0 20px 40px rgba(76,29,149,.15)}
+#aic .im{aspect-ratio:16/9;background:linear-gradient(135deg,#ede9fe,#fbcfe8) center/cover no-repeat}
+#aic .rk{position:absolute;top:10px;inset-inline-start:10px;z-index:2;min-width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#db2777);color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 18px rgba(124,58,237,.4)}
+#aic .bd{display:flex;flex-direction:column;gap:8px;padding:14px 16px 16px;flex:1}
+#aic .tp{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--mu)}
+#aic .src{font-weight:700;color:var(--ac);background:#efe9ff;border-radius:30px;padding:1px 12px}
+#aic .card h3{margin:0;font-size:16.5px;line-height:1.6;font-weight:700}
+#aic .go{margin-top:auto;padding-top:10px;border-top:1px dashed var(--ln);display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;color:var(--ac)}
+#aic .go svg{transition:.2s}#aic .card:hover .go svg{transform:translateX(-5px)}
+#aic .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:14px;font-weight:700;font-size:13.5px;border:1px solid var(--ln);background:#fff;color:var(--ac);cursor:pointer;font-family:inherit}
+#aic .btn:hover:not([disabled]){border-color:var(--ac)}
+#aic .btn.d{background:var(--ac);border-color:var(--ac);color:#fff;box-shadow:0 10px 24px rgba(124,58,237,.35)}
+#aic .btn[disabled]{opacity:.45;cursor:default;box-shadow:none}
+#aic .back{display:inline-flex;align-items:center;gap:8px;margin:20px 0 0;padding:8px 18px;border-radius:30px;background:#fff;border:1px solid var(--ln);font-weight:700;font-size:13.5px;color:var(--ac);cursor:pointer;font-family:inherit}
+#aic .dh h1{font-size:clamp(22px,3.4vw,34px);line-height:1.5}
+#aic .lay{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);gap:16px;margin-top:16px;align-items:start}
+@media(max-width:900px){#aic .lay{grid-template-columns:1fr}}
+#aic .box{background:#fff;border:1px solid var(--ln);border-radius:20px;padding:14px;box-shadow:0 8px 24px rgba(76,29,149,.05)}
+#aic .pl{width:100%;aspect-ratio:16/9;border:0;border-radius:14px;background:#1b1740;display:block}
+#aic .now{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px 4px 2px}
+#aic .now h2{margin:0;font-size:17px;flex:1 1 220px;line-height:1.7}
+#aic .nav{display:flex;gap:8px}
+#aic .yt{display:inline-block;margin-top:6px;color:var(--mu);font-size:12.5px;padding:0 4px}
+#aic .ls{max-height:640px;overflow:auto;position:relative}
+@media(max-width:900px){#aic .ls{max-height:none}}
+#aic .ls h4{margin:2px 4px 10px;font-size:14px;color:var(--mu)}
+#aic .ln{display:flex;gap:10px;align-items:center;padding:9px 12px;margin-bottom:8px;border-radius:14px;background:#faf9fe;border:1px solid var(--ln);cursor:pointer;transition:.2s}
+#aic .ln:hover{border-color:var(--ac)}
+#aic .ln.on{background:#efe9ff;border-color:var(--ac)}
+#aic .ln b{flex:none;width:30px;height:30px;border-radius:50%;background:#e4dafc;color:var(--ac);display:flex;align-items:center;justify-content:center;font-size:13px}
+#aic .ln.on b{background:var(--ac);color:#fff}
+#aic .ln.dn b{background:#bdf0d6;color:#047857}
+#aic .ln span{font-size:13.5px;font-weight:600;line-height:1.7}
+#aic .empty{padding:30px;text-align:center;color:var(--mu);background:#fff;border:1px dashed var(--ln);border-radius:18px;grid-column:1/-1}
+#aic .sk{height:260px;border-radius:20px;background:linear-gradient(90deg,#efe9fb 25%,#f8f5ff 50%,#efe9fb 75%);background-size:200% 100%;animation:aics 1.2s infinite}
+@keyframes aics{0%{background-position:200% 0}100%{background-position:-200% 0}}
+#aic .note{font-size:12px;color:var(--mu);margin-top:18px;text-align:center}
+#aic-seo{max-width:1200px;margin:24px auto 0;color:#3d3963;font-size:15px}
+@media(max-width:560px){#aic .w{padding:0 14px 18px}#aic .hero{margin:12px 14px 0;padding:30px 20px}}
+</style>
+
+<div id="aic"><div id="aic-root"><div class="w"><div class="grid" style="padding-top:24px"><div class="sk"></div><div class="sk"></div><div class="sk"></div></div></div></div></div>
+
+<div id="aic-seo" lang="ar" dir="rtl">
+<hr>
+<h2>كورسات الذكاء الاصطناعي المجانية بالعربي</h2>
+<p>تجمع هذه الصفحة كورسات مجانية مرتبة درسا بعد درس من يوتيوب، تغطي Claude وSeedance وHiggsfield وأدوات جوجل وبناء المواقع والتطبيقات بالذكاء الاصطناعي والربح من يوتيوب بدون ظهور. اختر الكورس وابدأ من الدرس الأول، والصفحة تتذكر ما شاهدته.</p>
+<h3>الأسئلة الشائعة</h3>
+<details><summary>هل الكورسات مجانية؟</summary><p>نعم، كل الدروس فيديوهات عامة على يوتيوب ولا تحتاج اشتراكا.</p></details>
+<details><summary>كيف تتحدث الكورسات؟</summary><p>تُقرأ القائمة من مستودع GitHub، فتظهر الكورسات والدروس الجديدة تلقائيا بدون تعديل الصفحة.</p></details>
+</div>
+
+<script>//<![CDATA[
+(function(){
+var SRC=["https://ahmedmher.github.io/monsinfopubilc/ai-courses/","https://raw.githubusercontent.com/ahmedmher/monsinfopubilc/main/ai-courses/"];
+var YT="https://www.youtube.com/@monsterinfo/videos";
+var root=document.getElementById("aic-root"),D=null,q="";
+var AR='<svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
+var YI='<svg viewBox="0 0 24 24"><path d="M22 8.5a3 3 0 0 0-2-2C18 6 12 6 12 6s-6 0-8 .5a3 3 0 0 0-2 2C1.5 10.5 1.5 12 1.5 12s0 1.5.5 3.5a3 3 0 0 0 2 2c2 .5 8 .5 8 .5s6 0 8-.5a3 3 0 0 0 2-2c.5-2 .5-3.5.5-3.5s0-1.5-.5-3.5z"/><path d="m10 15 5-3-5-3z"/></svg>';
+function esc(s){var d=document.createElement("div");d.textContent=s==null?"":s;return d.innerHTML.replace(/"/g,"&quot;")}
+function vid(u){var m=String(u).match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);return m?m[1]:""}
+function cover(c,b){var u=String(c||"").trim();if(/^https?:\/\//i.test(u))return u;if(/^[\w\-.\/]+\.(jpe?g|png|webp|gif|avif)$/i.test(u))return b+u;return""}
+function ls(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||"null");localStorage.setItem(k,JSON.stringify(v))}catch(e){}return null}
+function total(){return D.courses.reduce(function(a,c){return a+c.lessons.length},0)}
+
+function home(){
+  var qq=q.trim().toLowerCase();
+  var list=D.courses.filter(function(c){
+    if(!qq)return true;
+    return c.title.toLowerCase().indexOf(qq)>-1||c.lessons.some(function(l){return l.title.toLowerCase().indexOf(qq)>-1});
+  });
+  var h='<div class="hero"><span class="kick"><i></i>تعلّم مجانا من يوتيوب</span>'+
+    '<h1>كورسات <em>الذكاء الاصطناعي</em> المجانية</h1>'+
+    '<p class="lead">كورسات مرتبة درسا بعد درس: من Claude وSeedance وHiggsfield إلى بناء المواقع والتطبيقات والربح من يوتيوب. اختر كورسا وابدأ فورا.</p>'+
+    '<div class="tags"><span>'+D.courses.length+' كورسات</span><span>'+total()+' درس</span><span>مجاني 100%</span></div>'+
+    '<a class="gtb" href="'+YT+'" target="_blank" rel="noopener">'+YI+' قناتي على يوتيوب</a></div>'+
+    '<div class="w"><div class="bar"><input id="aic-q" type="search" placeholder="ابحث في الكورسات والدروس..." value="'+esc(q)+'"></div><div class="grid">';
+  if(!list.length)h+='<div class="empty">لا توجد نتائج مطابقة.</div>';
+  list.forEach(function(c){
+    var i=D.courses.indexOf(c),img=cover(c.cover,D.base),done=(ls("aic-"+c.id)||[]).length;
+    h+='<div class="card" data-id="'+esc(c.id)+'"><span class="rk">'+(i+1)+'</span>'+
+      '<div class="im"'+(img?' style="background-image:url(\''+esc(img)+'\')"':'')+'></div>'+
+      '<div class="bd"><div class="tp"><span class="src">'+c.lessons.length+' درس</span>'+(done?'<span>شاهدت '+done+'</span>':'')+'</div>'+
+      '<h3>'+esc(c.title)+'</h3><div class="go"><span>ابدأ الكورس</span>'+AR+'</div></div></div>';
+  });
+  root.innerHTML=h+'</div><div class="note">البيانات تُحدَّث تلقائيا من GitHub</div></div>';
+  var inp=document.getElementById("aic-q");
+  inp.oninput=function(){q=inp.value;var p=inp.selectionStart;home();var n=document.getElementById("aic-q");n.focus();n.setSelectionRange(p,p)};
+  root.querySelectorAll(".card").forEach(function(el){el.onclick=function(){location.hash="aic/"+el.dataset.id}});
+}
+
+function course(c,idx,auto){
+  var key="aic-"+c.id,done=ls(key)||[];
+  if(done.indexOf(idx)<0){done.push(idx);ls(key,done)}
+  var l=c.lessons[idx],n=c.lessons.length;
+  var h='<div class="hero dh"><span class="kick"><i></i>كورس مجاني</span><h1>'+esc(c.title)+'</h1>'+
+    '<div class="meta">'+n+' درس • شاهدت '+done.length+' من '+n+'</div></div>'+
+    '<div class="w"><button class="back">'+AR+' كل الكورسات</button><div class="lay"><div class="box">'+
+    '<iframe class="pl" allowfullscreen title="'+esc(l.title)+'" allow="accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen" src="https://www.youtube-nocookie.com/embed/'+vid(l.url)+'?rel=0'+(auto?'&autoplay=1':'')+'"></iframe>'+
+    '<div class="now"><h2>'+(idx+1)+'. '+esc(l.title)+'</h2><div class="nav">'+
+    '<button class="btn" data-g="'+(idx-1)+'"'+(idx<=0?' disabled':'')+'>السابق</button>'+
+    '<button class="btn d" data-g="'+(idx+1)+'"'+(idx+1>=n?' disabled':'')+'>الدرس التالي</button></div></div>'+
+    '<a class="yt" target="_blank" rel="noopener" href="'+esc(l.url)+'">فتح الدرس على يوتيوب ↗</a></div>'+
+    '<div class="box ls"><h4>دروس الكورس ('+n+')</h4>';
+  c.lessons.forEach(function(x,i){
+    var d=done.indexOf(i)>-1&&i!==idx;
+    h+='<div class="ln'+(i===idx?' on':'')+(d?' dn':'')+'" data-i="'+i+'"><b>'+(d?'✓':i+1)+'</b><span>'+esc(x.title)+'</span></div>';
+  });
+  root.innerHTML=h+'</div></div></div>';
+  root.querySelector(".back").onclick=function(){location.hash=""};
+  function go(i){course(c,i,true);try{document.getElementById("aic").scrollIntoView({behavior:"smooth",block:"start"})}catch(e){}}
+  root.querySelectorAll(".ln").forEach(function(el){el.onclick=function(){go(+el.dataset.i)}});
+  root.querySelectorAll(".btn[data-g]").forEach(function(el){el.onclick=function(){if(!el.disabled)go(+el.dataset.g)}});
+  var a=root.querySelector(".ln.on"),box=root.querySelector(".ls");
+  if(a&&box&&box.scrollHeight>box.clientHeight)box.scrollTop=Math.max(0,a.offsetTop-70);
+}
+
+function route(){
+  var m=location.hash.match(/^#aic\/(.+)$/),c=m&&D.courses.filter(function(x){return x.id===decodeURIComponent(m[1])})[0];
+  c?course(c,0,false):home();
+}
+
+function load(i){
+  if(i>=SRC.length){root.innerHTML='<div class="w"><div class="empty" style="margin-top:24px">تعذر جلب الكورسات حاليا. حاول لاحقا.</div></div>';return}
+  fetch(SRC[i]+"courses.json?v="+Math.floor(Date.now()/600000)).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){
+    D=d;D.base=SRC[i];window.addEventListener("hashchange",route);route();
+  }).catch(function(){load(i+1)});
+}
+load(0);
+})();
+//]]></script>
