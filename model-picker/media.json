@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-07",
+ "updated": "2026-10-16",
  "source": "LiteLLM community price list",
  "tools": [
   {
@@ -301,17 +301,17 @@
     "adv"
    ],
    "q": 2,
-   "c": 2,
+   "c": 1,
    "o": 0,
    "s": "نتائج جيدة وسريعة بتكلفة منخفضة",
    "u": "https://hailuoai.video",
    "k": "sec",
    "pr": {
     "k": "sec",
-    "min": 0.13,
+    "min": 0.08,
     "max": 0.13,
-    "med": 0.13,
-    "n": 2
+    "med": 0.105,
+    "n": 4
    }
   },
   {
