@@ -9,17 +9,15 @@
 
 ## الروابط
 
-الأساس (ثابت على نسخة محددة — لا يتغير):
-`https://cdn.jsdelivr.net/gh/ahmedmher/monsinfopubilc@montag-v2.7/montag/`
+الأساس مثبّت على رقم commit محدد (لا يتغير أبداً، وبالتالي لا مشكلة في الذاكرة المؤقتة):
+`https://cdn.jsdelivr.net/gh/ahmedmher/monsinfopubilc@350855f92a3f3e41a3b59466b346ecb3c2c28a58/montag/`
 
 مثال: `.../montag/data/templates/index.json`
 
+صفحات بلوجر الجاهزة في `dist/` تشير إلى هذا الأساس. الإصدار الحالي: انظر `version.json`.
+
 ## تحديث إصدار جديد
 
-يُولَّد المحتوى تلقائياً من المستودع الخاص بالأمر:
-
-```
-node tools/build-single.mjs --cdn=https://cdn.jsdelivr.net/gh/ahmedmher/monsinfopubilc@montag-vX.Y/montag --publish=<مسار monsinfopubilc>/montag
-```
-
-ثم commit وtag باسم `montag-vX.Y` (استخدم tag جديداً لكل إصدار حتى لا يبقى ملف قديم في ذاكرة jsDelivr المؤقتة).
+يُولَّد المحتوى من المستودع الخاص (`tools/publish-cdn.sh`) على خطوتين:
+1. commit للبيانات والخطوط (يعطي رقم commit جديداً).
+2. إعادة بناء الصفحات بحيث تشير إلى رقم ذلك الـ commit ثم commit ثانٍ للصفحات.
