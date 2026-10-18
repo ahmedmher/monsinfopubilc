@@ -1,6 +1,6 @@
 {
  "build": "2.9",
- "base": "https://cdn.jsdelivr.net/gh/ahmedmher/monsinfopubilc@main/montag",
+ "base": "https://cdn.jsdelivr.net/gh/ahmedmher/monsinfopubilc@cf60283e33569c1462953d3d8f3b2e8b822d35ca/montag",
  "generated": "2026-10-18",
  "layers": 48,
  "templates": 97
