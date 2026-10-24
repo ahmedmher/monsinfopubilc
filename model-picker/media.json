@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-17",
+ "updated": "2026-10-24",
  "source": "LiteLLM community price list",
  "tools": [
   {
@@ -334,17 +334,17 @@
     "voice"
    ],
    "q": 3,
-   "c": 2,
+   "c": 1,
    "o": 0,
    "s": "أصوات طبيعية جدا ودعم للعربية واستنساخ الصوت",
    "u": "https://elevenlabs.io",
    "k": "kchar",
    "pr": {
     "k": "kchar",
-    "min": 0.18,
-    "max": 0.18,
-    "med": 0.18,
-    "n": 2
+    "min": 0.04,
+    "max": 0.08,
+    "med": 0.04,
+    "n": 9
    }
   },
   {
