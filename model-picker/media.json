@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-24",
+ "updated": "2026-11-11",
  "source": "LiteLLM community price list",
  "tools": [
   {
@@ -31,8 +31,8 @@
     "k": "img",
     "min": 0.0336,
     "max": 0.15,
-    "med": 0.0561,
-    "n": 26
+    "med": 0.0672,
+    "n": 34
    }
   },
   {
@@ -72,9 +72,9 @@
    "pr": {
     "k": "img",
     "min": 0.003,
-    "max": 0.06,
-    "med": 0.04,
-    "n": 9
+    "max": 0.1,
+    "med": 0.025,
+    "n": 108
    }
   },
   {
@@ -91,10 +91,10 @@
    "k": "img",
    "pr": {
     "k": "img",
-    "min": 0.06,
-    "max": 0.06,
+    "min": 0.0075,
+    "max": 0.15,
     "med": 0.06,
-    "n": 1
+    "n": 28
    }
   },
   {
@@ -143,10 +143,10 @@
    "k": "img",
    "pr": {
     "k": "img",
-    "min": 0.022,
-    "max": 0.04,
-    "med": 0.0398,
-    "n": 3
+    "min": 0.004,
+    "max": 0.3,
+    "med": 0.04,
+    "n": 23
    }
   },
   {
@@ -206,10 +206,10 @@
    "k": "sec",
    "pr": {
     "k": "sec",
-    "min": 0.071,
-    "max": 0.473,
-    "med": 0.3017,
-    "n": 14
+    "min": 0.007,
+    "max": 1.164,
+    "med": 0.3034,
+    "n": 27
    }
   },
   {
@@ -225,7 +225,14 @@
    "o": 0,
    "s": "حركة واقعية وتحريك صور ممتاز بسعر معقول",
    "u": "https://klingai.com",
-   "k": "sec"
+   "k": "sec",
+   "pr": {
+    "k": "sec",
+    "min": 0.042,
+    "max": 0.42,
+    "med": 0.1205,
+    "n": 46
+   }
   },
   {
    "n": "Veo",
@@ -308,10 +315,10 @@
    "k": "sec",
    "pr": {
     "k": "sec",
-    "min": 0.08,
-    "max": 0.13,
-    "med": 0.105,
-    "n": 4
+    "min": 0.017,
+    "max": 0.45,
+    "med": 0.08,
+    "n": 32
    }
   },
   {
@@ -418,94 +425,124 @@
  ],
  "discovered": [
   {
-   "n": "bria/text-to-image",
-   "k": "img",
-   "p": 0.0398,
+   "n": "ai-avatar/multi",
+   "k": "sec",
+   "p": 0.2,
    "src": "fal_ai"
   },
   {
-   "n": "bytedance/dreamina",
+   "n": "ai-avatar/multi-text",
+   "k": "sec",
+   "p": 0.2,
+   "src": "fal_ai"
+  },
+  {
+   "n": "ai-avatar/single-text",
+   "k": "sec",
+   "p": 0.2,
+   "src": "fal_ai"
+  },
+  {
+   "n": "alibaba/happy-horse",
+   "k": "sec",
+   "p": 0.18,
+   "src": "fal_ai"
+  },
+  {
+   "n": "alibaba/wan-3.0",
+   "k": "sec",
+   "p": 0.2,
+   "src": "fal_ai"
+  },
+  {
+   "n": "alibaba/wan-3.0-prime",
+   "k": "sec",
+   "p": 0.28,
+   "src": "fal_ai"
+  },
+  {
+   "n": "bagel",
    "k": "img",
+   "p": 0.1,
+   "src": "fal_ai"
+  },
+  {
+   "n": "bagel/edit",
+   "k": "img",
+   "p": 0.1,
+   "src": "fal_ai"
+  },
+  {
+   "n": "ben/v2",
+   "k": "img",
+   "p": 0.025,
+   "src": "fal_ai"
+  },
+  {
+   "n": "blackforestlabs/flux-3",
+   "k": "sec",
    "p": 0.03,
    "src": "fal_ai"
   },
   {
-   "n": "bytedance/seedream",
-   "k": "img",
-   "p": 0.03,
+   "n": "blackforestlabs/flux-3-max",
+   "k": "sec",
+   "p": 0.085,
    "src": "fal_ai"
   },
   {
-   "n": "minimax/speech-02-hd",
-   "k": "kchar",
-   "p": 0.1,
-   "src": "minimax"
+   "n": "blackforestlabs/flux-video-upscale",
+   "k": "sec",
+   "p": 0.474,
+   "src": "fal_ai"
   },
   {
-   "n": "minimax/speech-02-turbo",
-   "k": "kchar",
-   "p": 0.06,
-   "src": "minimax"
-  },
-  {
-   "n": "minimax/speech-2.6-hd",
-   "k": "kchar",
-   "p": 0.1,
-   "src": "minimax"
-  },
-  {
-   "n": "minimax/speech-2.6-turbo",
-   "k": "kchar",
-   "p": 0.06,
-   "src": "minimax"
-  },
-  {
-   "n": "stability/sd3.5-large",
-   "k": "img",
-   "p": 0.065,
-   "src": "stability"
-  },
-  {
-   "n": "stability/sd3.5-large-turbo",
+   "n": "boogu-image",
    "k": "img",
    "p": 0.04,
-   "src": "stability"
+   "src": "fal_ai"
   },
   {
-   "n": "stability/sd3.5-medium",
+   "n": "boogu-image/edit",
    "k": "img",
-   "p": 0.035,
-   "src": "stability"
+   "p": 0.04,
+   "src": "fal_ai"
   },
   {
-   "n": "stability/stable-image-core",
+   "n": "bria/background",
    "k": "img",
-   "p": 0.03,
-   "src": "stability"
+   "p": 0.018,
+   "src": "fal_ai"
   },
   {
-   "n": "stability/stable-image-ultra",
+   "n": "bria/bria_video_eraser",
+   "k": "sec",
+   "p": 0.14,
+   "src": "fal_ai"
+  },
+  {
+   "n": "bria/embed-product",
    "k": "img",
-   "p": 0.08,
-   "src": "stability"
+   "p": 0.04,
+   "src": "fal_ai"
   },
   {
-   "n": "xai/grok-imagine-video",
-   "k": "sec",
-   "p": 0.05,
-   "src": "xai"
+   "n": "bria/eraser",
+   "k": "img",
+   "p": 0.04,
+   "src": "fal_ai"
   },
   {
-   "n": "xai/grok-imagine-video-1.5",
-   "k": "sec",
-   "p": 0.08,
-   "src": "xai"
+   "n": "bria/expand",
+   "k": "img",
+   "p": 0.04,
+   "src": "fal_ai"
   },
   {
-   "n": "xai/grok-imagine-video-1.5-lite",
-   "k": "sec",
+   "n": "bria/extract-object",
+   "k": "img",
    "p": 0.02,
-   "src": "xai"
+   "src": "fal_ai"
   }
  ]
 }
