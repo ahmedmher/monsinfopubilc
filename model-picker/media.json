@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-13",
+ "updated": "2026-11-17",
  "source": "LiteLLM community price list",
  "tools": [
   {
@@ -208,8 +208,8 @@
     "k": "sec",
     "min": 0.007,
     "max": 1.164,
-    "med": 0.3,
-    "n": 27
+    "med": 0.3034,
+    "n": 30
    }
   },
   {
