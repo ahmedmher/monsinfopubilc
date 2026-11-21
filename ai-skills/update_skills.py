@@ -168,6 +168,26 @@ def translate_batch(items):
     except Exception as e:
         print('translate failed:', e); return {}
 
+def gtr(text):
+    """ترجمة مجانية عبر نقطة جوجل العامة (بدون مفتاح)."""
+    import urllib.parse, time
+    out = []
+    for chunk in re.findall(r'.{1,400}(?:\s|$)', text, re.S):
+        if not chunk.strip():
+            continue
+        url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=' + urllib.parse.quote(chunk)
+        for _ in range(3):
+            try:
+                r = json.load(urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'}), timeout=30))
+                out.append(''.join(x[0] for x in r[0] if x[0]))
+                break
+            except Exception as e:
+                time.sleep(2)
+        else:
+            return ''
+        time.sleep(0.25)
+    return ' '.join(out).strip()
+
 def main():
     old = {}
     if OUT.exists():
@@ -198,7 +218,10 @@ def main():
                     s['title_ar'], s['desc_ar'] = r.get('title_ar', ''), r['desc_ar']
                     s['cat'] = r.get('cat') if r.get('cat') in CAT_IDS else heuristic_cat(s['name'], s['desc_en'])
     elif todo:
-        print('ANTHROPIC_API_KEY missing: translation skipped for', len(todo))
+        for s in todo:
+            s['desc_ar'] = gtr(s['desc_en'][:500])
+            s['title_ar'] = gtr(re.sub(r'[-_]+', ' ', s['name'])) if s['desc_ar'] else ''
+        print('google translate done for', len(todo))
     for s in skills:
         s.setdefault('title_ar', ''); s.setdefault('desc_ar', '')
         if s.get('cat') not in CAT_IDS:
