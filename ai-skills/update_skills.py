@@ -136,6 +136,7 @@ def readme_media(dst, repo, branch):
     return None
 
 def skill_media(folder, dst, repo, branch):
+    """صورة/فيديو خاص بالـ skill نفسها فقط: ملف داخل مجلدها، أو صورة مذكورة في SKILL.md/README الخاص بها."""
     pref = re.compile(r'preview|cover|banner|hero|demo|screenshot|thumb|logo', re.I)
     best = None
     for f in sorted(folder.rglob('*')):
@@ -143,10 +144,20 @@ def skill_media(folder, dst, repo, branch):
         if f.is_file() and n.endswith(IMG + VID) and f.stat().st_size < 8_000_000 and 'node_modules' not in f.parts:
             if best is None or (pref.search(n) and not pref.search(best.name)):
                 best = f
-    if not best:
-        return None
-    u = f'https://raw.githubusercontent.com/{repo}/{branch}/' + best.relative_to(dst).as_posix()
-    return {'type': 'video' if best.name.lower().endswith(VID) else 'image', 'url': u}
+    if best:
+        u = f'https://raw.githubusercontent.com/{repo}/{branch}/' + best.relative_to(dst).as_posix()
+        return {'type': 'video' if best.name.lower().endswith(VID) else 'image', 'url': u}
+    for md in (folder / 'SKILL.md', folder / 'README.md'):
+        if not md.exists():
+            continue
+        for m in re.finditer(r'!\[[^\]]*\]\(\s*<?([^)\s>]+)|<img[^>]+src=["\']([^"\']+)', md.read_text(encoding='utf-8', errors='ignore')):
+            u = next(g for g in m.groups() if g)
+            if BAD.search(u) or not u.lower().split('?')[0].endswith(IMG):
+                continue
+            if not u.startswith('http'):
+                u = f'https://raw.githubusercontent.com/{repo}/{branch}/' + (folder.relative_to(dst) / u.lstrip('./')).as_posix()
+            return {'type': 'image', 'url': u}
+    return None
 
 def scan_repo(cfg, tmp):
     repo = cfg['repo']

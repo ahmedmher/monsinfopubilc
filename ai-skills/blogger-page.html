@@ -47,6 +47,9 @@
 #sk .when{background:#f8f5ff;border-radius:12px;padding:10px 14px;margin-top:12px;font-size:14px}
 #sk .qb{height:8px;border-radius:8px;background:#efe9fb;overflow:hidden;margin-top:6px}
 #sk .qb span{display:block;height:100%;background:linear-gradient(90deg,#7b1fa2,#db2777)}
+#sk .art{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:100%;height:100%;color:#fff;border-radius:inherit}
+#sk .art span{font-size:44px;line-height:1}
+#sk .art b{font-size:13px;direction:ltr;opacity:.92;padding:0 12px;text-align:center}
 #sk .empty{padding:30px;text-align:center;color:var(--mu);background:#fff;border:1px dashed var(--ln);border-radius:18px;grid-column:1/-1}
 #sk .sh{height:260px;border-radius:20px;background:linear-gradient(90deg,#efe9fb 25%,#f8f5ff 50%,#efe9fb 75%);background-size:200% 100%;animation:sks 1.2s infinite}
 @keyframes sks{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -93,15 +96,15 @@ function safe(u){return /^https:\/\//i.test(u||"")?u:""}
 function title(s){return s.title_ar||s.name}
 function desc(s){return s.desc_ar||s.desc_main||s.desc_en||""}
 function catLabel(id){var c=D.categories.filter(function(x){return x.id===id})[0];return c?c.label:"أخرى"}
-function thumb(s){
-  var m=s.media&&s.media.type==="image"?s.media.url:(s.repo_media&&s.repo_media.type==="image"?s.repo_media.url:s.og);
-  return safe(m)||safe(s.og);
-}
+var ICO={dev:"💻",docs:"📄",design:"🎨",content:"✍️",media:"🎬",data:"📊",automation:"⚙️",research:"🔎",business:"📈",quality:"🛡️",other:"✨"};
+var GRD={dev:"#4f46e5,#06b6d4",docs:"#0ea5e9,#6366f1",design:"#ec4899,#f59e0b",content:"#10b981,#3b82f6",media:"#ef4444,#8b5cf6",data:"#14b8a6,#6366f1",automation:"#7c3aed,#db2777",research:"#f59e0b,#ef4444",business:"#22c55e,#0ea5e9",quality:"#64748b,#4f46e5",other:"#7c3aed,#a855f7"};
+function ownImg(s){return s.media&&s.media.type==="image"&&safe(s.media.url)?s.media.url:""}
+function hasVideo(s){return !!(s.media&&s.media.type==="video")}
+function cover(s){var u=ownImg(s);return u?'<img src="'+esc(u)+'" alt="'+esc(title(s))+'" loading="lazy" decoding="async" onerror="this.parentNode.classList.add(\'ph\');this.remove()">':'<div class="art" style="background:linear-gradient(135deg,'+(GRD[s.cat]||GRD.other)+')"><span>'+(ICO[s.cat]||"✨")+'</span><b>'+esc(s.name)+'</b></div>'}
 function stars(n){return '<span class="rt" title="تقييم الجودة '+n+' من 5">'+"★".repeat(n)+'<i>'+"★".repeat(5-n)+'</i></span>'}
-function badges(s){var b=[];if(s.has&&s.has.scripts)b.push("سكربتات");if(s.has&&s.has.refs)b.push("مراجع");if(s.has&&s.has.assets)b.push("قوالب");if(s.media||s.repo_media)b.push(hasVideo(s)?"فيديو":"صور");return b.length?'<div class="bg">'+b.map(function(x){return "<em>"+x+"</em>"}).join("")+'</div>':""}
-function card(s){var img=thumb(s);return '<div class="card" data-id="'+esc(s.id)+'"><div class="cv">'+(img?'<img src="'+esc(img)+'" alt="'+esc(title(s))+'" loading="lazy" decoding="async" onerror="this.remove()">':'')+(hasVideo(s)?'<span class="pl">'+PI+' فيديو</span>':'')+'</div>'+
+function badges(s){var b=[];if(s.has&&s.has.scripts)b.push("سكربتات");if(s.has&&s.has.refs)b.push("مراجع");if(s.has&&s.has.assets)b.push("قوالب");if(s.media)b.push(hasVideo(s)?"فيديو":"صورة");return b.length?'<div class="bg">'+b.map(function(x){return "<em>"+x+"</em>"}).join("")+'</div>':""}
+function card(s){return '<div class="card" data-id="'+esc(s.id)+'"><div class="cv">'+cover(s)+(hasVideo(s)?'<span class="pl">'+PI+' فيديو</span>':'')+'</div>'+
  '<div class="bd"><div class="tp"><span>'+esc(catLabel(s.cat))+'</span>'+stars(s.rating)+'</div><h3>'+esc(title(s))+'</h3>'+(s.title_ar?'<div class="nm">'+esc(s.name)+'</div>':'')+'<p>'+esc(desc(s))+'</p>'+badges(s)+'<div class="go"><span>التفاصيل والتحميل</span>'+AR+'</div></div></div>'}
-function hasVideo(s){return (s.media&&s.media.type==="video")||(!s.media&&s.repo_media&&s.repo_media.type==="video")}
 function gh(s){return "https://github.com/"+s.repo+(s.path?"/tree/"+s.branch+"/"+s.path:"")}
 function pageUrl(){return location.origin+location.pathname}
 
@@ -146,12 +149,16 @@ function home(){
 }
 
 function mediaHtml(s){
-  var m=s.media||s.repo_media;
+  var m=s.media;
   if(m&&safe(m.url)){
-    if(m.type==="video")return '<video class="md" controls preload="metadata" playsinline src="'+esc(m.url)+'" poster="'+esc(safe(s.og))+'"></video>';
+    if(m.type==="video")return '<video class="md" controls preload="metadata" playsinline src="'+esc(m.url)+'"></video>';
     return '<img class="md" src="'+esc(m.url)+'" alt="'+esc(title(s))+'" onerror="this.remove()">';
   }
-  return s.og?'<img class="md" src="'+esc(s.og)+'" alt="'+esc(title(s))+'" onerror="this.remove()">':"";
+  return '<div class="md art" style="height:200px;background:linear-gradient(135deg,'+(GRD[s.cat]||GRD.other)+')"><span>'+(ICO[s.cat]||"✨")+'</span><b>'+esc(s.name)+'</b></div>';
+}
+function repoMedia(s){
+  var m=s.repo_media;if(!m||!safe(m.url))return "";
+  return '<div class="box"><h2>عن مستودع المصدر</h2>'+(m.type==="video"?'<video class="md" controls preload="metadata" playsinline src="'+esc(m.url)+'"></video>':'<img class="md" src="'+esc(m.url)+'" alt="'+esc(s.repo)+'" onerror="this.parentNode.remove()">')+'</div>';
 }
 
 function detail(s){
@@ -167,7 +174,7 @@ function detail(s){
     '<div class="box"><h2>تحميل الـ skill</h2><div class="acts"><button class="dl" id="sk-dl">'+DI+' تحميل ZIP من GitHub</button><a class="ob" href="'+esc(gh(s))+'" target="_blank" rel="noopener">فتح على GitHub '+GI+'</a></div><div class="msg" id="sk-msg"></div>'+
     '<h2 style="margin-top:18px;font-size:16px">طريقة الاستخدام</h2><ol><li>حمّل الملف ثم فك الضغط، ستجد مجلدا فيه ملف <code>SKILL.md</code>.</li><li><b>في Claude:</b> الإعدادات ← Capabilities ← Skills ← ارفع ملف ZIP.</li><li><b>في Claude Code:</b> ضع المجلد داخل <code>~/.claude/skills/</code> ثم أعد تشغيل الجلسة.</li></ol>'+
     '<p style="font-size:12.5px;color:var(--mu)">الملفات تُحمَّل مباشرة من مستودع المؤلف الأصلي وتخضع لرخصته. راجع الرخصة قبل إعادة التوزيع.</p></div>'+
-    (s.files.length?'<div class="box"><h2>محتويات الـ skill</h2><div class="fl">'+s.files.map(function(f){return esc(f.slice(s.path?s.path.length+1:0))}).join("<br>")+'</div></div>':'')+
+    repoMedia(s)+(s.files.length?'<div class="box"><h2>محتويات الـ skill</h2><div class="fl">'+s.files.map(function(f){return esc(f.slice(s.path?s.path.length+1:0))}).join("<br>")+'</div></div>':'')+
     (rel.length?'<div class="box"><h2>skills مشابهة</h2><div class="grid">'+rel.map(function(r){return '<div class="card" data-id="'+esc(r.id)+'"><div class="bd"><h3>'+esc(title(r))+'</h3><p>'+esc(desc(r))+'</p></div></div>'}).join("")+'</div></div>':'')+'</div>';
   root.innerHTML=h;
   root.querySelector(".back").onclick=function(){location.hash=""};
