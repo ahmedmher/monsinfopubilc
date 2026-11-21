@@ -13,7 +13,7 @@ GH_TOKEN = os.environ.get('GITHUB_TOKEN', '')
 CATS = [
     ('dev', 'برمجة وتطوير'), ('docs', 'مستندات وملفات'), ('design', 'تصميم وواجهات'),
     ('content', 'كتابة ومحتوى'), ('media', 'فيديو وصوت وصور'), ('data', 'بيانات وتحليل'),
-    ('automation', 'أتمتة وأدوات'), ('research', 'بحث ومعرفة'), ('business', 'أعمال وتسويق'),
+    ('automation', 'أتمتة وأدوات'), ('research', 'بحث ومعرفة'), ('marketing', 'تسويق وSEO'), ('business', 'أعمال ومبيعات'), ('ai', 'ذكاء اصطناعي وتعلّم آلة'),
     ('quality', 'اختبار وجودة وأمان'), ('other', 'أخرى')]
 CAT_IDS = [c[0] for c in CATS]
 KW = {
@@ -185,6 +185,8 @@ def scan_repo(cfg, tmp):
         if not desc:
             first = next((l.strip() for l in body.splitlines() if l.strip() and not l.startswith('#')), '')
             desc = first[:300]
+        if cfg.get('only') and name not in cfg['only']:
+            continue
         files, total = [], 0
         for f in sorted(folder.rglob('*')):
             if f.is_file() and '.git' not in f.parts and 'node_modules' not in f.parts:

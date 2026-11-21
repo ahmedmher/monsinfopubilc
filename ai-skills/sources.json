@@ -1,11 +1,163 @@
 {
-  "_help": "أضف هنا أي مستودع عام فيه مجلدات skills (كل skill مجلد فيه ملف SKILL.md). repo = المالك/الاسم. path اختياري لو الـ skills داخل مجلد فرعي.",
-  "repos": [
-    {"repo": "anthropics/skills"},
-    {"repo": "addyosmani/agent-skills"},
-    {"repo": "ComposioHQ/awesome-claude-skills", "exclude": ["composio-skills/"]},
-    {"repo": "blader/humanizer"}
-  ],
-  "max_files_per_skill": 60,
-  "max_skill_bytes": 6000000
+ "_help": "أضف هنا أي مستودع عام فيه مجلدات skills (كل skill مجلد فيه ملف SKILL.md). repo = المالك/الاسم. path اختياري لو الـ skills داخل مجلد فرعي.",
+ "repos": [
+  {
+   "repo": "anthropics/skills"
+  },
+  {
+   "repo": "addyosmani/agent-skills"
+  },
+  {
+   "repo": "ComposioHQ/awesome-claude-skills",
+   "exclude": [
+    "composio-skills/"
+   ]
+  },
+  {
+   "repo": "blader/humanizer"
+  },
+  {
+   "repo": "obra/superpowers",
+   "only": [
+    "brainstorming",
+    "dispatching-parallel-agents",
+    "executing-plans",
+    "finishing-a-development-branch",
+    "receiving-code-review",
+    "requesting-code-review",
+    "subagent-driven-development",
+    "systematic-debugging",
+    "using-git-worktrees",
+    "using-superpowers",
+    "verification-before-completion",
+    "writing-plans",
+    "writing-skills"
+   ]
+  },
+  {
+   "repo": "coreyhaines31/marketingskills",
+   "only": [
+    "ab-testing",
+    "ad-creative",
+    "ads",
+    "ai-seo",
+    "analytics",
+    "cold-email",
+    "community-marketing",
+    "competitors",
+    "content-strategy",
+    "copy-editing",
+    "copywriting",
+    "cro",
+    "customer-research",
+    "emails",
+    "free-tools",
+    "influencer-marketing",
+    "launch",
+    "lead-magnets",
+    "link-building",
+    "marketing-ideas",
+    "marketing-plan",
+    "marketing-psychology",
+    "offers",
+    "onboarding",
+    "pricing",
+    "programmatic-seo",
+    "public-relations",
+    "referrals",
+    "sales-enablement",
+    "schema",
+    "seo-audit",
+    "signup",
+    "social"
+   ]
+  },
+  {
+   "repo": "emilkowalski/skills",
+   "only": [
+    "animate",
+    "animation-performance",
+    "apple-design",
+    "break-ui",
+    "emil-design-eng",
+    "gestures",
+    "mobile-native",
+    "pick-ui-library",
+    "prototype"
+   ]
+  },
+  {
+   "repo": "obsidianmd/obsidian-skills",
+   "only": [
+    "defuddle",
+    "json-canvas",
+    "obsidian-bases",
+    "obsidian-cli",
+    "obsidian-markdown"
+   ]
+  },
+  {
+   "repo": "vercel-labs/agent-skills",
+   "only": [
+    "vercel-composition-patterns",
+    "deploy-to-vercel",
+    "vercel-react-best-practices",
+    "vercel-react-native-skills",
+    "vercel-react-view-transitions",
+    "web-design-guidelines"
+   ]
+  },
+  {
+   "repo": "huggingface/skills",
+   "only": [
+    "hf-mcp",
+    "hf-cli",
+    "huggingface-best",
+    "huggingface-datasets",
+    "huggingface-gradio",
+    "huggingface-llm-trainer",
+    "huggingface-local-models",
+    "huggingface-spaces",
+    "huggingface-papers",
+    "transformers-js",
+    "huggingface-trackio"
+   ]
+  },
+  {
+   "repo": "pbakaus/impeccable",
+   "only": [
+    "impeccable"
+   ]
+  },
+  {
+   "repo": "Leonxlnx/taste-skill"
+  },
+  {
+   "repo": "cathrynlavery/diagram-design"
+  },
+  {
+   "repo": "tt-a1i/archify",
+   "only": [
+    "archify"
+   ]
+  },
+  {
+   "repo": "OthmanAdi/planning-with-files",
+   "only": [
+    "planning-with-files"
+   ]
+  },
+  {
+   "repo": "DietrichGebert/ponytail",
+   "only": [
+    "ponytail",
+    "ponytail-review"
+   ]
+  },
+  {
+   "repo": "ayghri/i-have-adhd"
+  }
+ ],
+ "max_files_per_skill": 60,
+ "max_skill_bytes": 6000000
 }

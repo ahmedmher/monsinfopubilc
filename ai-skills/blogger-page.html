@@ -13,7 +13,7 @@
 #sk .lead{margin:0;max-width:720px;font-size:16px;opacity:.94}
 #sk .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 #sk .tags span{font-size:12.5px;font-weight:700;padding:2px 14px;border-radius:30px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4)}
-#sk .bar{margin:24px 0 12px}
+#sk .stick{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 0 6px;margin-bottom:8px}
 #sk input{width:100%;font:inherit;font-size:14px;color:var(--ink);background:#fff;border:1px solid var(--ln);border-radius:12px;padding:10px 14px}
 #sk input:focus{outline:2px solid var(--ac);outline-offset:1px}
 #sk .chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
@@ -51,6 +51,15 @@
 #sk .art span{font-size:44px;line-height:1}
 #sk .art b{font-size:13px;direction:ltr;opacity:.92;padding:0 12px;text-align:center}
 #sk .src{font-size:12px;color:var(--mu);direction:ltr;text-align:right}
+#sk .stick{position:sticky;top:0;z-index:5;background:var(--bg);padding:16px 0 8px;margin-bottom:10px}
+#sk .stick .chips{flex-wrap:nowrap;overflow-x:auto;padding:10px 0 6px;margin:0;scrollbar-width:thin}
+#sk .stick .chip{white-space:nowrap}
+#sk .tools{margin:4px 0 0!important}
+#sk .cnt{font-size:13px;color:var(--mu);margin-inline-start:auto}
+#sk .sec{display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px}
+#sk .sec h2{margin:0;font-size:20px}
+#sk .sec h2 small{font-size:13px;color:var(--mu);font-weight:600;margin-inline-start:6px}
+#sk .more{display:inline-flex;align-items:center;gap:6px;font:inherit;font-weight:700;font-size:13.5px;color:var(--ac);background:none;border:0;cursor:pointer}
 #sk .empty{padding:30px;text-align:center;color:var(--mu);background:#fff;border:1px dashed var(--ln);border-radius:18px;grid-column:1/-1}
 #sk .sh{height:260px;border-radius:20px;background:linear-gradient(90deg,#efe9fb 25%,#f8f5ff 50%,#efe9fb 75%);background-size:200% 100%;animation:sks 1.2s infinite}
 @keyframes sks{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -87,7 +96,7 @@
 (function(){
 var SRC=["https://ahmedmher.github.io/monsinfopubilc/ai-skills/","https://raw.githubusercontent.com/ahmedmher/monsinfopubilc/main/ai-skills/"];
 var SITE="مكتبة Skills للذكاء الاصطناعي بالعربي",T0=document.title;
-var root=document.getElementById("sk-root"),D=null,q="",cat="all",srt="best";
+var root=document.getElementById("sk-root"),D=null,q="",cat="all",srt="best",src="all",lim=24;
 var AR='<svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
 var DI='<svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>';
 var GI='<svg viewBox="0 0 24 24"><path d="M7 7h10v10M7 17 17 7"/></svg>';
@@ -97,8 +106,8 @@ function safe(u){return /^https:\/\//i.test(u||"")?u:""}
 function title(s){return s.title_ar||s.name}
 function desc(s){return s.desc_ar||s.desc_main||s.desc_en||""}
 function catLabel(id){var c=D.categories.filter(function(x){return x.id===id})[0];return c?c.label:"أخرى"}
-var ICO={dev:"💻",docs:"📄",design:"🎨",content:"✍️",media:"🎬",data:"📊",automation:"⚙️",research:"🔎",business:"📈",quality:"🛡️",other:"✨"};
-var GRD={dev:"#4f46e5,#06b6d4",docs:"#0ea5e9,#6366f1",design:"#ec4899,#f59e0b",content:"#10b981,#3b82f6",media:"#ef4444,#8b5cf6",data:"#14b8a6,#6366f1",automation:"#7c3aed,#db2777",research:"#f59e0b,#ef4444",business:"#22c55e,#0ea5e9",quality:"#64748b,#4f46e5",other:"#7c3aed,#a855f7"};
+var ICO={marketing:"📣",ai:"🤖",dev:"💻",docs:"📄",design:"🎨",content:"✍️",media:"🎬",data:"📊",automation:"⚙️",research:"🔎",business:"📈",quality:"🛡️",other:"✨"};
+var GRD={marketing:"#f97316,#db2777",ai:"#0ea5e9,#7c3aed",dev:"#4f46e5,#06b6d4",docs:"#0ea5e9,#6366f1",design:"#ec4899,#f59e0b",content:"#10b981,#3b82f6",media:"#ef4444,#8b5cf6",data:"#14b8a6,#6366f1",automation:"#7c3aed,#db2777",research:"#f59e0b,#ef4444",business:"#22c55e,#0ea5e9",quality:"#64748b,#4f46e5",other:"#7c3aed,#a855f7"};
 function ownImg(s){return s.media&&s.media.type==="image"&&safe(s.media.url)?s.media.url:""}
 function hasVideo(s){return !!(s.media&&s.media.type==="video")}
 function cover(s){var u=ownImg(s);return u?'<img src="'+esc(u)+'" alt="'+esc(title(s))+'" loading="lazy" decoding="async" onerror="this.parentNode.classList.add(\'ph\');this.remove()">':'<div class="art" style="background:linear-gradient(135deg,'+(GRD[s.cat]||GRD.other)+')"><span>'+(ICO[s.cat]||"✨")+'</span><b>'+esc(s.name)+'</b></div>'}
@@ -124,28 +133,41 @@ function home(){
   var qq=q.trim().toLowerCase();
   var list=D.skills.filter(function(s){
     if(cat!=="all"&&s.cat!==cat)return false;
+    if(src!=="all"&&s.repo.split("/")[0]!==src)return false;
     if(!qq)return true;
     return (s.name+" "+(s.title_ar||"")+" "+(s.desc_ar||"")+" "+(s.desc_en||"")).toLowerCase().indexOf(qq)>-1;
   });
   if(srt==="stars")list=list.slice().sort(function(a,b){return b.stars-a.stars});else if(srt==="name")list=list.slice().sort(function(a,b){return title(a).localeCompare(title(b),"ar")});
-  var top=(!qq&&cat==="all"&&srt==="best")?D.skills.slice(0,6):[];
-  var counts={};D.skills.forEach(function(s){counts[s.cat]=(counts[s.cat]||0)+1});
-  var h='<div class="hero"><span class="kick">محدّثة تلقائيا من GitHub</span><h1>مكتبة <em style="font-style:normal">Skills</em> الذكاء الاصطناعي بالعربي</h1>'+
-    '<p class="lead">أكبر تجميعة skills جاهزة لـ Claude وأدوات الذكاء الاصطناعي، بشرح عربي مختصر وتصنيف حسب الاستخدام. اختر skill، اقرأ تفاصيلها، ثم حمّلها بضغطة واحدة من GitHub.</p>'+
-    '<div class="tags"><span>'+D.skills.length+' skill</span><span>'+Object.keys(counts).length+' تصنيفات</span><span>مجانية ومفتوحة المصدر</span></div></div>'+
-    '<div class="w"><div class="bar"><input id="sk-q" type="search" aria-label="بحث" placeholder="ابحث باسم الـ skill أو وصفها..." value="'+esc(q)+'"></div><div class="chips">'+
-    '<button class="chip'+(cat==="all"?" on":"")+'" data-c="all">الكل<small>'+D.skills.length+'</small></button>'+
-    D.categories.filter(function(c){return counts[c.id]}).map(function(c){return '<button class="chip'+(cat===c.id?" on":"")+'" data-c="'+c.id+'">'+esc(c.label)+'<small>'+counts[c.id]+'</small></button>'}).join("")+
-    '</div><div class="tools"><select id="sk-s" aria-label="الترتيب"><option value="best"'+(srt==="best"?" selected":"")+'>الأعلى تقييما</option><option value="stars"'+(srt==="stars"?" selected":"")+'>الأشهر على GitHub</option><option value="name"'+(srt==="name"?" selected":"")+'>أبجديا</option></select><span style="font-size:13px;color:var(--mu)">'+list.length+' نتيجة</span></div>'+
-    (top.length?'<div class="sec"><h2>⭐ الأفضل تقييما</h2></div><div class="feat">'+top.map(card).join("")+'</div><div class="sec"><h2>كل الـ skills</h2></div>':"")+'<div class="grid">';
-  if(!list.length)h+='<div class="empty">لا توجد نتائج مطابقة.</div>';
-  list.slice(0,120).forEach(function(s){h+=card(s)});
-  if(list.length>120)h+='<div class="empty">يظهر أول 120 نتيجة. استخدم البحث أو التصنيفات لتضييق القائمة.</div>';
-  root.innerHTML=h+'</div><div class="note">آخر تحديث: '+esc(D.updated)+' • القائمة تُحدَّث تلقائيا</div></div>';
+  var filtered=!!qq||cat!=="all"||src!=="all"||srt!=="best";
+  var counts={},owners={};D.skills.forEach(function(s){counts[s.cat]=(counts[s.cat]||0)+1;var o=s.repo.split("/")[0];owners[o]=(owners[o]||0)+1});
+  var h='<div class="hero"><span class="kick">محدّثة تلقائيا من GitHub • ترجمة ومراجعة يدوية</span><h1>مكتبة <em style="font-style:normal">Skills</em> الذكاء الاصطناعي بالعربي</h1>'+
+    '<p class="lead">skills جاهزة لـ Claude وأدوات الذكاء الاصطناعي، بشرح عربي واضح وتصنيف حسب الاستخدام. اختر skill، اقرأ تفاصيلها، ثم حمّلها بضغطة واحدة من GitHub.</p>'+
+    '<div class="tags"><span>'+D.skills.length+' skill</span><span>'+Object.keys(counts).length+' تصنيفات</span><span>'+Object.keys(owners).length+' مصدر</span><span>مجانية ومفتوحة المصدر</span></div></div>'+
+    '<div class="w"><div class="stick"><input id="sk-q" type="search" aria-label="بحث" placeholder="ابحث باسم الـ skill أو وصفها..." value="'+esc(q)+'">'+
+    '<div class="chips"><button class="chip'+(cat==="all"?" on":"")+'" data-c="all">الكل<small>'+D.skills.length+'</small></button>'+
+    D.categories.filter(function(c){return counts[c.id]}).map(function(c){return '<button class="chip'+(cat===c.id?" on":"")+'" data-c="'+c.id+'">'+(ICO[c.id]||"")+" "+esc(c.label)+'<small>'+counts[c.id]+'</small></button>'}).join("")+'</div>'+
+    '<div class="tools"><select id="sk-src" aria-label="المصدر"><option value="all">كل المصادر</option>'+Object.keys(owners).sort().map(function(o){return '<option value="'+esc(o)+'"'+(src===o?" selected":"")+'>'+esc(o)+' ('+owners[o]+')</option>'}).join("")+'</select>'+
+    '<select id="sk-s" aria-label="الترتيب"><option value="best"'+(srt==="best"?" selected":"")+'>الأعلى تقييما</option><option value="stars"'+(srt==="stars"?" selected":"")+'>الأشهر على GitHub</option><option value="name"'+(srt==="name"?" selected":"")+'>أبجديا</option></select>'+
+    (filtered?'<button class="chip" id="sk-clr">مسح الفلاتر ✕</button>':'')+'<span class="cnt">'+list.length+' نتيجة</span></div></div>';
+  if(!filtered){
+    h+='<div class="sec"><h2>⭐ الأفضل تقييما</h2></div><div class="feat">'+D.skills.slice(0,8).map(card).join("")+'</div>';
+    D.categories.forEach(function(c){
+      var items=D.skills.filter(function(s){return s.cat===c.id});if(!items.length)return;
+      h+='<div class="sec"><h2>'+(ICO[c.id]||"")+" "+esc(c.label)+' <small>'+items.length+'</small></h2>'+(items.length>6?'<button class="more" data-c="'+c.id+'">عرض الكل '+AR+'</button>':'')+'</div><div class="grid">'+items.slice(0,6).map(card).join("")+'</div>';
+    });
+  }else{
+    h+='<div class="grid">'+(list.length?list.slice(0,lim).map(card).join(""):'<div class="empty">لا توجد نتائج مطابقة.</div>')+'</div>';
+    if(list.length>lim)h+='<div style="text-align:center;margin-top:18px"><button class="chip" id="sk-more" style="padding:8px 28px">عرض المزيد ('+(list.length-lim)+' متبقية)</button></div>';
+  }
+  root.innerHTML=h+'<div class="note">آخر تحديث: '+esc(D.updated)+' • القائمة تُحدَّث تلقائيا من GitHub</div></div>';
   var inp=document.getElementById("sk-q");
-  inp.oninput=function(){q=inp.value;var p=inp.selectionStart;home();var n=document.getElementById("sk-q");n.focus();n.setSelectionRange(p,p)};
-  document.getElementById("sk-s").onchange=function(){srt=this.value;home()};
-  root.querySelectorAll(".chip").forEach(function(el){el.onclick=function(){cat=el.dataset.c;home()}});
+  inp.oninput=function(){q=inp.value;lim=24;var p=inp.selectionStart;home();var n=document.getElementById("sk-q");n.focus();n.setSelectionRange(p,p)};
+  document.getElementById("sk-s").onchange=function(){srt=this.value;lim=24;home()};
+  document.getElementById("sk-src").onchange=function(){src=this.value;lim=24;home()};
+  var clr=document.getElementById("sk-clr");if(clr)clr.onclick=function(){q="";cat="all";src="all";srt="best";lim=24;home()};
+  var mo=document.getElementById("sk-more");if(mo)mo.onclick=function(){lim+=24;home()};
+  root.querySelectorAll(".chip[data-c]").forEach(function(el){el.onclick=function(){cat=el.dataset.c;lim=24;home()}});
+  root.querySelectorAll(".more").forEach(function(el){el.onclick=function(){cat=el.dataset.c;lim=24;home();try{document.getElementById("sk").scrollIntoView()}catch(e){}}});
   root.querySelectorAll(".card").forEach(function(el){el.onclick=function(){location.hash="sk/"+el.dataset.id}});
 }
 
