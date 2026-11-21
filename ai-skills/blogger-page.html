@@ -100,6 +100,35 @@
 #sk-seo details{border:1px solid #e6e1f5;border-radius:12px;padding:8px 14px;margin:8px 0}
 #sk-seo summary{cursor:pointer;font-weight:700}
 @media(max-width:560px){#sk .w{padding:0 14px 90px}#sk .hero{margin:12px 14px 0;padding:28px 20px}#sk .bar{margin:16px 14px 0}}
+
+#sk .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+#sk .tabs .chip{font-size:14.5px;padding:5px 18px}
+#sk .dkb{position:absolute!important;top:14px;left:14px;font:inherit;cursor:pointer;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;border-radius:30px;padding:2px 14px;font-size:13px}
+#sk .m .nw,#sk-ov .m .nw{background:#dcfce7;color:#166534;font-weight:700}
+#sk .m .sc1,#sk-ov .m .sc1{background:#ecfdf5;color:#047857}
+#sk .m .sc2,#sk-ov .m .sc2{background:#fff7ed;color:#9a3412}
+#sk .m .sc3,#sk-ov .m .sc3{background:#fef2f2;color:#b91c1c;font-weight:700}
+#sk .bt .ic{padding:2px 11px}
+#sk .pk h3{margin:0;font-size:18px}
+#sk .pk .chs{display:flex;flex-wrap:wrap;gap:6px}
+#sk .pk .chs a{font-size:12.5px;background:var(--bg);border-radius:30px;padding:0 10px;color:var(--ink)}
+#sk .pk .chs a:hover{color:var(--ac)}
+#sk .stp{list-style:none;margin:6px 0 0;padding:0;counter-reset:s}
+#sk .stp li{counter-increment:s;display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px dashed var(--ln)}
+#sk .stp li:before{content:counter(s);flex:0 0 26px;height:26px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;margin-top:2px}
+#sk .stp b a:hover{color:var(--ac)}
+#sk .stp span{display:block;color:var(--mu);font-size:13.5px}
+#sk .rc{margin-top:14px;font-size:13px;color:var(--mu)}
+#sk .rc .chip{font-size:12.5px;padding:1px 12px;margin:2px 0 0 4px;display:inline-block}
+#sk-ov .gd{margin:0;padding-inline-start:20px}
+#sk-ov .ex{background:#fff;border:1.5px dashed #c4b5fd;border-radius:14px;padding:10px 14px;font-size:14.5px}
+#sk-ov table.cmp{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border-radius:14px;overflow:hidden}
+#sk-ov table.cmp th,#sk-ov table.cmp td{border:1px solid #e6e1f5;padding:8px 10px;vertical-align:top;text-align:right}
+#sk-ov table.cmp th{background:#f1ecfd;width:22%}
+#sk-ov .sc1{color:#047857}#sk-ov .sc2{color:#9a3412}#sk-ov .sc3{color:#b91c1c;font-weight:700}
+#sk.dk{filter:invert(1) hue-rotate(180deg)}
+#sk-ov.dk .sh{filter:invert(1) hue-rotate(180deg)}
+#sk.dk .hero,#sk.dk img,#sk.dk video,#sk.dk .bar,#sk-ov.dk .sh img,#sk-ov.dk .sh video,#sk-ov.dk .sh .hd{filter:invert(1) hue-rotate(180deg)}
 </style>
 
 <div id="sk"><div id="sk-root"><div class="w"><div class="skl"></div><div class="skl"></div></div></div></div>
@@ -129,7 +158,7 @@
 (function(){
 var SRC=["https://ahmedmher.github.io/monsinfopubilc/ai-skills/","https://raw.githubusercontent.com/ahmedmher/monsinfopubilc/main/ai-skills/"];
 var CHANNEL="https://www.youtube.com/@monsterinfo",SITE="مكتبة Skills للذكاء الاصطناعي بالعربي",T0=document.title;
-var D=null,st={q:"",cat:"all",src:"all",sort:"best",show:24,sel:{}},TRC={},RM={};
+var D=null,st={q:"",cat:"all",src:"all",sort:"best",show:24,sel:{},view:"skills",cmp:[]},TRC={},RM={};
 var root=document.getElementById("sk-root"),ov=document.getElementById("sk-ov");
 function el(t,c,h){var e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e}
 function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
@@ -143,6 +172,16 @@ function byId(id){return D.skills.filter(function(x){return x.id===id})[0]}
 function owner(s){return s.repo.split("/")[0]}
 function isAr(t){var a=(t.match(/[؀-ۿ]/g)||[]).length;return a>t.replace(/\s/g,"").length*0.3}
 function pageUrl(){return location.origin+location.pathname}
+function lsg(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function lss(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var FAV=lsg("sk_fav",[]),REC=lsg("sk_rec",[]),DK=lsg("sk_dk",null);
+if(DK===null){try{DK=!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)}catch(e){DK=false}}
+function applyDk(){document.getElementById("sk").className=DK?"dk":"";ov.className=(ov.className.indexOf("on")>-1?"on":"")+(DK?" dk":"")}
+function isFav(id){return FAV.indexOf(id)>-1}
+function togFav(id){var i=FAV.indexOf(id);if(i>-1)FAV.splice(i,1);else FAV.push(id);lss("sk_fav",FAV)}
+function addRec(id){REC=[id].concat(REC.filter(function(x){return x!==id})).slice(0,8);lss("sk_rec",REC)}
+function secInfo(s){var l=(s.sec&&s.sec.level)||"safe";return{safe:[1,"نصوص فقط"],review:[2,"بها سكربتات"],warn:[3,"راجع قبل التشغيل"]}[l]}
+function toggleCmp(id){var i=st.cmp.indexOf(id);if(i>-1)st.cmp.splice(i,1);else{st.cmp.push(id);if(st.cmp.length>2)st.cmp.shift()}drawList();drawBar()}
 
 /* ---------- ترجمة جوجل داخل المتصفح (لمحتوى SKILL.md) ---------- */
 function gtr(c){return fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ar&dt=t&q="+encodeURIComponent(c)).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){var s=(j[0]||[]).map(function(x){return x[0]}).join("");if(!s)throw 0;return s})}
@@ -203,13 +242,14 @@ function downloadOne(s,btn,msg){
   loadZip().then(function(){var z=new JSZip();return addSkill(z,s,function(){done++;msg.textContent="تم تحميل "+done+" من "+s.files.length+" ملف…"}).then(function(){return saveZip(z,((s.path?s.path.split("/").pop():s.name)||s.name)+".zip")})})
   .then(function(){msg.textContent="تم التحميل ✓";btn.disabled=false}).catch(function(){msg.innerHTML='تعذر التحميل المباشر. <a href="'+esc(gh(s))+'" target="_blank" rel="noopener">حمّلها من GitHub</a>.';btn.disabled=false});
 }
-function downloadBundle(btn){
-  var ids=Object.keys(st.sel),items=ids.map(byId).filter(function(s){return s.files.length}),skipped=ids.length-items.length;
+function downloadMany(ids,btn,name){
+  var items=ids.map(byId).filter(function(s){return s&&s.files.length}),skipped=ids.length-items.length;
   if(!items.length){btn.textContent="الملفات كبيرة، حمّلها من GitHub";return}
   var total=items.reduce(function(a,s){return a+s.files.length},0),done=0,lab=btn.textContent;btn.disabled=true;
-  loadZip().then(function(){var z=new JSZip();return Promise.all(items.map(function(s){return addSkill(z,s,function(){done++;btn.textContent="جارٍ التحميل "+done+"/"+total})})).then(function(){return saveZip(z,"skills-bundle.zip")})})
+  loadZip().then(function(){var z=new JSZip();return Promise.all(items.map(function(s){return addSkill(z,s,function(){done++;btn.textContent="جارٍ التحميل "+done+"/"+total})})).then(function(){return saveZip(z,name)})})
   .then(function(){btn.textContent="تم ✓"+(skipped?" (تخطّينا "+skipped+" كبيرة)":"");setTimeout(function(){btn.textContent=lab;btn.disabled=false},2500)}).catch(function(){btn.textContent="تعذر التحميل";setTimeout(function(){btn.textContent=lab;btn.disabled=false},2500)});
 }
+function downloadBundle(btn){downloadMany(Object.keys(st.sel),btn,"skills-bundle.zip")}
 
 /* ---------- الصفحة الرئيسية ---------- */
 function list(){
@@ -220,21 +260,24 @@ function list(){
     if(!qq)return true;
     return (s.name+" "+(s.title_ar||"")+" "+(s.desc_ar||"")+" "+(s.desc_en||"")+" "+(s.when_ar||"")).toLowerCase().indexOf(qq)>-1});
   if(st.sort==="stars")a=a.slice().sort(function(x,y){return y.stars-x.stars});
+  else if(st.sort==="trend")a=a.slice().sort(function(x,y){return (y.growth||0)-(x.growth||0)||y.score-x.score});
   else if(st.sort==="name")a=a.slice().sort(function(x,y){return title(x).localeCompare(title(y),"ar")});
   return a}
 function build(){
   var counts={},owners={};D.skills.forEach(function(s){counts[s.cat]=(counts[s.cat]||0)+1;owners[owner(s)]=(owners[owner(s)]||0)+1});
   root.innerHTML="";
   var hero=el("div","hero",'<span class="kick"><i></i>تُحدَّث تلقائيا من GitHub</span><h1>مكتبة <em>Skills</em> الذكاء الاصطناعي بالعربي</h1><p class="lead">مهارات جاهزة لـ Claude وأدوات البرمجة، بشرح عربي واضح وتصنيف حسب الاستخدام. اقرأ التفاصيل، ثم حمّل المهارة مباشرة من GitHub، أو اجمع عدة مهارات في حزمة واحدة.</p><div class="meta">آخر تحديث: '+esc(D.updated)+'</div>');
+  var dkb=el('button','dkb',DK?'☀ وضع فاتح':'☾ وضع داكن');dkb.type='button';dkb.onclick=function(){DK=!DK;lss('sk_dk',DK);dkb.textContent=DK?'☀ وضع فاتح':'☾ وضع داكن';applyDk()};hero.appendChild(dkb);
   root.appendChild(hero);
   var w=el("div","w");root.appendChild(w);
   w.appendChild(el("div","sum",'<div class="st"><small>مهارة</small><b>'+D.skills.length+'</b></div><div class="st"><small>تصنيف</small><b>'+Object.keys(counts).length+'</b></div><div class="st"><small>مصدر على GitHub</small><b>'+Object.keys(owners).length+'</b></div><div class="st"><small>بشرح عربي مراجع</small><b>'+D.skills.filter(function(s){return s.curated}).length+'</b></div>'));
   w.appendChild(el("div","warn","تنبيه أمني: بعض المهارات تتضمن سكربتات تعمل على جهازك. اقرأ ملفاتها وراجع رخصتها قبل الاستخدام، ولا تثق إلا بالمصادر التي تعرفها."));
-  var bx=el("div","box");w.appendChild(bx);
+  var tabs=el("div","tabs");tabs.id="sk-tabs";w.appendChild(tabs);
+  var bx=el("div","box");bx.id="sk-box";w.appendChild(bx);
   var ctl=el("div","ctl");bx.appendChild(ctl);
   var q=el("input");q.type="search";q.placeholder="ابحث باسم المهارة أو وصفها…";q.setAttribute("aria-label","بحث");q.value=st.q;q.oninput=function(){st.q=q.value;st.show=24;drawList()};ctl.appendChild(q);
   var ss=el("select");ss.setAttribute("aria-label","المصدر");ss.innerHTML='<option value="all">كل المصادر</option>'+Object.keys(owners).sort().map(function(o){return '<option value="'+esc(o)+'">'+esc(o)+" ("+owners[o]+")</option>"}).join("");ss.onchange=function(){st.src=ss.value;st.show=24;drawList()};ctl.appendChild(ss);
-  var so=el("select");so.setAttribute("aria-label","الترتيب");so.innerHTML='<option value="best">الأعلى تقييما</option><option value="stars">الأشهر على GitHub</option><option value="name">أبجديا</option>';so.onchange=function(){st.sort=so.value;st.show=24;drawList()};ctl.appendChild(so);
+  var so=el("select");so.setAttribute("aria-label","الترتيب");so.innerHTML='<option value="best">الأعلى تقييما</option><option value="trend">الأكثر صعودا هذا الأسبوع</option><option value="stars">الأشهر على GitHub</option><option value="name">أبجديا</option>';so.onchange=function(){st.sort=so.value;st.show=24;drawList()};ctl.appendChild(so);
   var ch=el("div","ch");bx.appendChild(ch);
   function chips(){ch.innerHTML="";[["all","الكل",D.skills.length]].concat(D.categories.filter(function(c){return counts[c.id]}).map(function(c){return [c.id,c.label,counts[c.id]]})).forEach(function(c){var b=el("button","chip"+(st.cat===c[0]?" on":""),esc(c[1])+"<small>"+c[2]+"</small>");b.type="button";b.onclick=function(){st.cat=c[0];st.show=24;chips();drawList()};ch.appendChild(b)})}
   chips();
@@ -243,34 +286,70 @@ function build(){
   var bar=el("div","bar");bar.id="sk-bar";root.appendChild(bar);
 }
 function toggle(id){if(st.sel[id])delete st.sel[id];else st.sel[id]=1;drawList();drawBar()}
+function drawTabs(){var t=document.getElementById("sk-tabs");if(!t)return;t.innerHTML="";[["skills","كل المهارات"],["packs","الحزم الجاهزة"],["paths","مسارات التعلم"],["fav","المفضلة ("+FAV.length+")"]].forEach(function(x){var b=el("button","chip"+(st.view===x[0]?" on":""),esc(x[1]));b.type="button";b.onclick=function(){st.view=x[0];drawTabs();drawList();window.scrollTo&&0};t.appendChild(b)})}
+function card(s){
+  var on=!!st.sel[s.id],c=el("div","cd"+(on?" sel":"")),si=secInfo(s);
+  c.appendChild(el("h3","",'<a href="#/k/'+esc(s.id)+'">'+esc(title(s))+"</a>"));
+  if(s.title_ar)c.appendChild(el("div","en",esc(s.name)));
+  c.appendChild(el("div","m",(s.new?'<span class="nw">جديد</span>':"")+'<span>'+esc(catLabel(s.cat))+'</span><span>★ '+kf(s.stars)+'</span>'+(s.growth>0?'<span class="up">↑ +'+kf(s.growth)+' هذا الأسبوع</span>':"")+'<span class="up">جودة '+s.rating+"/5</span>"+'<span class="sc'+si[0]+'">'+si[1]+"</span>"+(s.license&&s.license!=="NOASSERTION"?"<span>"+esc(s.license)+"</span>":"")+(s.curated?"":'<span class="am">ترجمة آلية</span>')));
+  c.appendChild(el("p","",esc(desc(s))||"لا يوجد وصف."));
+  var bt=el("div","bt"),d=el("a","pr","التفاصيل والتحميل");d.href="#/k/"+s.id;bt.appendChild(d);
+  var b=el("button",on?"on":"",on?"✓ في الحزمة":"+ أضف للحزمة");b.type="button";b.onclick=function(){toggle(s.id)};bt.appendChild(b);
+  var f=el("button","ic"+(isFav(s.id)?" on":""),isFav(s.id)?"♥":"♡");f.type="button";f.title="المفضلة";f.setAttribute("aria-label","المفضلة");f.onclick=function(){togFav(s.id);drawTabs();drawList()};bt.appendChild(f);
+  var cm=el("button","ic"+(st.cmp.indexOf(s.id)>-1?" on":""),"⇄");cm.type="button";cm.title="قارن";cm.setAttribute("aria-label","أضف للمقارنة");cm.onclick=function(){toggleCmp(s.id)};bt.appendChild(cm);
+  var l=el("a","g","GitHub");l.href=gh(s);l.target="_blank";l.rel="noopener";bt.appendChild(l);c.appendChild(bt);return c}
+function skillChips(ids){return ids.map(function(i){var s=byId(i);return s?'<a href="#/k/'+esc(i)+'">'+esc(title(s))+"</a>":""}).join("")}
+function drawPacks(g){
+  g.appendChild(el("p","note","كل حزمة تضم مهارات تعمل معًا لهدف واحد. حمّلها كلها بملف ZIP واحد مباشرة من GitHub."));
+  var grid=el("div","gr");(D.packs||[]).forEach(function(p){
+    var c=el("div","cd pk");c.appendChild(el("h3","",esc(p.title_ar)));c.appendChild(el("p","",esc(p.desc_ar)));
+    c.appendChild(el("div","chs",skillChips(p.ids)));
+    var bt=el("div","bt"),d=el("button","pr","تحميل الحزمة ("+p.ids.length+" مهارة)");d.type="button";d.onclick=function(){downloadMany(p.ids,d,"pack-"+p.id+".zip")};bt.appendChild(d);
+    var a=el("button","","اختيارها للحزمة");a.type="button";a.onclick=function(){p.ids.forEach(function(i){st.sel[i]=1});drawBar();a.textContent="تمت الإضافة ✓"};bt.appendChild(a);c.appendChild(bt);grid.appendChild(c)});
+  g.appendChild(grid)}
+function drawPaths(g){
+  g.appendChild(el("p","note","مسارات مرتبة: ابدأ من الخطوة الأولى، وافتح كل مهارة لتقرأ شرحها وتحمّلها. لشرح مرئي، ابحث في قناة مونستر على يوتيوب."));
+  var grid=el("div","gr");(D.paths||[]).forEach(function(p){
+    var c=el("div","cd pk");c.appendChild(el("h3","",esc(p.title_ar)));c.appendChild(el("p","",esc(p.desc_ar)));
+    var ol=el("ol","stp");p.steps.forEach(function(x){var s=byId(x.id);ol.appendChild(el("li","","<div><b><a href='#/k/"+esc(x.id)+"'>"+esc(title(s))+"</a></b><span>"+esc(x.note)+"</span></div>"))});c.appendChild(ol);
+    var bt=el("div","bt"),d=el("button","pr","تحميل كل المسار");d.type="button";d.onclick=function(){downloadMany(p.steps.map(function(x){return x.id}),d,"path-"+p.id+".zip")};bt.appendChild(d);
+    var y=el("a","g","شاهد على القناة");y.href=CHANNEL;y.target="_blank";y.rel="noopener";bt.appendChild(y);c.appendChild(bt);grid.appendChild(c)});
+  g.appendChild(grid)}
+function drawFav(g){
+  var a=FAV.map(byId).filter(Boolean);
+  g.appendChild(el("p","note","المفضلة والمشاهدات الأخيرة محفوظة في متصفحك فقط."));
+  var grid=el("div","gr");if(!a.length)grid.appendChild(el("div","empty","لم تضف شيئا بعد. اضغط ♡ على أي بطاقة لتحفظها هنا."));
+  a.forEach(function(s){grid.appendChild(card(s))});g.appendChild(grid);
+  var r=REC.map(byId).filter(Boolean);if(r.length){g.appendChild(el("div","rc","شاهدتها مؤخرا: "+r.map(function(s){return '<a class="chip" href="#/k/'+esc(s.id)+'">'+esc(title(s))+"</a>"}).join("")))}}
 function drawList(){
-  var g=document.getElementById("sk-list");if(!g)return;g.innerHTML="";var a=list();
+  var g=document.getElementById("sk-list");if(!g)return;g.innerHTML="";
+  var bx=document.getElementById("sk-box");if(bx)bx.style.display=st.view==="skills"?"":"none";
+  if(st.view==="packs")return drawPacks(g);if(st.view==="paths")return drawPaths(g);if(st.view==="fav")return drawFav(g);
+  var a=list();
   g.appendChild(el("p","note","عدد النتائج: "+a.length));var grid=el("div","gr");
   if(!a.length)grid.appendChild(el("div","empty","لا توجد مهارة تطابق بحثك. جرّب كلمة أخرى أو اختر «الكل»."));
-  a.slice(0,st.show).forEach(function(s){
-    var on=!!st.sel[s.id],c=el("div","cd"+(on?" sel":""));
-    c.appendChild(el("h3","",'<a href="#/k/'+esc(s.id)+'">'+esc(title(s))+"</a>"));
-    if(s.title_ar)c.appendChild(el("div","en",esc(s.name)));
-    c.appendChild(el("div","m",'<span>'+esc(catLabel(s.cat))+'</span><span>★ '+kf(s.stars)+'</span><span class="up">جودة '+s.rating+"/5</span>"+(s.license&&s.license!=="NOASSERTION"?"<span>"+esc(s.license)+"</span>":"")+(s.curated?"":'<span class="am">ترجمة آلية</span>')));
-    c.appendChild(el("p","",esc(desc(s))||"لا يوجد وصف."));
-    var bt=el("div","bt"),d=el("a","pr","التفاصيل والتحميل");d.href="#/k/"+s.id;bt.appendChild(d);
-    var b=el("button",on?"on":"",on?"✓ في الحزمة":"+ أضف للحزمة");b.type="button";b.onclick=function(){toggle(s.id)};bt.appendChild(b);
-    var l=el("a","g","GitHub");l.href=gh(s);l.target="_blank";l.rel="noopener";bt.appendChild(l);c.appendChild(bt);grid.appendChild(c)});
+  a.slice(0,st.show).forEach(function(s){grid.appendChild(card(s))});
   g.appendChild(grid);
   if(a.length>st.show){var mb=el("button","more","عرض المزيد ("+(a.length-st.show)+")");mb.type="button";mb.onclick=function(){st.show+=24;drawList()};g.appendChild(mb)}
+  var r=REC.map(byId).filter(Boolean);if(r.length&&!st.q)g.appendChild(el("div","rc","شاهدتها مؤخرا: "+r.map(function(s){return '<a class="chip" href="#/k/'+esc(s.id)+'">'+esc(title(s))+"</a>"}).join("")));
 }
 function drawBar(){
-  var bar=document.getElementById("sk-bar");if(!bar)return;var n=Object.keys(st.sel).length;bar.className="bar"+(n?" on":"");bar.innerHTML="";if(!n)return;
-  bar.appendChild(el("span","","تم اختيار <b>"+n+"</b> مهارة"));var ac=el("div","ac");
-  var d=el("button","","تحميل الحزمة (ZIP)");d.type="button";d.onclick=function(){downloadBundle(d)};ac.appendChild(d);
-  var c=el("button","ls","مسح");c.type="button";c.onclick=function(){st.sel={};drawList();drawBar()};ac.appendChild(c);bar.appendChild(ac);
+  var bar=document.getElementById("sk-bar");if(!bar)return;var n=Object.keys(st.sel).length,m=st.cmp.length;bar.className="bar"+(n||m?" on":"");bar.innerHTML="";if(!n&&!m)return;
+  var ac=el("div","ac");
+  if(n){bar.appendChild(el("span","","تم اختيار <b>"+n+"</b> مهارة"));
+    var d=el("button","","تحميل الحزمة (ZIP)");d.type="button";d.onclick=function(){downloadBundle(d)};ac.appendChild(d);
+    var c=el("button","ls","مسح");c.type="button";c.onclick=function(){st.sel={};drawList();drawBar()};ac.appendChild(c)}
+  if(m){var cb=el("button",m<2?"ls":"","قارن ("+m+"/2)");cb.type="button";cb.disabled=m<2;cb.onclick=function(){location.hash="#/c/"+st.cmp.join(",")};ac.appendChild(cb);
+    var cc=el("button","ls","إلغاء المقارنة");cc.type="button";cc.onclick=function(){st.cmp=[];drawList();drawBar()};ac.appendChild(cc)}
+  bar.appendChild(ac);
 }
 
 /* ---------- نافذة التفاصيل ---------- */
 function openDetail(id){
   var s=byId(id);if(!s){closeDetail();return}
+  addRec(id);
   document.title=title(s)+" | "+SITE;
-  ov.innerHTML="";ov.className="on";document.body.style.overflow="hidden";ov.scrollTop=0;
+  ov.innerHTML="";ov.className="on"+(DK?" dk":"");document.body.style.overflow="hidden";ov.scrollTop=0;
   ov.onclick=function(e){if(e.target===ov)closeDetail()};
   var sh=el("div","sh"),hd=el("div","hd"),h2=el("h2","",esc(title(s))+(s.title_ar?"<small>"+esc(s.name)+"</small>":"")),cx=el("button","x","×");cx.type="button";cx.setAttribute("aria-label","إغلاق");cx.onclick=closeDetail;hd.appendChild(h2);hd.appendChild(cx);sh.appendChild(hd);
   var bd=el("div","bd");sh.appendChild(bd);ov.appendChild(sh);
@@ -284,10 +363,15 @@ function openDetail(id){
   /* الأزرار */
   var row=el("div","row"),dl=el("button","btn p","تحميل المهارة (ZIP)");dl.type="button";row.appendChild(dl);
   var g=el("a","btn","فتح على GitHub");g.href=gh(s);g.target="_blank";g.rel="noopener";row.appendChild(g);
+  var fb=el("button","btn",isFav(s.id)?"♥ في المفضلة":"♡ أضف للمفضلة");fb.type="button";fb.onclick=function(){togFav(s.id);fb.textContent=isFav(s.id)?"♥ في المفضلة":"♡ أضف للمفضلة";drawTabs()};row.appendChild(fb);
   var ab=el("button","btn",st.sel[s.id]?"✓ في الحزمة":"+ أضف للحزمة");ab.type="button";ab.onclick=function(){toggle(s.id);ab.textContent=st.sel[s.id]?"✓ في الحزمة":"+ أضف للحزمة"};row.appendChild(ab);
   var yq=el("a","btn","ابحث عن «"+esc(s.name)+"» في يوتيوب");yq.href=CHANNEL+"/search?query="+encodeURIComponent(s.name);yq.target="_blank";yq.rel="noopener";yq.style.cssText="background:#dc2626;border-color:#dc2626;color:#fff";row.appendChild(yq);
   ds.appendChild(row);var msg=el("div","msg");msg.setAttribute("role","status");ds.appendChild(msg);dl.onclick=function(){downloadOne(s,dl,msg)};
   bd.appendChild(ds);
+  if(s.guide_ar&&s.guide_ar.length)bd.appendChild(el("div","bx","<h3>ملخص الدليل بالعربي</h3><ul class='gd'>"+s.guide_ar.map(function(x){return "<li>"+esc(x)+"</li>"}).join("")+"</ul>"));
+  if(s.ex_ar){var eb=el("div","bx","<h3>جرّب هذا الطلب</h3>"),ex=el("div","ex",esc(s.ex_ar)),cp=el("button","btn","نسخ الطلب");cp.type="button";cp.style.marginTop="10px";cp.onclick=function(){copyTxt(s.ex_ar,cp,"نسخ الطلب")};eb.appendChild(ex);eb.appendChild(cp);bd.appendChild(eb)}
+  var si=secInfo(s),sc=s.sec||{flags:[]},slab={1:"نصوص فقط، ولا سكربتات تنفَّذ على جهازك.",2:"تتضمن سكربتات أو أوامر. راجعها قبل التشغيل.",3:"اكتُشفت أنماط حساسة. افحص الملفات بنفسك قبل أي استخدام."}[si[0]];
+  bd.appendChild(el("div","bx","<h3>فحص أمني تقريبي</h3><p class='sc"+si[0]+"'>"+slab+"</p>"+(sc.flags.length?"<ul class='gd'>"+sc.flags.map(function(x){return "<li>"+esc(x)+"</li>"}).join("")+"</ul>":"")+"<p class='nt'>فحص آلي بالكلمات المفتاحية، ولا يغني عن القراءة اليدوية.</p>"));
   /* الاستخدام */
   bd.appendChild(el("div","bx","<h3>طريقة الاستخدام</h3><ol><li>اضغط «تحميل المهارة» لتحصل على ملف ZIP، وفكّ ضغطه.</li><li><b>في Claude:</b> الإعدادات، ثم Capabilities، ثم Skills، وارفع الملف.</li><li><b>في Claude Code:</b> انقل المجلد إلى <code>~/.claude/skills/</code> وأعد تشغيل الجلسة.</li></ol>"));
   /* SKILL.md */
@@ -302,15 +386,24 @@ function openDetail(id){
   if(rel.length){var rb=el("div","bx","<h3>مهارات مشابهة</h3>"),rr=el("div","row");rel.forEach(function(r){var a=el("a","chip",esc(title(r)));a.href="#/k/"+r.id;rr.appendChild(a)});rb.appendChild(rr);bd.appendChild(rb)}
   bd.appendChild(el("div","wn","المهارة ملك لصاحبها وتُحمَّل مباشرة من مستودعه، وتخضع لرخصته. اقرأ ملفاتها قبل تشغيلها، فقد تتضمن سكربتات."));
 }
-function closeDetail(){ov.className="";ov.innerHTML="";document.body.style.overflow="";document.title=T0;if(/^#\/k\//.test(location.hash)){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){location.hash=""}}}
-function route(){var m=location.hash.match(/^#\/k\/([^\/?#]+)/);if(m&&D)openDetail(decodeURIComponent(m[1]));else if(!m)closeDetail()}
+function openCompare(ids){
+  var a=ids.map(byId).filter(Boolean);if(a.length<2){closeDetail();return}
+  document.title="مقارنة المهارات | "+SITE;ov.innerHTML="";ov.className="on"+(DK?" dk":"");document.body.style.overflow="hidden";ov.scrollTop=0;ov.onclick=function(e){if(e.target===ov)closeDetail()};
+  var sh=el("div","sh"),hd=el("div","hd",""),cx=el("button","x","×");cx.type="button";cx.onclick=closeDetail;hd.appendChild(el("h2","","مقارنة المهارات"));hd.appendChild(cx);sh.appendChild(hd);
+  var bd=el("div","bd");sh.appendChild(bd);ov.appendChild(sh);
+  function row(l,f){return "<tr><th>"+l+"</th>"+a.map(function(s){return "<td>"+f(s)+"</td>"}).join("")+"</tr>"}
+  bd.appendChild(el("div","bx","<table class='cmp'>"+row("المهارة",function(s){return "<b><a href='#/k/"+esc(s.id)+"'>"+esc(title(s))+"</a></b><br><small>"+esc(s.name)+"</small>"})+row("التصنيف",function(s){return esc(catLabel(s.cat))})+row("الجودة",function(s){return s.rating+"/5"})+row("نجوم المستودع",function(s){return kf(s.stars)})+row("الرخصة",function(s){return esc(s.license&&s.license!=="NOASSERTION"?s.license:"غير محددة")})+row("الفحص الأمني",function(s){var i=secInfo(s);return "<span class='sc"+i[0]+"'>"+i[1]+"</span>"})+row("عدد الملفات",function(s){return s.files.length||"كبيرة"})+row("الوصف",function(s){return esc(desc(s))})+row("متى تستخدمها؟",function(s){return esc(s.when_ar||s.when_en||"-")})+"</table>"));
+  var bt=el("div","row");a.forEach(function(s){var b=el("button","btn p","تحميل: "+title(s));b.type="button";b.onclick=function(){downloadMany([s.id],b,s.name+".zip")};bt.appendChild(b)});bd.appendChild(bt);
+}
+function closeDetail(){ov.className="";ov.innerHTML="";document.body.style.overflow="";document.title=T0;if(/^#\/[kc]\//.test(location.hash)){try{history.replaceState(null,"",location.pathname+location.search)}catch(e){location.hash=""}}}
+function route(){var m=location.hash.match(/^#\/k\/([^\/?#]+)/),cm=location.hash.match(/^#\/c\/([^\/?#]+)/);if(cm&&D)openCompare(decodeURIComponent(cm[1]).split(","));else if(m&&D)openDetail(decodeURIComponent(m[1]));else if(!m&&!cm)closeDetail()}
 window.addEventListener("hashchange",route);
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&ov.className)closeDetail()});
 
 function jsonld(){var s=document.createElement("script");s.type="application/ld+json";s.textContent=JSON.stringify({"@context":"https://schema.org","@type":"CollectionPage","name":SITE,"inLanguage":"ar","url":pageUrl(),"mainEntity":{"@type":"ItemList","numberOfItems":D.skills.length,"itemListElement":D.skills.slice(0,100).map(function(x,i){return{"@type":"ListItem","position":i+1,"name":title(x),"url":pageUrl()+"#/k/"+x.id}})}}).replace(/<\//g,"<\\/");document.head.appendChild(s)}
 function get(i){
   if(i>=SRC.length){root.innerHTML='<div class="w"><div class="empty" style="margin-top:24px">تعذّر تحميل البيانات الآن. حاول لاحقا.</div></div>';return}
-  fetch(SRC[i]+"skills.json?v="+Math.floor(Date.now()/600000)).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){D=d;build();drawList();drawBar();jsonld();route()}).catch(function(){get(i+1)});
+  fetch(SRC[i]+"skills.json?v="+Math.floor(Date.now()/600000)).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){D=d;build();applyDk();drawTabs();drawList();drawBar();jsonld();route()}).catch(function(){get(i+1)});
 }
 get(0);
 })();

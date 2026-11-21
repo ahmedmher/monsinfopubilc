@@ -159,6 +159,43 @@ def skill_media(folder, dst, repo, branch):
             return {'type': 'image', 'url': u}
     return None
 
+EXEC_EXT = ('.py', '.sh', '.bash', '.js', '.mjs', '.cjs', '.ts', '.rb', '.pl', '.ps1', '.bat')
+SEVERE = [
+    (r'(curl|wget)[^\n|]*\|\s*(sudo\s+)?(ba|z)?sh', 'تحميل وتنفيذ سكربت مباشرة من الإنترنت'),
+    (r'rm\s+-rf?\s+(/|~|\$HOME)(\s|$)', 'حذف مجلدات النظام أو المنزل'),
+    (r'(b64decode|base64\s+(-d|--decode))', 'فك ترميز base64 (قد يخفي أوامر)'),
+    (r'\.ssh|\.aws/credentials|id_rsa|keychain', 'الوصول لمفاتيح أو بيانات اعتماد'),
+    (r'eval\s*\(\s*(requests|urllib|fetch|atob)', 'تنفيذ كود مجلوب من الإنترنت'),
+]
+MILD = [
+    (r'subprocess|os\.system|child_process|exec\s*\(|spawn\s*\(', 'تشغيل أوامر على الجهاز'),
+    (r'(requests\.(get|post)|urllib|fetch\s*\(|https?://[\w.-]+/api|axios)', 'اتصال بالإنترنت'),
+    (r'(pip3?|npm|pnpm|yarn)\s+(install|i)\b', 'تثبيت حزم برمجية'),
+    (r'\bsudo\b|chmod\s+\+x', 'صلاحيات مرتفعة'),
+    (r'(open\(|writeFile|fs\.write|shutil\.(rmtree|move))', 'كتابة أو حذف ملفات'),
+]
+
+def scan_security(folder):
+    """فحص تقريبي للنصوص والسكربتات: safe (نصوص فقط) / review (فيها سكربتات أو أوامر) / warn (أنماط خطرة)."""
+    scripts, sev, mild = 0, set(), set()
+    for f in folder.rglob('*'):
+        if not f.is_file() or 'node_modules' in f.parts or f.stat().st_size > 400_000:
+            continue
+        ex = f.suffix.lower() in EXEC_EXT
+        scripts += ex
+        if not (ex or f.suffix.lower() in ('.md', '.txt', '.json', '.yml', '.yaml', '.toml', '')):
+            continue
+        t = f.read_text(encoding='utf-8', errors='ignore')
+        for rx, lab in SEVERE:
+            if re.search(rx, t, re.I):
+                sev.add(lab)
+        if ex:
+            for rx, lab in MILD:
+                if re.search(rx, t):
+                    mild.add(lab)
+    level = 'warn' if sev else ('review' if scripts or mild else 'safe')
+    return {'level': level, 'scripts': scripts, 'flags': sorted(sev) + sorted(mild)}
+
 def scan_repo(cfg, tmp):
     repo = cfg['repo']
     dst = tmp / slug(repo)
@@ -196,7 +233,7 @@ def scan_repo(cfg, tmp):
         sub = [f.relative_to(folder).as_posix().lower() for f in folder.rglob('*') if f.is_file()]
         has = {'scripts': int(any(x.startswith('scripts/') for x in sub)), 'refs': int(any(x.startswith(('references/', 'reference/', 'docs/')) for x in sub)), 'assets': int(any(x.startswith(('assets/', 'templates/', 'examples/')) for x in sub))}
         out.append({
-            'has': has, 'body_len': len(body), 'body': body[:3000],
+            'sec': scan_security(folder), 'has': has, 'body_len': len(body), 'body': body[:3000],
             'id': slug(f'{repo}-{rel or name}'), 'name': name, 'desc_en': desc,
             'repo': repo, 'branch': branch, 'path': rel if rel != '.' else '',
             'files': files if ok else [], 'size': total, 'zip_ok': ok,
@@ -298,8 +335,19 @@ def main():
             continue
         seen.add(s['name']); uniq.append(s)
     skills = uniq
+    ex_file = D / 'extras.json'
+    extras = json.load(open(ex_file, encoding='utf-8')) if ex_file.exists() else {}
+    import datetime
+    today = datetime.date.today()
+    hist_file = D / 'history.json'
+    seeded = hist_file.exists()
+    hist = json.load(open(hist_file, encoding='utf-8')) if seeded else {'first': {}, 'stars': {}}
     todo = []
     for s in skills:
+        s.update({k: v for k, v in extras.get(s['name'], {}).items() if k in ('ex_ar', 'guide_ar')})
+        first = hist['first'].setdefault(s['id'], today.isoformat() if seeded else '2000-01-01')
+        s['added'] = first
+        s['new'] = first != '2000-01-01' and (today - datetime.date.fromisoformat(first)).days <= 7
         c = curated.get(s['name'])
         if c:
             s.update({k: c[k] for k in ('title_ar', 'desc_ar', 'when_ar', 'cat') if k in c})
@@ -339,9 +387,25 @@ def main():
         ov = overrides.get(s['id']) or overrides.get(s['name']) or {}
         s.update({k: v for k, v in ov.items() if k in ('title_ar', 'desc_ar', 'when_ar', 'cat', 'featured')})
         s.pop('body', None)
+    for r in {s['repo'] for s in skills}:      # نمو النجوم خلال 7 أيام تقريبًا
+        h = hist['stars'].setdefault(r, {})
+        cur = next(s['stars'] for s in skills if s['repo'] == r)
+        h[today.isoformat()] = cur
+        for d in sorted(h)[:-35]:
+            h.pop(d)
+    for s in skills:
+        h = hist['stars'].get(s['repo'], {})
+        old_days = [d for d in h if (today - datetime.date.fromisoformat(d)).days >= 6]
+        s['growth'] = max(0, s['stars'] - h[max(old_days)]) if old_days else 0
+    hist_file.write_text(json.dumps(hist, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
     skills.sort(key=lambda s: (-bool(s.get('featured')), -s['score'], s['name']))
+    pk_file = D / 'packs.json'
+    pk = json.load(open(pk_file, encoding='utf-8')) if pk_file.exists() else {'packs': [], 'paths': []}
+    by_name = {s['name']: s['id'] for s in reversed(skills)}
+    packs = [{**p, 'ids': [by_name[n] for n in p['skills'] if n in by_name]} for p in pk['packs']]
+    paths = [{**p, 'steps': [{'id': by_name[n], 'note': t} for n, t in p['steps'] if n in by_name]} for p in pk['paths']]
     data = {'updated': __import__('datetime').date.today().isoformat(),
-            'categories': [{'id': i, 'label': l} for i, l in CATS], 'skills': skills}
+            'categories': [{'id': i, 'label': l} for i, l in CATS], 'packs': packs, 'paths': paths, 'skills': skills}
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
     print('ok', len(skills), 'skills,', len(todo), 'new/changed')
 

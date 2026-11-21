@@ -1,0 +1,262 @@
+{
+ "packs": [
+  {
+   "id": "creator",
+   "title_ar": "حزمة صانع المحتوى",
+   "desc_ar": "كتابة بشرية ومحتوى بحثي ونصوص تسويقية ومنشورات اجتماعية وتحسين الصور.",
+   "skills": [
+    "humanizer",
+    "content-research-writer",
+    "doc-coauthoring",
+    "copywriting",
+    "content-strategy",
+    "social",
+    "twitter-algorithm-optimizer",
+    "image-enhancer"
+   ]
+  },
+  {
+   "id": "marketer",
+   "title_ar": "حزمة المسوّق الرقمي",
+   "desc_ar": "من تدقيق السيو والإعلانات إلى التسعير والإطلاق وسلاسل البريد.",
+   "skills": [
+    "seo-audit",
+    "ai-seo",
+    "copywriting",
+    "cro",
+    "ads",
+    "ad-creative",
+    "emails",
+    "pricing",
+    "launch",
+    "analytics"
+   ]
+  },
+  {
+   "id": "web-dev",
+   "title_ar": "حزمة مطوّر الويب",
+   "desc_ar": "تصميم واجهات سريعة ومتاحة، واختبارها، ونشرها على Vercel.",
+   "skills": [
+    "frontend-design",
+    "frontend-ui-engineering",
+    "accessibility-engineering",
+    "webapp-testing",
+    "performance-optimization",
+    "vercel-react-best-practices",
+    "web-design-guidelines",
+    "deploy-to-vercel"
+   ]
+  },
+  {
+   "id": "quality",
+   "title_ar": "حزمة الجودة والأمان",
+   "desc_ar": "اختبارات أولًا، وتصحيح منهجي للأخطاء، ومراجعة كود وأمان.",
+   "skills": [
+    "test-driven-development",
+    "systematic-debugging",
+    "debugging-and-error-recovery",
+    "code-review-and-quality",
+    "security-and-hardening",
+    "verification-before-completion"
+   ]
+  },
+  {
+   "id": "office",
+   "title_ar": "حزمة المكتب والمستندات",
+   "desc_ar": "التعامل مع Word وPDF وPowerPoint وExcel، وتنسيقها بهوية موحدة.",
+   "skills": [
+    "docx",
+    "pdf",
+    "pptx",
+    "xlsx",
+    "internal-comms",
+    "theme-factory",
+    "brand-guidelines"
+   ]
+  },
+  {
+   "id": "builder",
+   "title_ar": "حزمة بناء Skills وMCP",
+   "desc_ar": "كل ما تحتاجه لتبني skill أو خادم MCP أو تطبيقًا بـ Claude API.",
+   "skills": [
+    "skill-creator",
+    "mcp-builder",
+    "writing-skills",
+    "using-agent-skills",
+    "claude-api"
+   ]
+  },
+  {
+   "id": "workflow",
+   "title_ar": "حزمة سير العمل المنهجي",
+   "desc_ar": "من العصف الذهني والخطة إلى التنفيذ والمراجعة والدمج بمنهج متكامل.",
+   "skills": [
+    "brainstorming",
+    "writing-plans",
+    "executing-plans",
+    "subagent-driven-development",
+    "test-driven-development",
+    "requesting-code-review",
+    "finishing-a-development-branch"
+   ]
+  },
+  {
+   "id": "ui",
+   "title_ar": "حزمة تصميم الواجهات والحركة",
+   "desc_ar": "تصميم راقٍ وحركات طبيعية وإيماءات وفن بصري.",
+   "skills": [
+    "impeccable",
+    "design-taste-frontend",
+    "animate",
+    "gestures",
+    "apple-design",
+    "emil-design-eng",
+    "canvas-design"
+   ]
+  },
+  {
+   "id": "ai",
+   "title_ar": "حزمة الذكاء الاصطناعي والنماذج",
+   "desc_ar": "البحث عن النماذج وتشغيلها محليًا وبناء عروض تجريبية.",
+   "skills": [
+    "hf-mcp",
+    "huggingface-best",
+    "huggingface-datasets",
+    "huggingface-gradio",
+    "huggingface-local-models",
+    "transformers-js"
+   ]
+  },
+  {
+   "id": "founder",
+   "title_ar": "حزمة رواد الأعمال",
+   "desc_ar": "بحث عملاء، ورسائل تواصل، وتسعير، وخطة تسويق، واسم نطاق.",
+   "skills": [
+    "lead-research-assistant",
+    "cold-email",
+    "sales-enablement",
+    "pricing",
+    "marketing-plan",
+    "domain-name-brainstormer"
+   ]
+  }
+ ],
+ "paths": [
+  {
+   "id": "start",
+   "title_ar": "ابدأ مع الـ Skills من الصفر",
+   "desc_ar": "أربع خطوات تأخذك من فهم الفكرة إلى بناء أول skill خاصة بك.",
+   "steps": [
+    [
+     "academy-guide",
+     "اعرف ما الذي يستطيع Claude فعله وابدأ بالدورات المناسبة."
+    ],
+    [
+     "using-agent-skills",
+     "افهم كيف يختار الوكيل الـ skill المناسبة ويستدعيها."
+    ],
+    [
+     "skill-creator",
+     "ابنِ أول skill لمهمة تكررها كل أسبوع."
+    ],
+    [
+     "writing-skills",
+     "اختبرها وحسّن وصفها قبل أن تشاركها."
+    ]
+   ]
+  },
+  {
+   "id": "launch",
+   "title_ar": "أطلق منتجك",
+   "desc_ar": "من الفكرة الغامضة إلى منتج منشور بمواصفات وخطة وتصميم وإطلاق.",
+   "steps": [
+    [
+     "idea-refine",
+     "صقل الفكرة واختبر افتراضاتها."
+    ],
+    [
+     "interview-me",
+     "وضّح ما تحتاجه فعلًا بأسئلة واحدة تلو الأخرى."
+    ],
+    [
+     "spec-driven-development",
+     "اكتب المواصفات قبل أي كود."
+    ],
+    [
+     "planning-and-task-breakdown",
+     "قسّم العمل إلى مهام مرتبة."
+    ],
+    [
+     "frontend-design",
+     "صمّم واجهة بهوية مميزة."
+    ],
+    [
+     "launch",
+     "خطّط للإطلاق وحدّد قنواتك."
+    ]
+   ]
+  },
+  {
+   "id": "quality",
+   "title_ar": "ارفع جودة كودك",
+   "desc_ar": "ممارسات تجعل الكود أوضح وأكثر أمانًا وأقل أخطاء.",
+   "steps": [
+    [
+     "test-driven-development",
+     "ابدأ بالاختبار قبل الكود."
+    ],
+    [
+     "systematic-debugging",
+     "عند أي علّة، ابحث عن السبب الجذري أولًا."
+    ],
+    [
+     "code-review-and-quality",
+     "راجع التغيير على خمسة محاور."
+    ],
+    [
+     "security-and-hardening",
+     "حصّن الكود ضد الثغرات."
+    ],
+    [
+     "performance-optimization",
+     "قِس الأداء ثم حسّنه."
+    ],
+    [
+     "shipping-and-launch",
+     "جهّز النشر بقائمة تحقق."
+    ]
+   ]
+  },
+  {
+   "id": "marketing",
+   "title_ar": "سوّق لمشروعك",
+   "desc_ar": "مسار تسويقي عملي من فهم العميل إلى قياس النتائج.",
+   "steps": [
+    [
+     "customer-research",
+     "افهم عملاءك من كلامهم الحقيقي."
+    ],
+    [
+     "copywriting",
+     "اكتب رسالة واضحة لصفحتك."
+    ],
+    [
+     "seo-audit",
+     "تأكد أن محركات البحث تفهم موقعك."
+    ],
+    [
+     "content-strategy",
+     "خطّط للمحتوى الذي يجلب العملاء."
+    ],
+    [
+     "social",
+     "وزّع المحتوى على قنوات التواصل."
+    ],
+    [
+     "analytics",
+     "قِس ما يعمل وما لا يعمل."
+    ]
+   ]
+  }
+ ]
+}
