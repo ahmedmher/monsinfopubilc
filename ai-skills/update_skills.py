@@ -210,29 +210,57 @@ def translate_batch(items):
     except Exception as e:
         print('translate failed:', e); return {}
 
-GT_FAILS = [0]
+GT_FAILS = {}
+LAST_ERR = {}
+UA = {'User-Agent': 'Mozilla/5.0'}
+
+def _get(url):
+    return json.load(urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=30))
+
+def _google(chunk):
+    import urllib.parse
+    r = _get('https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=' + urllib.parse.quote(chunk))
+    return ''.join(x[0] for x in r[0] if x[0])
+
+def _mymemory(chunk):
+    import urllib.parse
+    url = 'https://api.mymemory.translated.net/get?langpair=en|ar&q=' + urllib.parse.quote(chunk[:450])
+    r = _get(url)
+    t = r['responseData']['translatedText']
+    if r.get('responseStatus') != 200 or 'MYMEMORY' in t.upper():
+        raise RuntimeError(str(r.get('responseDetails'))[:100])
+    return t
+
+def _lingva(chunk):
+    import urllib.parse
+    err = None
+    for host in ('lingva.ml', 'lingva.lunar.icu'):
+        try:
+            return _get(f'https://{host}/api/v1/en/ar/' + urllib.parse.quote(chunk))['translation']
+        except Exception as e:
+            err = e
+    raise err
+
+ENGINES = [('google', _google), ('mymemory', _mymemory), ('lingva', _lingva)]
 
 def gtr(text):
-    """ترجمة مجانية عبر نقطة جوجل العامة (بدون مفتاح)."""
-    import urllib.parse, time
+    """ترجمة مجانية بدون مفتاح: جوجل ثم MyMemory ثم Lingva. يتخطى أي محرك فشل 3 مرات متتالية."""
+    import time
     out = []
-    if GT_FAILS[0] >= 3:
-        return ''
     for chunk in re.findall(r'.{1,400}(?:\s|$)', text, re.S):
         if not chunk.strip():
             continue
-        url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=' + urllib.parse.quote(chunk)
-        for _ in range(3):
+        for name, fn in ENGINES:
+            if GT_FAILS.get(name, 0) >= 3:
+                continue
             try:
-                r = json.load(urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'}), timeout=30))
-                out.append(''.join(x[0] for x in r[0] if x[0]))
-                break
+                out.append(fn(chunk)); GT_FAILS[name] = 0; time.sleep(0.3); break
             except Exception as e:
-                time.sleep(1)
+                GT_FAILS[name] = GT_FAILS.get(name, 0) + 1
+                if name not in LAST_ERR:
+                    LAST_ERR[name] = str(e)[:150]; print('translate engine failed:', name, e)
         else:
-            GT_FAILS[0] += 1
             return ''
-        time.sleep(0.25)
     return ' '.join(out).strip()
 
 def main():
