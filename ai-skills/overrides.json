@@ -1,0 +1,4 @@
+{
+  "_help": "تعديل يدوي لأي skill: المفتاح هو id أو name. الحقول المسموحة: title_ar, desc_ar, when_ar, cat, featured (true لتثبيتها في الأعلى).",
+  "example-skill-name": {"cat": "dev", "featured": false}
+}

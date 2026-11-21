@@ -53,6 +53,45 @@ def parse_frontmatter(text):
 def slug(s):
     return re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
 
+RULES = {
+ 'docs': [(r'\b(docx|pdf|pptx|xlsx|word|excel|powerpoint|spreadsheet|slides?|document|presentation|markdown|epub)\b', 3)],
+ 'design': [(r'\b(design|ui|ux|css|frontend|front-end|canvas|theme|brand|art|figma|tailwind|layout|accessibility|a11y|typography|animation)\b', 3)],
+ 'media': [(r'\b(video|audio|image|gif|photo|music|thumbnail|youtube|podcast|ffmpeg|voice|subtitle|caption)\b', 3)],
+ 'quality': [(r'\b(test|testing|tdd|review|security|debug|debugging|lint|audit|qa|performance|vulnerab\w*|e2e|benchmark)\b', 3)],
+ 'data': [(r'\b(data|analytics?|analysis|sql|chart|csv|dashboard|database|statistics|pandas|visuali[sz]ation)\b', 3)],
+ 'content': [(r'\b(writing|write|blog|copywriting|humaniz\w*|email|communication|content|article|editor|tone|translate|newsletter|resume|cover letter)\b', 3)],
+ 'business': [(r'\b(marketing|sales|seo|lead|invoice|business|competitive|pricing|startup|customer|brand|ads?|growth|crm)\b', 3)],
+ 'research': [(r'\b(research|learn\w*|knowledge|summari[sz]\w*|study|academy|tutorial|notes?|reading|citation|paper)\b', 3)],
+ 'automation': [(r'\b(mcp|automation|automate|workflow|agents?|integration|zapier|slack|github actions|n8n|pipeline|cli|plugin|skill-creator|skills?)\b', 2)],
+ 'dev': [(r'\b(code|coding|api|git|build|deploy\w*|react|python|typescript|javascript|refactor\w*|develop\w*|software|architecture|backend|node|docker|spec|planning|debugging)\b', 3)],
+}
+
+def score_cat(name, desc, body):
+    best, bs = 'other', 0
+    for c, rules in RULES.items():
+        sc = 0
+        for rx, w in rules:
+            r = re.compile(rx, re.I)
+            sc += w * (3 * len(r.findall(name.replace('-', ' '))) + len(r.findall(desc)) + 0.3 * len(r.findall(body)))
+        if sc > bs:
+            best, bs = c, sc
+    return best if bs >= 2 else 'other'
+
+def quality(s):
+    """تقييم جودة شفاف من 100: شعبية المستودع + اكتمال الوصف والمحتوى + وجود سكربتات ومراجع ووسائط ورخصة."""
+    import math
+    pts = 38 * min(1, math.log10(s['stars'] + 1) / 5.3)
+    pts += 15 * min(1, len(s['desc_en']) / 220)
+    pts += 14 * min(1, s['body_len'] / 2500)
+    pts += 8 * s['has']['scripts'] + 8 * s['has']['refs'] + 4 * s['has']['assets']
+    pts += 6 * bool(s['media'] or s['repo_media']) + 4 * bool(s['license'])
+    pts += 3 * bool(re.search(r'use when|trigger|when the user|use this', s['desc_en'], re.I))
+    return round(pts)
+
+def split_when(desc):
+    m = re.search(r'(.*?)\s*((?:Use (?:this )?(?:skill )?when|Use it when|Use for|Trigger[s]? (?:on|when)|Activate when).*)$', desc, re.I)
+    return (m.group(1).strip(' .'), m.group(2).strip()) if m and m.group(1).strip() else (desc, '')
+
 def heuristic_cat(name, desc):
     t = f'{name} {desc}'.lower()
     for c, rx in KW.items():
@@ -141,13 +180,16 @@ def scan_repo(cfg, tmp):
                 total += f.stat().st_size
                 files.append(f.relative_to(dst).as_posix())
         ok = len(files) <= SRC.get('max_files_per_skill', 60) and total <= SRC.get('max_skill_bytes', 6_000_000)
+        sub = [f.relative_to(folder).as_posix().lower() for f in folder.rglob('*') if f.is_file()]
+        has = {'scripts': int(any(x.startswith('scripts/') for x in sub)), 'refs': int(any(x.startswith(('references/', 'reference/', 'docs/')) for x in sub)), 'assets': int(any(x.startswith(('assets/', 'templates/', 'examples/')) for x in sub))}
         out.append({
+            'has': has, 'body_len': len(body), 'body': body[:3000],
             'id': slug(f'{repo}-{rel or name}'), 'name': name, 'desc_en': desc,
             'repo': repo, 'branch': branch, 'path': rel if rel != '.' else '',
             'files': files if ok else [], 'size': total, 'zip_ok': ok,
             'media': skill_media(folder, dst, repo, branch), 'repo_media': rmedia, 'og': og,
             'stars': meta.get('stars', 0), 'license': meta.get('license', ''),
-            'when': re.sub(r'\s+', ' ', body.strip())[:700]})
+            'when': ''})
     print(repo, len(out), 'skills')
     return out
 
@@ -168,10 +210,14 @@ def translate_batch(items):
     except Exception as e:
         print('translate failed:', e); return {}
 
+GT_FAILS = [0]
+
 def gtr(text):
     """ترجمة مجانية عبر نقطة جوجل العامة (بدون مفتاح)."""
     import urllib.parse, time
     out = []
+    if GT_FAILS[0] >= 3:
+        return ''
     for chunk in re.findall(r'.{1,400}(?:\s|$)', text, re.S):
         if not chunk.strip():
             continue
@@ -182,8 +228,9 @@ def gtr(text):
                 out.append(''.join(x[0] for x in r[0] if x[0]))
                 break
             except Exception as e:
-                time.sleep(2)
+                time.sleep(1)
         else:
+            GT_FAILS[0] += 1
             return ''
         time.sleep(0.25)
     return ' '.join(out).strip()
@@ -193,6 +240,8 @@ def main():
     if OUT.exists():
         for s in json.load(open(OUT, encoding='utf-8')).get('skills', []):
             old[s['id']] = s
+    ov_file = D / 'overrides.json'
+    overrides = json.load(open(ov_file, encoding='utf-8')) if ov_file.exists() else {}
     tmp = pathlib.Path(tempfile.mkdtemp())
     skills = []
     for cfg in SRC['repos']:
@@ -202,11 +251,11 @@ def main():
         print('nothing fetched, keeping old file'); return
     todo = []
     for s in skills:
-        h = hashlib.md5((s['name'] + s['desc_en']).encode()).hexdigest()[:10]
-        s['hash'] = h
+        s['desc_main'], s['when_en'] = split_when(s['desc_en'])
+        s['hash'] = hashlib.md5((s['name'] + s['desc_en']).encode()).hexdigest()[:10]
         o = old.get(s['id'])
-        if o and o.get('hash') == h and o.get('desc_ar'):
-            s.update({k: o[k] for k in ('title_ar', 'desc_ar', 'cat')})
+        if o and o.get('hash') == s['hash'] and o.get('desc_ar'):
+            s.update({k: o.get(k, '') for k in ('title_ar', 'desc_ar', 'when_ar')})
         else:
             todo.append(s)
     if todo and API_KEY:
@@ -216,17 +265,23 @@ def main():
                 r = res.get(s['id'])
                 if r and r.get('desc_ar'):
                     s['title_ar'], s['desc_ar'] = r.get('title_ar', ''), r['desc_ar']
-                    s['cat'] = r.get('cat') if r.get('cat') in CAT_IDS else heuristic_cat(s['name'], s['desc_en'])
+                    if r.get('cat') in CAT_IDS:
+                        s['ai_cat'] = r['cat']
     elif todo:
         for s in todo:
-            s['desc_ar'] = gtr(s['desc_en'][:500])
+            s['desc_ar'] = gtr(s['desc_main'][:450])
+            s['when_ar'] = gtr(s['when_en'][:350]) if s['when_en'] and s['desc_ar'] else ''
             s['title_ar'] = gtr(re.sub(r'[-_]+', ' ', s['name'])) if s['desc_ar'] else ''
         print('google translate done for', len(todo))
     for s in skills:
-        s.setdefault('title_ar', ''); s.setdefault('desc_ar', '')
-        if s.get('cat') not in CAT_IDS:
-            s['cat'] = heuristic_cat(s['name'], s['desc_en'])
-    skills.sort(key=lambda s: (-s['stars'], s['name']))
+        s.setdefault('title_ar', ''); s.setdefault('desc_ar', ''); s.setdefault('when_ar', '')
+        s['cat'] = s.pop('ai_cat', None) or score_cat(s['name'], s['desc_en'], s.get('body', ''))
+        s['score'] = quality(s)
+        s['rating'] = 5 if s['score'] >= 52 else 4 if s['score'] >= 44 else 3 if s['score'] >= 36 else 2 if s['score'] >= 30 else 1
+        ov = overrides.get(s['id']) or overrides.get(s['name']) or {}
+        s.update({k: v for k, v in ov.items() if k in ('title_ar', 'desc_ar', 'when_ar', 'cat', 'featured')})
+        s.pop('body', None)
+    skills.sort(key=lambda s: (-bool(s.get('featured')), -s['score'], s['name']))
     data = {'updated': __import__('datetime').date.today().isoformat(),
             'categories': [{'id': i, 'label': l} for i, l in CATS], 'skills': skills}
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
