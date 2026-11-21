@@ -13,7 +13,7 @@ GH_TOKEN = os.environ.get('GITHUB_TOKEN', '')
 CATS = [
     ('dev', 'برمجة وتطوير'), ('docs', 'مستندات وملفات'), ('design', 'تصميم وواجهات'),
     ('content', 'كتابة ومحتوى'), ('media', 'فيديو وصوت وصور'), ('data', 'بيانات وتحليل'),
-    ('automation', 'أتمتة وأدوات'), ('research', 'بحث ومعرفة'), ('marketing', 'تسويق وSEO'), ('business', 'أعمال ومبيعات'), ('ai', 'ذكاء اصطناعي وتعلّم آلة'),
+    ('automation', 'أتمتة وأدوات'), ('research', 'بحث ومعرفة'), ('marketing', 'التسويق والسيو'), ('business', 'أعمال ومبيعات'), ('ai', 'ذكاء اصطناعي وتعلّم آلة'),
     ('quality', 'اختبار وجودة وأمان'), ('other', 'أخرى')]
 CAT_IDS = [c[0] for c in CATS]
 KW = {
@@ -305,6 +305,9 @@ def main():
             s.update({k: c[k] for k in ('title_ar', 'desc_ar', 'when_ar', 'cat') if k in c})
             s['curated'] = True
         s['desc_main'], s['when_en'] = split_when(s['desc_en'])
+        o0 = old.get(s['id'])
+        if o0 and not s.get('stars'):          # فشل جلب بيانات المستودع: نحتفظ بآخر قيمة معروفة
+            s['stars'] = o0.get('stars', 0); s['license'] = s.get('license') or o0.get('license', '')
         s['hash'] = hashlib.md5((s['name'] + s['desc_en']).encode()).hexdigest()[:10]
         o = old.get(s['id'])
         if s.get('curated'):
