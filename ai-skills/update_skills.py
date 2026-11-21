@@ -288,12 +288,26 @@ def main():
     shutil.rmtree(tmp, ignore_errors=True)
     if not skills and old:
         print('nothing fetched, keeping old file'); return
+    cur_file = D / 'curated.json'
+    curated = json.load(open(cur_file, encoding='utf-8')).get('skills', {}) if cur_file.exists() else {}
+    seen, uniq = set(), []
+    for s in skills:                       # نفس الاسم في أكثر من مستودع: نُبقي الأول (ترتيب sources.json)
+        if s['name'] in seen or curated.get(s['name'], {}).get('hidden'):
+            continue
+        seen.add(s['name']); uniq.append(s)
+    skills = uniq
     todo = []
     for s in skills:
+        c = curated.get(s['name'])
+        if c:
+            s.update({k: c[k] for k in ('title_ar', 'desc_ar', 'when_ar', 'cat') if k in c})
+            s['curated'] = True
         s['desc_main'], s['when_en'] = split_when(s['desc_en'])
         s['hash'] = hashlib.md5((s['name'] + s['desc_en']).encode()).hexdigest()[:10]
         o = old.get(s['id'])
-        if o and o.get('hash') == s['hash'] and o.get('desc_ar'):
+        if s.get('curated'):
+            pass
+        elif o and o.get('hash') == s['hash'] and o.get('desc_ar'):
             s.update({k: o.get(k, '') for k in ('title_ar', 'desc_ar', 'when_ar')})
         else:
             todo.append(s)
@@ -314,7 +328,7 @@ def main():
         print('google translate done for', len(todo))
     for s in skills:
         s.setdefault('title_ar', ''); s.setdefault('desc_ar', ''); s.setdefault('when_ar', '')
-        s['cat'] = s.pop('ai_cat', None) or score_cat(s['name'], s['desc_en'], s.get('body', ''))
+        s['cat'] = s.get('cat') if s.get('curated') else (s.pop('ai_cat', None) or score_cat(s['name'], s['desc_en'], s.get('body', '')))
         s['score'] = quality(s)
         s['rating'] = 5 if s['score'] >= 52 else 4 if s['score'] >= 44 else 3 if s['score'] >= 36 else 2 if s['score'] >= 30 else 1
         ov = overrides.get(s['id']) or overrides.get(s['name']) or {}
