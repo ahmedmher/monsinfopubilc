@@ -50,6 +50,7 @@
 #sk .art{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:100%;height:100%;color:#fff;border-radius:inherit}
 #sk .art span{font-size:44px;line-height:1}
 #sk .art b{font-size:13px;direction:ltr;opacity:.92;padding:0 12px;text-align:center}
+#sk .src{font-size:12px;color:var(--mu);direction:ltr;text-align:right}
 #sk .empty{padding:30px;text-align:center;color:var(--mu);background:#fff;border:1px dashed var(--ln);border-radius:18px;grid-column:1/-1}
 #sk .sh{height:260px;border-radius:20px;background:linear-gradient(90deg,#efe9fb 25%,#f8f5ff 50%,#efe9fb 75%);background-size:200% 100%;animation:sks 1.2s infinite}
 @keyframes sks{0%{background-position:200% 0}100%{background-position:-200% 0}}
@@ -104,7 +105,7 @@ function cover(s){var u=ownImg(s);return u?'<img src="'+esc(u)+'" alt="'+esc(tit
 function stars(n){return '<span class="rt" title="تقييم الجودة '+n+' من 5">'+"★".repeat(n)+'<i>'+"★".repeat(5-n)+'</i></span>'}
 function badges(s){var b=[];if(s.has&&s.has.scripts)b.push("سكربتات");if(s.has&&s.has.refs)b.push("مراجع");if(s.has&&s.has.assets)b.push("قوالب");if(s.media)b.push(hasVideo(s)?"فيديو":"صورة");return b.length?'<div class="bg">'+b.map(function(x){return "<em>"+x+"</em>"}).join("")+'</div>':""}
 function card(s){return '<div class="card" data-id="'+esc(s.id)+'"><div class="cv">'+cover(s)+(hasVideo(s)?'<span class="pl">'+PI+' فيديو</span>':'')+'</div>'+
- '<div class="bd"><div class="tp"><span>'+esc(catLabel(s.cat))+'</span>'+stars(s.rating)+'</div><h3>'+esc(title(s))+'</h3>'+(s.title_ar?'<div class="nm">'+esc(s.name)+'</div>':'')+'<p>'+esc(desc(s))+'</p>'+badges(s)+'<div class="go"><span>التفاصيل والتحميل</span>'+AR+'</div></div></div>'}
+ '<div class="bd"><div class="tp"><span>'+esc(catLabel(s.cat))+'</span>'+(s.curated?'':'<span style="background:#fff3e0;color:#9a5b00">ترجمة آلية</span>')+stars(s.rating)+'</div><h3>'+esc(title(s))+'</h3>'+(s.title_ar?'<div class="nm">'+esc(s.name)+'</div>':'')+'<p>'+esc(desc(s))+'</p>'+badges(s)+'<div class="src">من '+esc(s.repo.split("/")[0])+'</div><div class="go"><span>التفاصيل والتحميل</span>'+AR+'</div></div></div>'}
 function gh(s){return "https://github.com/"+s.repo+(s.path?"/tree/"+s.branch+"/"+s.path:"")}
 function pageUrl(){return location.origin+location.pathname}
 
