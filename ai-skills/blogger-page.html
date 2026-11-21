@@ -1,0 +1,203 @@
+<meta charset="utf-8"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+#sk{--ink:#1b1740;--mu:#65618a;--ac:#7c3aed;--bg:#f6f4fc;--ln:#e6e1f5;font-family:'IBM Plex Sans Arabic',Tahoma,Arial,sans-serif;color:var(--ink);direction:rtl;text-align:right;line-height:1.8;background:var(--bg);border-radius:26px;overflow:hidden;max-width:1200px;margin:0 auto}
+#sk *{box-sizing:border-box}
+#sk a{color:inherit;text-decoration:none}
+#sk svg{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+#sk .w{padding:0 26px 26px}
+#sk .hero{position:relative;margin:20px 26px 0;padding:40px 34px;border-radius:22px;color:#fff;overflow:hidden;background:radial-gradient(circle at 85% 10%,rgba(255,255,255,.18),transparent 40%),linear-gradient(120deg,#4a0a68,#7b1fa2 55%,#a24bf0)}
+#sk .hero>*{position:relative}
+#sk .kick{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);padding:4px 16px;border-radius:30px;font-size:13.5px;font-weight:600;margin-bottom:14px}
+#sk h1{margin:0 0 12px;font-size:clamp(25px,4vw,42px);line-height:1.35;font-weight:700}
+#sk .lead{margin:0;max-width:720px;font-size:16px;opacity:.94}
+#sk .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+#sk .tags span{font-size:12.5px;font-weight:700;padding:2px 14px;border-radius:30px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4)}
+#sk .bar{margin:24px 0 12px}
+#sk input{width:100%;font:inherit;font-size:14px;color:var(--ink);background:#fff;border:1px solid var(--ln);border-radius:12px;padding:10px 14px}
+#sk input:focus{outline:2px solid var(--ac);outline-offset:1px}
+#sk .chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+#sk .chip{font:inherit;font-size:13.5px;font-weight:600;padding:5px 15px;border-radius:30px;border:1px solid var(--ln);background:#fff;color:var(--ink);cursor:pointer;transition:.2s}
+#sk .chip:hover{border-color:var(--ac)}
+#sk .chip.on{background:var(--ac);border-color:var(--ac);color:#fff}
+#sk .chip small{opacity:.7;margin-inline-start:4px}
+#sk .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:16px}
+#sk .card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--ln);border-radius:20px;overflow:hidden;cursor:pointer;transition:.25s;box-shadow:0 8px 24px rgba(76,29,149,.06)}
+#sk .card:hover{transform:translateY(-5px);border-color:var(--ac);box-shadow:0 20px 40px rgba(76,29,149,.15)}
+#sk .cv{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#ede9fe,#fbcfe8)}
+#sk .cv img{width:100%;height:100%;object-fit:cover;display:block}
+#sk .pl{position:absolute;inset-inline-start:10px;bottom:10px;background:rgba(0,0,0,.65);color:#fff;border-radius:30px;padding:0 10px;font-size:12px;display:flex;align-items:center;gap:4px}
+#sk .bd{display:flex;flex-direction:column;gap:6px;padding:14px 16px 16px;flex:1}
+#sk .tp{display:flex;gap:6px;flex-wrap:wrap;font-size:12px}
+#sk .tp span{background:#f1ecfd;color:#5b21b6;font-weight:700;border-radius:30px;padding:0 10px}
+#sk .tp .st{background:#fff7e0;color:#8a5a00}
+#sk .card h3{margin:2px 0 0;font-size:17px;line-height:1.5}
+#sk .card .nm{font-size:12px;color:var(--mu);direction:ltr;text-align:right}
+#sk .card p{margin:0;font-size:13.5px;color:var(--mu);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+#sk .go{margin-top:auto;padding-top:8px;display:flex;align-items:center;gap:6px;font-weight:700;color:var(--ac);font-size:14px}
+#sk .empty{padding:30px;text-align:center;color:var(--mu);background:#fff;border:1px dashed var(--ln);border-radius:18px;grid-column:1/-1}
+#sk .sh{height:260px;border-radius:20px;background:linear-gradient(90deg,#efe9fb 25%,#f8f5ff 50%,#efe9fb 75%);background-size:200% 100%;animation:sks 1.2s infinite}
+@keyframes sks{0%{background-position:200% 0}100%{background-position:-200% 0}}
+#sk .back{display:inline-flex;align-items:center;gap:6px;font:inherit;font-weight:700;font-size:14px;background:#fff;border:1px solid var(--ln);border-radius:30px;padding:6px 16px;margin:20px 0 14px;cursor:pointer;color:var(--ink)}
+#sk .back:hover{border-color:var(--ac)}
+#sk .box{background:#fff;border:1px solid var(--ln);border-radius:20px;padding:20px;margin-bottom:16px}
+#sk .box h2{margin:0 0 10px;font-size:19px}
+#sk .md{width:100%;max-height:480px;border-radius:14px;background:#000;display:block;margin-bottom:16px;object-fit:contain}
+#sk .dl{display:inline-flex;align-items:center;gap:8px;font:inherit;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(120deg,#7b1fa2,#db2777);border:0;border-radius:30px;padding:12px 28px;cursor:pointer;box-shadow:0 10px 26px rgba(123,31,162,.35)}
+#sk .dl:disabled{opacity:.7;cursor:wait}
+#sk .ob{display:inline-flex;align-items:center;gap:6px;font-weight:700;padding:11px 22px;border:1px solid var(--ln);border-radius:30px;background:#fff;margin-inline-start:10px}
+#sk .acts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+#sk .msg{font-size:13px;color:var(--mu);margin-top:10px;min-height:20px}
+#sk .info{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+#sk .info div{background:#f8f5ff;border-radius:12px;padding:8px 12px;font-size:13px}
+#sk .info b{display:block;color:var(--mu);font-weight:600;font-size:12px}
+#sk details{margin-top:12px}
+#sk summary{cursor:pointer;font-weight:700}
+#sk .en{direction:ltr;text-align:left;color:var(--mu);font-size:14px;margin:8px 0 0}
+#sk ol{padding-inline-start:22px;margin:6px 0}
+#sk .fl{direction:ltr;text-align:left;font-family:Consolas,monospace;font-size:12.5px;max-height:220px;overflow:auto;background:#faf8ff;border-radius:12px;padding:10px 14px;margin:8px 0 0}
+#sk .note{font-size:12px;color:var(--mu);margin-top:18px;text-align:center}
+#sks-seo{max-width:1200px;margin:24px auto 0;padding:0 8px;color:#3d3963;font-size:15px;line-height:1.9;direction:rtl;text-align:right;font-family:'IBM Plex Sans Arabic',Tahoma,Arial,sans-serif}
+#sks-seo h3{font-size:16px;margin:14px 0 2px}
+@media(max-width:560px){#sk .w{padding:0 14px 18px}#sk .hero{margin:12px 14px 0;padding:28px 20px}}
+</style>
+
+<div id="sk"><div id="sk-root"><div class="w"><div class="grid" style="padding-top:24px"><div class="sh"></div><div class="sh"></div><div class="sh"></div></div></div></div></div>
+<noscript><p dir="rtl" style="text-align:center">فعّل JavaScript لعرض الـ skills.</p></noscript>
+<div id="sks-seo" lang="ar" dir="rtl"><div id="sk-index"></div></div>
+<script type="application/ld+json" id="sk-ld"></script>
+
+<script>//<![CDATA[
+(function(){
+var SRC=["https://ahmedmher.github.io/monsinfopubilc/ai-skills/","https://raw.githubusercontent.com/ahmedmher/monsinfopubilc/main/ai-skills/"];
+var SITE="مكتبة Skills للذكاء الاصطناعي بالعربي",T0=document.title;
+var root=document.getElementById("sk-root"),D=null,q="",cat="all";
+var AR='<svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
+var DI='<svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>';
+var GI='<svg viewBox="0 0 24 24"><path d="M7 7h10v10M7 17 17 7"/></svg>';
+var PI='<svg viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></svg>';
+function esc(s){var d=document.createElement("div");d.textContent=s==null?"":s;return d.innerHTML.replace(/"/g,"&quot;")}
+function safe(u){return /^https:\/\//i.test(u||"")?u:""}
+function title(s){return s.title_ar||s.name}
+function desc(s){return s.desc_ar||s.desc_en||""}
+function catLabel(id){var c=D.categories.filter(function(x){return x.id===id})[0];return c?c.label:"أخرى"}
+function thumb(s){
+  var m=s.media&&s.media.type==="image"?s.media.url:(s.repo_media&&s.repo_media.type==="image"?s.repo_media.url:s.og);
+  return safe(m)||safe(s.og);
+}
+function hasVideo(s){return (s.media&&s.media.type==="video")||(!s.media&&s.repo_media&&s.repo_media.type==="video")}
+function gh(s){return "https://github.com/"+s.repo+(s.path?"/tree/"+s.branch+"/"+s.path:"")}
+function pageUrl(){return location.origin+location.pathname}
+
+function seoIndex(){
+  var el=document.getElementById("sk-index");if(!el)return;
+  el.innerHTML="<h2>فهرس الـ skills</h2>"+D.skills.filter(function(s){return s.desc_ar}).map(function(s){return "<h3>"+esc(title(s))+"</h3><p>"+esc(s.desc_ar)+"</p>"}).join("");
+}
+function jsonld(){
+  var s=document.getElementById("sk-ld");if(!s)return;
+  s.textContent=JSON.stringify({"@context":"https://schema.org","@type":"CollectionPage","name":SITE,"inLanguage":"ar","url":pageUrl(),
+    "mainEntity":{"@type":"ItemList","numberOfItems":D.skills.length,"itemListElement":D.skills.slice(0,100).map(function(x,i){return {"@type":"ListItem","position":i+1,"name":title(x),"url":pageUrl()+"#sk/"+x.id}})}}).replace(/<\//g,"<\\/");
+}
+
+function home(){
+  document.title=T0;
+  var qq=q.trim().toLowerCase();
+  var list=D.skills.filter(function(s){
+    if(cat!=="all"&&s.cat!==cat)return false;
+    if(!qq)return true;
+    return (s.name+" "+(s.title_ar||"")+" "+(s.desc_ar||"")+" "+(s.desc_en||"")).toLowerCase().indexOf(qq)>-1;
+  });
+  var counts={};D.skills.forEach(function(s){counts[s.cat]=(counts[s.cat]||0)+1});
+  var h='<div class="hero"><span class="kick">محدّثة تلقائيا من GitHub</span><h1>مكتبة <em style="font-style:normal">Skills</em> الذكاء الاصطناعي بالعربي</h1>'+
+    '<p class="lead">أكبر تجميعة skills جاهزة لـ Claude وأدوات الذكاء الاصطناعي، بشرح عربي مختصر وتصنيف حسب الاستخدام. اختر skill، اقرأ تفاصيلها، ثم حمّلها بضغطة واحدة من GitHub.</p>'+
+    '<div class="tags"><span>'+D.skills.length+' skill</span><span>'+Object.keys(counts).length+' تصنيفات</span><span>مجانية ومفتوحة المصدر</span></div></div>'+
+    '<div class="w"><div class="bar"><input id="sk-q" type="search" aria-label="بحث" placeholder="ابحث باسم الـ skill أو وصفها..." value="'+esc(q)+'"></div><div class="chips">'+
+    '<button class="chip'+(cat==="all"?" on":"")+'" data-c="all">الكل<small>'+D.skills.length+'</small></button>'+
+    D.categories.filter(function(c){return counts[c.id]}).map(function(c){return '<button class="chip'+(cat===c.id?" on":"")+'" data-c="'+c.id+'">'+esc(c.label)+'<small>'+counts[c.id]+'</small></button>'}).join("")+
+    '</div><div class="grid">';
+  if(!list.length)h+='<div class="empty">لا توجد نتائج مطابقة.</div>';
+  list.slice(0,120).forEach(function(s){
+    var img=thumb(s);
+    h+='<div class="card" data-id="'+esc(s.id)+'"><div class="cv">'+(img?'<img src="'+esc(img)+'" alt="'+esc(title(s))+'" loading="lazy" decoding="async" onerror="this.remove()">':'')+(hasVideo(s)?'<span class="pl">'+PI+' فيديو</span>':'')+'</div>'+
+      '<div class="bd"><div class="tp"><span>'+esc(catLabel(s.cat))+'</span>'+(s.stars?'<span class="st">★ '+(s.stars>=1000?Math.round(s.stars/1000)+'k':s.stars)+'</span>':'')+'</div>'+
+      '<h3>'+esc(title(s))+'</h3>'+(s.title_ar?'<div class="nm">'+esc(s.name)+'</div>':'')+'<p>'+esc(desc(s))+'</p><div class="go"><span>التفاصيل والتحميل</span>'+AR+'</div></div></div>';
+  });
+  if(list.length>120)h+='<div class="empty">يظهر أول 120 نتيجة. استخدم البحث أو التصنيفات لتضييق القائمة.</div>';
+  root.innerHTML=h+'</div><div class="note">آخر تحديث: '+esc(D.updated)+' • القائمة تُحدَّث تلقائيا</div></div>';
+  var inp=document.getElementById("sk-q");
+  inp.oninput=function(){q=inp.value;var p=inp.selectionStart;home();var n=document.getElementById("sk-q");n.focus();n.setSelectionRange(p,p)};
+  root.querySelectorAll(".chip").forEach(function(el){el.onclick=function(){cat=el.dataset.c;home()}});
+  root.querySelectorAll(".card").forEach(function(el){el.onclick=function(){location.hash="sk/"+el.dataset.id}});
+}
+
+function mediaHtml(s){
+  var m=s.media||s.repo_media;
+  if(m&&safe(m.url)){
+    if(m.type==="video")return '<video class="md" controls preload="metadata" playsinline src="'+esc(m.url)+'" poster="'+esc(safe(s.og))+'"></video>';
+    return '<img class="md" src="'+esc(m.url)+'" alt="'+esc(title(s))+'" onerror="this.remove()">';
+  }
+  return s.og?'<img class="md" src="'+esc(s.og)+'" alt="'+esc(title(s))+'" onerror="this.remove()">':"";
+}
+
+function detail(s){
+  document.title=title(s)+" | "+SITE;
+  var rel=D.skills.filter(function(x){return x.cat===s.cat&&x.id!==s.id}).slice(0,6);
+  var h='<div class="hero"><span class="kick">'+esc(catLabel(s.cat))+'</span><h1>'+esc(title(s))+'</h1>'+(s.title_ar?'<p class="lead" style="direction:ltr;text-align:right">'+esc(s.name)+'</p>':'')+'</div>'+
+    '<div class="w"><button class="back">'+AR+' كل الـ skills</button>'+
+    '<div class="box">'+mediaHtml(s)+'<h2>ما هي هذه الـ skill؟</h2><p style="margin:0">'+esc(desc(s)||"لا يوجد وصف.")+'</p>'+
+    (s.desc_ar&&s.desc_en?'<details><summary>الوصف الأصلي بالإنجليزية</summary><p class="en">'+esc(s.desc_en)+'</p></details>':'')+
+    '<div class="info"><div><b>التصنيف</b>'+esc(catLabel(s.cat))+'</div><div><b>المصدر</b><a href="https://github.com/'+esc(s.repo)+'" target="_blank" rel="noopener" style="direction:ltr;display:block">'+esc(s.repo)+'</a></div>'+
+    (s.stars?'<div><b>نجوم المستودع</b>★ '+s.stars.toLocaleString("en")+'</div>':'')+(s.license?'<div><b>الرخصة</b>'+esc(s.license)+'</div>':'')+
+    '<div><b>عدد الملفات</b>'+(s.files.length||"—")+'</div></div></div>'+
+    '<div class="box"><h2>تحميل الـ skill</h2><div class="acts"><button class="dl" id="sk-dl">'+DI+' تحميل ZIP من GitHub</button><a class="ob" href="'+esc(gh(s))+'" target="_blank" rel="noopener">فتح على GitHub '+GI+'</a></div><div class="msg" id="sk-msg"></div>'+
+    '<h2 style="margin-top:18px;font-size:16px">طريقة الاستخدام</h2><ol><li>حمّل الملف ثم فك الضغط، ستجد مجلدا فيه ملف <code>SKILL.md</code>.</li><li><b>في Claude:</b> الإعدادات ← Capabilities ← Skills ← ارفع ملف ZIP.</li><li><b>في Claude Code:</b> ضع المجلد داخل <code>~/.claude/skills/</code> ثم أعد تشغيل الجلسة.</li></ol>'+
+    '<p style="font-size:12.5px;color:var(--mu)">الملفات تُحمَّل مباشرة من مستودع المؤلف الأصلي وتخضع لرخصته. راجع الرخصة قبل إعادة التوزيع.</p></div>'+
+    (s.files.length?'<div class="box"><h2>محتويات الـ skill</h2><div class="fl">'+s.files.map(function(f){return esc(f.slice(s.path?s.path.length+1:0))}).join("<br>")+'</div></div>':'')+
+    (rel.length?'<div class="box"><h2>skills مشابهة</h2><div class="grid">'+rel.map(function(r){return '<div class="card" data-id="'+esc(r.id)+'"><div class="bd"><h3>'+esc(title(r))+'</h3><p>'+esc(desc(r))+'</p></div></div>'}).join("")+'</div></div>':'')+'</div>';
+  root.innerHTML=h;
+  root.querySelector(".back").onclick=function(){location.hash=""};
+  root.querySelectorAll(".card").forEach(function(el){el.onclick=function(){location.hash="sk/"+el.dataset.id}});
+  document.getElementById("sk-dl").onclick=function(){download(s)};
+  try{document.getElementById("sk").scrollIntoView({block:"start"})}catch(e){}
+}
+
+function loadZip(){
+  return new Promise(function(res,rej){
+    if(window.JSZip)return res();
+    var sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";
+    sc.onload=res;sc.onerror=rej;document.head.appendChild(sc);
+  });
+}
+function download(s){
+  var b=document.getElementById("sk-dl"),m=document.getElementById("sk-msg");
+  if(!s.files.length){m.innerHTML='الـ skill كبيرة للتحميل المباشر. <a href="'+esc(gh(s))+'" target="_blank" rel="noopener" style="color:var(--ac);font-weight:700">افتحها على GitHub</a> وحمّلها من هناك.';return}
+  b.disabled=true;m.textContent="جاري التجهيز...";
+  var root0=s.path?s.path.length+1:0,folder=(s.path?s.path.split("/").pop():s.name)||s.name,done=0;
+  loadZip().then(function(){
+    var z=new JSZip();
+    return Promise.all(s.files.map(function(f){
+      return fetch("https://raw.githubusercontent.com/"+s.repo+"/"+s.branch+"/"+f.split("/").map(encodeURIComponent).join("/")).then(function(r){
+        if(!r.ok)throw 0;return r.arrayBuffer()}).then(function(buf){z.file(folder+"/"+f.slice(root0),buf);done++;m.textContent="تم تحميل "+done+" من "+s.files.length+" ملف..."});
+    })).then(function(){return z.generateAsync({type:"blob"})});
+  }).then(function(blob){
+    var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=folder+".zip";document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},2000);
+    m.textContent="تم التحميل ✓ ("+folder+".zip)";b.disabled=false;
+  }).catch(function(){
+    m.innerHTML='تعذر التحميل المباشر. <a href="'+esc(gh(s))+'" target="_blank" rel="noopener" style="color:var(--ac);font-weight:700">حمّلها من GitHub</a>.';b.disabled=false;
+  });
+}
+
+function route(){
+  var m=location.hash.match(/^#sk\/(.+)$/),s=m&&D.skills.filter(function(x){return x.id===decodeURIComponent(m[1])})[0];
+  s?detail(s):home();
+}
+function load(i){
+  if(i>=SRC.length){root.innerHTML='<div class="w"><div class="empty" style="margin-top:24px">تعذر جلب الـ skills حاليا. حاول لاحقا.</div></div>';return}
+  fetch(SRC[i]+"skills.json?v="+Math.floor(Date.now()/600000)).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(d){
+    D=d;seoIndex();jsonld();window.addEventListener("hashchange",route);route();
+  }).catch(function(){load(i+1)});
+}
+load(0);
+})();
+//]]></script>

@@ -1,0 +1,11 @@
+{
+  "_help": "أضف هنا أي مستودع عام فيه مجلدات skills (كل skill مجلد فيه ملف SKILL.md). repo = المالك/الاسم. path اختياري لو الـ skills داخل مجلد فرعي.",
+  "repos": [
+    {"repo": "anthropics/skills"},
+    {"repo": "addyosmani/agent-skills"},
+    {"repo": "ComposioHQ/awesome-claude-skills", "exclude": ["composio-skills/"]},
+    {"repo": "blader/humanizer"}
+  ],
+  "max_files_per_skill": 60,
+  "max_skill_bytes": 6000000
+}
