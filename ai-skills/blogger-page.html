@@ -129,6 +129,19 @@
 #sk.dk{filter:invert(1) hue-rotate(180deg)}
 #sk-ov.dk .sh{filter:invert(1) hue-rotate(180deg)}
 #sk.dk .hero,#sk.dk img,#sk.dk video,#sk.dk .bar,#sk-ov.dk .sh img,#sk-ov.dk .sh video,#sk-ov.dk .sh .hd{filter:invert(1) hue-rotate(180deg)}
+
+#sk .cd{padding:0;overflow:hidden;gap:0;transition:transform .18s,box-shadow .18s}
+#sk .cd:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(76,29,149,.14)}
+#sk .cd.pk{padding:16px}
+#sk .cv{position:relative;height:128px;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#fff}
+#sk .cv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#sk .cv:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,23,42,0) 45%,rgba(15,23,42,.55))}
+#sk .cv .ic0{font-size:46px;line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,.25))}
+#sk .cv .tg{position:absolute;z-index:1;bottom:8px;right:12px;font-size:12px;font-weight:700;background:rgba(255,255,255,.2);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.4);border-radius:30px;padding:0 12px}
+#sk .cv .nw2{position:absolute;z-index:1;top:8px;left:10px;font-size:12px;font-weight:700;background:#22c55e;border-radius:30px;padding:0 10px}
+#sk .cb{padding:12px 16px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+#sk .rt{color:#f59e0b;letter-spacing:1px;font-size:13px}#sk .rt i{font-style:normal;color:#d9d3ec}
+#sk .cd .bt{flex-wrap:nowrap}#sk .cd .bt .pr{flex:1;text-align:center}
 </style>
 
 <div id="sk"><div id="sk-root"><div class="w"><div class="skl"></div><div class="skl"></div></div></div></div>
@@ -288,16 +301,21 @@ function build(){
 function toggle(id){if(st.sel[id])delete st.sel[id];else st.sel[id]=1;drawList();drawBar()}
 function drawTabs(){var t=document.getElementById("sk-tabs");if(!t)return;t.innerHTML="";[["skills","كل المهارات"],["packs","الحزم الجاهزة"],["paths","مسارات التعلم"],["fav","المفضلة ("+FAV.length+")"]].forEach(function(x){var b=el("button","chip"+(st.view===x[0]?" on":""),esc(x[1]));b.type="button";b.onclick=function(){st.view=x[0];drawTabs();drawList();window.scrollTo&&0};t.appendChild(b)})}
 function card(s){
-  var on=!!st.sel[s.id],c=el("div","cd"+(on?" sel":"")),si=secInfo(s);
+  var on=!!st.sel[s.id],c0=el("div","cd"+(on?" sel":"")),si=secInfo(s),c=el("div","cb"),G={dev:["#0f172a","#2563eb","💻"],docs:["#0f766e","#14b8a6","📄"],design:["#be185d","#f472b6","🎨"],content:["#b45309","#f59e0b","✍️"],media:["#6d28d9","#c084fc","🎬"],data:["#0369a1","#38bdf8","📊"],automation:["#4338ca","#818cf8","⚙️"],research:["#047857","#34d399","🔎"],marketing:["#c2410c","#fb923c","📣"],business:["#1e40af","#60a5fa","💼"],ai:["#7c3aed","#db2777","🤖"],quality:["#166534","#4ade80","🛡️"],other:["#475569","#94a3b8","🧩"]}[s.cat]||["#475569","#94a3b8","🧩"];
+  var cv=el("div","cv");cv.style.background="linear-gradient(135deg,"+G[0]+","+G[1]+")";
+  cv.innerHTML='<span class="ic0">'+G[2]+"</span>";
+  if(s.media&&s.media.type==="image"&&safe(s.media.url)){var im=el("img");im.loading="lazy";im.alt="";im.src=s.media.url;im.onerror=function(){im.remove()};cv.appendChild(im)}
+  cv.appendChild(el("span","tg",esc(catLabel(s.cat))));if(s.new)cv.appendChild(el("span","nw2","جديد"));c0.appendChild(cv);c0.appendChild(c);
+  c.appendChild(el("div","rt",new Array(s.rating+1).join("★")+"<i>"+new Array(6-s.rating).join("★")+"</i>"));
   c.appendChild(el("h3","",'<a href="#/k/'+esc(s.id)+'">'+esc(title(s))+"</a>"));
   if(s.title_ar)c.appendChild(el("div","en",esc(s.name)));
-  c.appendChild(el("div","m",(s.new?'<span class="nw">جديد</span>':"")+'<span>'+esc(catLabel(s.cat))+'</span><span>★ '+kf(s.stars)+'</span>'+(s.growth>0?'<span class="up">↑ +'+kf(s.growth)+' هذا الأسبوع</span>':"")+'<span class="up">جودة '+s.rating+"/5</span>"+'<span class="sc'+si[0]+'">'+si[1]+"</span>"+(s.license&&s.license!=="NOASSERTION"?"<span>"+esc(s.license)+"</span>":"")+(s.curated?"":'<span class="am">ترجمة آلية</span>')));
+  c.appendChild(el("div","m",'<span>★ '+kf(s.stars)+'</span>'+(s.growth>0?'<span class="up">↑ +'+kf(s.growth)+' هذا الأسبوع</span>':"")+'<span class="sc'+si[0]+'">'+si[1]+"</span>"+(s.license&&s.license!=="NOASSERTION"?"<span>"+esc(s.license)+"</span>":"")+(s.curated?"":'<span class="am">ترجمة آلية</span>')));
   c.appendChild(el("p","",esc(desc(s))||"لا يوجد وصف."));
-  var bt=el("div","bt"),d=el("a","pr","التفاصيل والتحميل");d.href="#/k/"+s.id;bt.appendChild(d);
-  var b=el("button",on?"on":"",on?"✓ في الحزمة":"+ أضف للحزمة");b.type="button";b.onclick=function(){toggle(s.id)};bt.appendChild(b);
+  var bt=el("div","bt"),d=el("a","pr","التفاصيل");d.href="#/k/"+s.id;bt.appendChild(d);
+  var b=el("button",on?"on":"",on?"✓ بالحزمة":"+ حزمة");b.type="button";b.onclick=function(){toggle(s.id)};bt.appendChild(b);
   var f=el("button","ic"+(isFav(s.id)?" on":""),isFav(s.id)?"♥":"♡");f.type="button";f.title="المفضلة";f.setAttribute("aria-label","المفضلة");f.onclick=function(){togFav(s.id);drawTabs();drawList()};bt.appendChild(f);
   var cm=el("button","ic"+(st.cmp.indexOf(s.id)>-1?" on":""),"⇄");cm.type="button";cm.title="قارن";cm.setAttribute("aria-label","أضف للمقارنة");cm.onclick=function(){toggleCmp(s.id)};bt.appendChild(cm);
-  var l=el("a","g","GitHub");l.href=gh(s);l.target="_blank";l.rel="noopener";bt.appendChild(l);c.appendChild(bt);return c}
+  var l=el("a","g","GitHub");l.href=gh(s);l.target="_blank";l.rel="noopener";bt.appendChild(l);c.appendChild(bt);return c0}
 function skillChips(ids){return ids.map(function(i){var s=byId(i);return s?'<a href="#/k/'+esc(i)+'">'+esc(title(s))+"</a>":""}).join("")}
 function drawPacks(g){
   g.appendChild(el("p","note","كل حزمة تضم مهارات تعمل معًا لهدف واحد. حمّلها كلها بملف ZIP واحد مباشرة من GitHub."));
