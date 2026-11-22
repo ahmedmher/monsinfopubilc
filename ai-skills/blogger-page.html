@@ -34,8 +34,8 @@
 #sk .gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px;margin-top:16px}
 #sk .cd{background:#fff;border:1px solid var(--ln);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;box-shadow:0 8px 22px rgba(76,29,149,.05)}
 #sk .cd.sel{border:2px solid var(--ac);background:linear-gradient(135deg,#faf7ff,#fff)}
-#sk .cd h3{margin:0;font-size:17px;line-height:1.5}
-#sk .cd h3 a:hover{color:var(--ac)}
+#sk .cd h4{margin:0;font-size:17px;line-height:1.5}
+#sk .cd h4 a:hover{color:var(--ac)}
 #sk .cd .en{direction:ltr;text-align:right;color:var(--mu);font-size:12.5px;margin-top:-4px;word-break:break-all}
 #sk .m{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;color:var(--mu)}
 #sk .m span{background:var(--bg);border-radius:30px;padding:0 10px}
@@ -109,7 +109,7 @@
 #sk .m .sc2,#sk-ov .m .sc2{background:#fff7ed;color:#9a3412}
 #sk .m .sc3,#sk-ov .m .sc3{background:#fef2f2;color:#b91c1c;font-weight:700}
 #sk .bt .ic{padding:2px 11px}
-#sk .pk h3{margin:0;font-size:18px}
+#sk .pk h4{margin:0;font-size:18px}
 #sk .pk .chs{display:flex;flex-wrap:wrap;gap:6px}
 #sk .pk .chs a{font-size:12.5px;background:var(--bg);border-radius:30px;padding:0 10px;color:var(--ink)}
 #sk .pk .chs a:hover{color:var(--ac)}
@@ -151,7 +151,7 @@
 #sk .tile{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;background:linear-gradient(135deg,var(--a1),var(--a2));box-shadow:0 10px 20px -6px var(--a1)}
 #sk .tile svg{width:26px;height:26px}
 #sk .tg2{font-size:12.5px;font-weight:700;color:var(--a1);background:rgba(255,255,255,.6);border-radius:30px;padding:0 14px;margin-top:2px}
-#sk .cd:not(.pk) h3{font-size:19px}
+#sk .cd:not(.pk) h4{font-size:19px}
 #sk .cd:not(.pk) p{-webkit-line-clamp:3}
 #sk .rt2{color:#f59e0b!important;background:none!important;padding:0!important;letter-spacing:1px}
 #sk .ft{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:12px;border-top:1px dashed var(--ln)}
@@ -168,6 +168,9 @@
 #sk-ov .hd{position:sticky;top:0;z-index:3;border-radius:0;padding:14px max(18px,calc((100% - 900px)/2))}
 #sk-ov .bd{max-width:900px;margin:0 auto;padding:18px 18px 0}
 #sk-ov .hd .x{width:auto;height:auto;border-radius:30px;padding:2px 18px;font-size:14px;font-weight:700}
+#sk .cd h4{margin:0;font-weight:700}
+#sk .adv{align-self:flex-start;font-size:12.5px;font-weight:700;color:#fff!important;background:linear-gradient(120deg,var(--a1),var(--a2));border-radius:30px;padding:1px 14px;margin-top:2px}
+#sk .adv:hover{filter:brightness(1.08)}
 </style>
 
 <div id="sk"><div id="sk-root"><div class="w"><div class="skl"></div><div class="skl"></div></div></div></div>
@@ -334,10 +337,11 @@ function card(s){
   hd.appendChild(el("span","tile",'<svg viewBox="0 0 24 24">'+(ICO[s.cat]||ICO.other)+"</svg>"));
   hd.appendChild(el("span","tg2",esc(catLabel(s.cat))+(s.new?" · جديد":"")));
   c.appendChild(hd);
-  c.appendChild(el("h3","",'<a href="#/k/'+esc(s.id)+'">'+esc(title(s))+"</a>"));
+  c.appendChild(el("h4","",'<a href="#/k/'+esc(s.id)+'">'+esc(title(s))+"</a>"));
   if(s.title_ar)c.appendChild(el("div","en",esc(s.name)));
   c.appendChild(el("p","",esc(desc(s))||"لا يوجد وصف."));
   c.appendChild(el("div","m",'<span>★ '+kf(s.stars)+'</span><span class="rt2">'+new Array(s.rating+1).join("★")+"</span>"+(s.growth>0?'<span class="up">↑ +'+kf(s.growth)+'</span>':"")+'<span class="sc'+si[0]+'">'+si[1]+"</span>"+(s.license&&s.license!=="NOASSERTION"?"<span>"+esc(s.license)+"</span>":"")+(s.curated?"":'<span class="am">ترجمة آلية</span>')));
+  var adv=el("a","adv","⚡ مهارات متقدمة");adv.href="https://www.monsinfo.com/p/mcp.html";adv.target="_blank";adv.rel="noopener";c.appendChild(adv);
   var ft=el("div","ft"),d=el("a","op","افتح المهارة"+' <svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>');d.href="#/k/"+s.id;ft.appendChild(d);
   var ac=el("span","ac2");
   var b=el("button",on?"on":"",on?"✓":"+");b.type="button";b.title="أضف للحزمة";b.setAttribute("aria-label","أضف للحزمة");b.onclick=function(){toggle(s.id)};ac.appendChild(b);
@@ -349,7 +353,7 @@ function skillChips(ids){return ids.map(function(i){var s=byId(i);return s?'<a h
 function drawPacks(g){
   g.appendChild(el("p","note","كل حزمة تضم مهارات تعمل معًا لهدف واحد. حمّلها كلها بملف ZIP واحد مباشرة من GitHub."));
   var grid=el("div","gr");(D.packs||[]).forEach(function(p){
-    var c=el("div","cd pk");c.appendChild(el("h3","",esc(p.title_ar)));c.appendChild(el("p","",esc(p.desc_ar)));
+    var c=el("div","cd pk");c.appendChild(el("h4","",esc(p.title_ar)));c.appendChild(el("p","",esc(p.desc_ar)));
     c.appendChild(el("div","chs",skillChips(p.ids)));
     var bt=el("div","bt"),d=el("button","pr","تحميل الحزمة ("+p.ids.length+" مهارة)");d.type="button";d.onclick=function(){downloadMany(p.ids,d,"pack-"+p.id+".zip")};bt.appendChild(d);
     var a=el("button","","اختيارها للحزمة");a.type="button";a.onclick=function(){p.ids.forEach(function(i){st.sel[i]=1});drawBar();a.textContent="تمت الإضافة ✓"};bt.appendChild(a);c.appendChild(bt);grid.appendChild(c)});
@@ -357,7 +361,7 @@ function drawPacks(g){
 function drawPaths(g){
   g.appendChild(el("p","note","مسارات مرتبة: ابدأ من الخطوة الأولى، وافتح كل مهارة لتقرأ شرحها وتحمّلها. لشرح مرئي، ابحث في قناة مونستر على يوتيوب."));
   var grid=el("div","gr");(D.paths||[]).forEach(function(p){
-    var c=el("div","cd pk");c.appendChild(el("h3","",esc(p.title_ar)));c.appendChild(el("p","",esc(p.desc_ar)));
+    var c=el("div","cd pk");c.appendChild(el("h4","",esc(p.title_ar)));c.appendChild(el("p","",esc(p.desc_ar)));
     var ol=el("ol","stp");p.steps.forEach(function(x){var s=byId(x.id);ol.appendChild(el("li","","<div><b><a href='#/k/"+esc(x.id)+"'>"+esc(title(s))+"</a></b><span>"+esc(x.note)+"</span></div>"))});c.appendChild(ol);
     var bt=el("div","bt"),d=el("button","pr","تحميل كل المسار");d.type="button";d.onclick=function(){downloadMany(p.steps.map(function(x){return x.id}),d,"path-"+p.id+".zip")};bt.appendChild(d);
     var y=el("a","g","شاهد على القناة");y.href=CHANNEL;y.target="_blank";y.rel="noopener";bt.appendChild(y);c.appendChild(bt);grid.appendChild(c)});

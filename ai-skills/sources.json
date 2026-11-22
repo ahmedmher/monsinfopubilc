@@ -156,6 +156,73 @@
   },
   {
    "repo": "ayghri/i-have-adhd"
+  },
+  {
+   "repo": "hardikpandya/stop-slop"
+  },
+  {
+   "repo": "forrestchang/andrej-karpathy-skills"
+  },
+  {
+   "repo": "JuliusBrussee/caveman",
+   "only": [
+    "caveman",
+    "caveman-commit",
+    "caveman-review"
+   ]
+  },
+  {
+   "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
+   "only": [
+    "ui-ux-pro-max",
+    "banner-design",
+    "brand",
+    "design-system",
+    "design",
+    "slides",
+    "ui-styling"
+   ]
+  },
+  {
+   "repo": "remotion-dev/skills",
+   "only": [
+    "remotion-best-practices",
+    "remotion-create",
+    "remotion-captions",
+    "remotion-markup",
+    "remotion-render"
+   ]
+  },
+  {
+   "repo": "heygen-com/hyperframes",
+   "only": [
+    "hyperframes",
+    "style-sampling",
+    "reverse-any-video",
+    "remotion-to-hyperframes",
+    "slideshow"
+   ]
+  },
+  {
+   "repo": "heygen-com/skills",
+   "only": [
+    "heygen-video",
+    "heygen-translate"
+   ]
+  },
+  {
+   "repo": "op7418/Youtube-clipper-skill"
+  },
+  {
+   "repo": "mattpocock/skills",
+   "only": [
+    "grilling",
+    "writing-for-agents",
+    "research",
+    "handoff",
+    "teach",
+    "to-spec"
+   ]
   }
  ],
  "max_files_per_skill": 60,

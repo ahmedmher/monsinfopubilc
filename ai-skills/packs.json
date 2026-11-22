@@ -139,6 +139,48 @@
     "marketing-plan",
     "domain-name-brainstormer"
    ]
+  },
+  {
+   "id": "video",
+   "title_ar": "حزمة صناعة الفيديو بالكود",
+   "desc_ar": "فيديوهات حركية وترجمات وتصدير بـ Remotion وHyperFrames.",
+   "skills": [
+    "remotion-best-practices",
+    "remotion-create",
+    "remotion-captions",
+    "remotion-render",
+    "hyperframes",
+    "style-sampling",
+    "youtube-clipper"
+   ]
+  },
+  {
+   "id": "design2",
+   "title_ar": "حزمة الهوية والتصميم الاحترافي",
+   "desc_ar": "نظام تصميم وهوية وبانرات وعروض ومكوّنات واجهة.",
+   "skills": [
+    "ui-ux-pro-max",
+    "design-system",
+    "design",
+    "brand",
+    "banner-design",
+    "slides",
+    "ui-styling"
+   ]
+  },
+  {
+   "id": "claudepro",
+   "title_ar": "حزمة كفاءة Claude",
+   "desc_ar": "ردود مختصرة وسلوك منضبط وتسليم بين الجلسات وبحث موثّق.",
+   "skills": [
+    "karpathy-guidelines",
+    "caveman",
+    "caveman-commit",
+    "handoff",
+    "research",
+    "grilling",
+    "stop-slop"
+   ]
   }
  ],
  "paths": [
