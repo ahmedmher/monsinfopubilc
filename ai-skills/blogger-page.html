@@ -175,7 +175,7 @@ function pageUrl(){return location.origin+location.pathname}
 function lsg(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
 function lss(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 var FAV=lsg("sk_fav",[]),REC=lsg("sk_rec",[]),DK=lsg("sk_dk",null);
-if(DK===null){try{DK=!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)}catch(e){DK=false}}
+DK=DK===true;
 function applyDk(){document.getElementById("sk").className=DK?"dk":"";ov.className=(ov.className.indexOf("on")>-1?"on":"")+(DK?" dk":"")}
 function isFav(id){return FAV.indexOf(id)>-1}
 function togFav(id){var i=FAV.indexOf(id);if(i>-1)FAV.splice(i,1);else FAV.push(id);lss("sk_fav",FAV)}
