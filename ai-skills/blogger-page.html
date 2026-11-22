@@ -162,6 +162,12 @@
 #sk .ac2 button,#sk .ac2 a{font:inherit;cursor:pointer;min-width:30px;height:30px;border-radius:50%;border:1px solid var(--ln);background:#fff;color:var(--mu);font-size:13px;display:inline-flex;align-items:center;justify-content:center;padding:0 6px}
 #sk .ac2 a{font-size:10.5px;font-weight:700}
 #sk .ac2 button:hover,#sk .ac2 a:hover,#sk .ac2 button.on{background:var(--a1);border-color:var(--a1);color:#fff}
+
+#sk-ov{background:#f6f4fc}
+#sk-ov .sh{max-width:none;margin:0;border-radius:0;box-shadow:none;min-height:100%;padding:0 0 40px}
+#sk-ov .hd{position:sticky;top:0;z-index:3;border-radius:0;padding:14px max(18px,calc((100% - 900px)/2))}
+#sk-ov .bd{max-width:900px;margin:0 auto;padding:18px 18px 0}
+#sk-ov .hd .x{width:auto;height:auto;border-radius:30px;padding:2px 18px;font-size:14px;font-weight:700}
 </style>
 
 <div id="sk"><div id="sk-root"><div class="w"><div class="skl"></div><div class="skl"></div></div></div></div>
@@ -392,8 +398,8 @@ function openDetail(id){
   addRec(id);
   document.title=title(s)+" | "+SITE;
   ov.innerHTML="";ov.className="on"+(DK?" dk":"");document.body.style.overflow="hidden";ov.scrollTop=0;
-  ov.onclick=function(e){if(e.target===ov)closeDetail()};
-  var sh=el("div","sh"),hd=el("div","hd"),h2=el("h2","",esc(title(s))+(s.title_ar?"<small>"+esc(s.name)+"</small>":"")),cx=el("button","x","×");cx.type="button";cx.setAttribute("aria-label","إغلاق");cx.onclick=closeDetail;hd.appendChild(h2);hd.appendChild(cx);sh.appendChild(hd);
+  
+  var sh=el("div","sh"),hd=el("div","hd"),h2=el("h2","",esc(title(s))+(s.title_ar?"<small>"+esc(s.name)+"</small>":"")),cx=el("button","x","→ رجوع للمكتبة");cx.type="button";cx.setAttribute("aria-label","رجوع");cx.onclick=closeDetail;hd.appendChild(h2);hd.appendChild(cx);sh.appendChild(hd);
   var bd=el("div","bd");sh.appendChild(bd);ov.appendChild(sh);
   bd.appendChild(el("div","m",'<span>'+esc(catLabel(s.cat))+'</span><span>★ '+kf(s.stars)+' نجمة للمستودع</span><span>جودة '+s.rating+'/5</span>'+(s.license&&s.license!=="NOASSERTION"?"<span>رخصة "+esc(s.license)+"</span>":"")+"<span>"+esc(s.repo)+"</span>"+(s.files.length?"<span>"+s.files.length+" ملف</span>":"")+(s.curated?"":'<span class="am">ترجمة آلية</span>')));
   /* عن المهارة */
@@ -430,8 +436,8 @@ function openDetail(id){
 }
 function openCompare(ids){
   var a=ids.map(byId).filter(Boolean);if(a.length<2){closeDetail();return}
-  document.title="مقارنة المهارات | "+SITE;ov.innerHTML="";ov.className="on"+(DK?" dk":"");document.body.style.overflow="hidden";ov.scrollTop=0;ov.onclick=function(e){if(e.target===ov)closeDetail()};
-  var sh=el("div","sh"),hd=el("div","hd",""),cx=el("button","x","×");cx.type="button";cx.onclick=closeDetail;hd.appendChild(el("h2","","مقارنة المهارات"));hd.appendChild(cx);sh.appendChild(hd);
+  document.title="مقارنة المهارات | "+SITE;ov.innerHTML="";ov.className="on"+(DK?" dk":"");document.body.style.overflow="hidden";ov.scrollTop=0;
+  var sh=el("div","sh"),hd=el("div","hd",""),cx=el("button","x","→ رجوع للمكتبة");cx.type="button";cx.onclick=closeDetail;hd.appendChild(el("h2","","مقارنة المهارات"));hd.appendChild(cx);sh.appendChild(hd);
   var bd=el("div","bd");sh.appendChild(bd);ov.appendChild(sh);
   function row(l,f){return "<tr><th>"+l+"</th>"+a.map(function(s){return "<td>"+f(s)+"</td>"}).join("")+"</tr>"}
   bd.appendChild(el("div","bx","<table class='cmp'>"+row("المهارة",function(s){return "<b><a href='#/k/"+esc(s.id)+"'>"+esc(title(s))+"</a></b><br><small>"+esc(s.name)+"</small>"})+row("التصنيف",function(s){return esc(catLabel(s.cat))})+row("الجودة",function(s){return s.rating+"/5"})+row("نجوم المستودع",function(s){return kf(s.stars)})+row("الرخصة",function(s){return esc(s.license&&s.license!=="NOASSERTION"?s.license:"غير محددة")})+row("الفحص الأمني",function(s){var i=secInfo(s);return "<span class='sc"+i[0]+"'>"+i[1]+"</span>"})+row("عدد الملفات",function(s){return s.files.length||"كبيرة"})+row("الوصف",function(s){return esc(desc(s))})+row("متى تستخدمها؟",function(s){return esc(s.when_ar||s.when_en||"-")})+"</table>"));
