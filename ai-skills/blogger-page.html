@@ -305,11 +305,10 @@ function list(){
 function build(){
   var counts={},owners={};D.skills.forEach(function(s){counts[s.cat]=(counts[s.cat]||0)+1;owners[owner(s)]=(owners[owner(s)]||0)+1});
   root.innerHTML="";
-  var hero=el("div","hero",'<span class="kick"><i></i>تُحدَّث تلقائيا من GitHub</span><h1>مكتبة <em>Skills</em> الذكاء الاصطناعي بالعربي</h1><p class="lead">مهارات جاهزة لـ Claude وأدوات البرمجة، بشرح عربي واضح وتصنيف حسب الاستخدام. اقرأ التفاصيل، ثم حمّل المهارة مباشرة من GitHub، أو اجمع عدة مهارات في حزمة واحدة.</p><div class="meta">آخر تحديث: '+esc(D.updated)+'</div>');
+  var hero=el("div","hero",'<span class="kick"><i></i>تُحدَّث تلقائيا من GitHub</span><h1>مكتبة <em>Skills</em> الذكاء الاصطناعي بالعربي</h1><p class="lead">مهارات جاهزة لـ Claude وأدوات البرمجة، بشرح عربي واضح وتصنيف حسب الاستخدام. اقرأ التفاصيل، ثم حمّل المهارة مباشرة، أو اجمع عدة مهارات في حزمة واحدة.</p><div class="meta">آخر تحديث: '+esc(D.updated)+'</div>');
   var dkb=el('button','dkb',DK?'☀ وضع فاتح':'☾ وضع داكن');dkb.type='button';dkb.onclick=function(){DK=!DK;lss('sk_dk',DK);dkb.textContent=DK?'☀ وضع فاتح':'☾ وضع داكن';applyDk()};hero.appendChild(dkb);
   root.appendChild(hero);
   var w=el("div","w");root.appendChild(w);
-  w.appendChild(el("div","sum",'<div class="st"><small>مهارة</small><b>'+D.skills.length+'</b></div><div class="st"><small>تصنيف</small><b>'+Object.keys(counts).length+'</b></div><div class="st"><small>مصدر على GitHub</small><b>'+Object.keys(owners).length+'</b></div><div class="st"><small>بشرح عربي مراجع</small><b>'+D.skills.filter(function(s){return s.curated}).length+'</b></div>'));
   w.appendChild(el("div","warn","تنبيه أمني: بعض المهارات تتضمن سكربتات تعمل على جهازك. اقرأ ملفاتها وراجع رخصتها قبل الاستخدام، ولا تثق إلا بالمصادر التي تعرفها."));
   var tabs=el("div","tabs");tabs.id="sk-tabs";w.appendChild(tabs);
   var bx=el("div","box");bx.id="sk-box";w.appendChild(bx);
