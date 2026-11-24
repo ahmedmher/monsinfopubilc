@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-23",
+ "updated": "2026-11-24",
  "source": "LiteLLM community price list",
  "tools": [
   {
@@ -146,7 +146,7 @@
     "min": 0.004,
     "max": 0.3,
     "med": 0.04,
-    "n": 23
+    "n": 24
    }
   },
   {
@@ -487,7 +487,7 @@
   {
    "n": "blackforestlabs/flux-3-max",
    "k": "sec",
-   "p": 0.17,
+   "p": 0.1105,
    "src": "fal_ai"
   },
   {
